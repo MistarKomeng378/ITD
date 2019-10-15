@@ -1,0 +1,20 @@
+ Volume in drive D is DATA
+ Volume Serial Number is 18DA-9B4F
+
+ Directory of D:\dev\xampp\htdocs\itd\js\notmin\plugins
+
+01/30/2012  10:08 AM    <DIR>          .
+01/30/2012  10:08 AM    <DIR>          ..
+01/30/2012  10:08 AM                 0 a.txt
+10/01/2011  04:36 AM             8,192 jsmin.exe
+01/03/2012  01:47 PM             1,032 min.bat
+08/31/2011  10:56 AM             1,433 slick.autotooltips.js
+08/31/2011  10:56 AM             2,803 slick.cellcopymanager.js
+08/31/2011  10:56 AM             1,746 slick.cellrangedecorator.js
+08/31/2011  10:56 AM             3,435 slick.cellrangeselector.js
+08/31/2011  10:56 AM             2,826 slick.cellselectionmodel.js
+08/31/2011  10:56 AM             4,827 slick.checkboxselectcolumn.js
+08/31/2011  10:56 AM             4,216 slick.rowmovemanager.js
+08/31/2011  10:56 AM             5,744 slick.rowselectionmodel.js
+              11 File(s)         36,254 bytes
+               2 Dir(s)  134,126,837,760 bytes free

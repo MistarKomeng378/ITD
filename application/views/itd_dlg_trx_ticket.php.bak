@@ -1,0 +1,61 @@
+<div style="border: 2px solid #000000; padding: 2px; font-size: 60%;" align="center">
+<table width="100%" border="0" cellspacing="2" cellpadding="2" bgcolor="#000000" style="font: 80%;">
+<tr bgcolor="#ffffff" valign="top" align="center">
+    <td width="20%" colspan="4">Client Code<br /><textarea cols="15" rows="2" id="dlg_trx_ticket_client_code"></textarea></td>
+    <td width="30%" colspan="6">Client Name<br /><textarea cols="35" rows="2" id="dlg_trx_ticket_client_name"></textarea></td>
+    <td width="40%" colspan="8"> Type of Transaction<br />
+    <table width="100%" border="0">
+        <tr>
+            <td width="50%"><input type="radio" name="dlg_trx_ticket_trx_type" id="dlg_trx_ticket_type1" value="1" /> Placement</td>
+            <td><input type="radio" name="dlg_trx_ticket_trx_type" id="dlg_trx_ticket_type2" value="2" /> Renegotiation</td>
+        </tr>
+        <tr>
+            <td><input type="radio" name="dlg_trx_ticket_trx_type" id="dlg_trx_ticket_type3" value="3" /> Redemption</td>
+            <td><input type="radio" name="dlg_trx_ticket_trx_type" id="dlg_trx_ticket_type4" value="4" /> Interest</td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="radio" name="dlg_trx_ticket_trx_type" id="dlg_trx_ticket_type5" value="5" /> <input type="text" id="dlg_trx_ticket_type" /></td>
+        </tr>
+    </table>
+    </td>
+    <td width="10%" colspan="2">Bank Placed<br /><textarea cols="15" rows="2" id="dlg_trx_ticket_bank" ></textarea></td>
+</tr>
+<tr bgcolor="#ffffff" align="center">
+    <td width="20%" colspan="4">Settlement Date<br /><textarea cols="15" rows="2" id="dlg_trx_ticket_set_dt" ></textarea></td>
+    <td width="10%" colspan="2">Term<br /><input type="text" id="dlg_trx_ticket_term"  style="width: 40px;" /> hari</td>
+    <td width="20%" colspan="4">Interest Rate<br /><input type="text" id="dlg_trx_ticket_rate"  style="width: 40px;" />% per 
+    <select id="dlg_trx_ticket_year">
+        <option value="360">360</option>
+        <option value="365">365</option>
+        <option value="366">366</option>
+    </select>
+    </td>
+    <td width="30%" colspan="6">Amount<br /><textarea cols="20" rows="2" id="dlg_trx_ticket_amount" ></textarea></td>
+    <td width="20%" colspan="4">Instruction Reference<br /><textarea cols="20" rows="2" id="dlg_trx_ticket_ref" ></textarea></td>
+</tr>                         
+<tr bgcolor="#ffffff" align="center">
+    <td width="20%" colspan="4" valign="top">Interest Before Tax<br /><textarea cols="15" rows="2" id="dlg_trx_ticket_rate_amount" ></textarea></td>
+    <td width="15%" colspan="3" valign="top">Tax<br /><input type="text" id="dlg_trx_ticket_tax"  style="width: 50px;"  value="20" /> %</td>
+    <td width="20%" colspan="4" align="left">
+        <input type="radio" name="dlg_trx_ticket_trx_stamp_type" id="dlg_trx_ticket_stamp1" value="1" checked  /> Stamp Duty<br />
+        <input type="radio" name="dlg_trx_ticket_trx_stamp_type" id="dlg_trx_ticket_stamp2" value="2" /> <input type="text" id="dlg_trx_ticket_stamp" />
+        <br /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="text" style="margin-top: 2px;" id="dlg_trx_ticket_stamp_amount"  /></td>
+    <td width="35%" colspan="7">Net Settlement Received<br /><textarea cols="15" rows="2" id="dlg_trx_ticket_net" ></textarea></td>
+    <td width="10%" colspan="2">ID<br /><textarea cols="15" rows="2" id="dlg_trx_ticket_id" ></textarea></td>
+</tr>                         
+<tr bgcolor="#ffffff">
+    <td width="5%" colspan="20">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <td width="5%" valign="top">Notes : </td>
+            <td><textarea cols="65" rows="4" id="dlg_trx_ticket_notes" ></textarea></td>
+        </table>
+    </td>
+</tr>
+<tr bgcolor="#ffffff" align="center">
+    <td width="25%" colspan="5">Prepared by :<br /><br /><br /><br />Date &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </td>
+    <td width="25%" colspan="5">Checked by :<br /><br /><br /><br />Date &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </td>
+    <td width="25%" colspan="5">Approved by :<br /><br /><br /><br />Date &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </td>
+    <td width="25%" colspan="5">Settled by :<br /><br /><br /><br />Date &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </td>
+</tr>
+</table>  
+</div>

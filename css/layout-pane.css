@@ -1,0 +1,32 @@
+/* customize the borders to avoid double-borders */
+    .ui-layout-pane {
+        border:            0; /* override layout-default-latest.css */
+        border-top:        1px solid #BBB;
+        border-bottom:    1px solid #BBB;
+    }
+.ui-layout-pane-north    {
+    padding:0px !important;
+}
+.ui-layout-pane-center    {
+        border-left:    0;
+        border-right:    0;
+        } 
+        .inner-center {
+            border:        1px solid #BBB;
+            padding:0;
+        }
+/* remove padding & scrolling from panes that are 'containers' for nested layouts */ 
+    .outer-center ,
+    .middle-center {
+        border:            0; /* cosmetic */
+        padding:        0; 
+        overflow:        hidden;
+        
+    }    
+
+/*Tambahan lainnya*/
+.hijau { color: green;}
+.merah {color: red;}
+.gw_bg{
+border: 1px solid #811920; background: #ffffff url(gw/images/ui-bg_layered-circles_75_ffffff_13x13.png) 50% 50% repeat; color: #222222;
+}

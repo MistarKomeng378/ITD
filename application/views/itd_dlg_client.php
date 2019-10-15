@@ -1,0 +1,53 @@
+<?php if(5) { ?>
+    <table width="100%">
+        <tr>
+            <td width="25%">Kode Klien</td>
+            <td width="1%">:</td>
+            <td><input type="text" id="dlgClient_code"  name="dlgClient_code" style="width:80px;" /></td>
+        </tr>
+        <tr>
+            <td>Nama klien</td>
+            <td>:</td>
+            <td><input type="text" id="dlgClient_name"  name="dlgClient_name" style="width:280px;" /></td>
+        </tr>
+        <tr>
+            <td>Nama Bank</td>
+            <td>:</td>
+            <td><input type="text" id="dlgClient_bank_name"  name="dlgClient_bank_name" style="width:180px;" /></td>
+        </tr>
+        <tr>
+            <td>No Rekening</td>
+            <td>:</td>
+            <td><input type="text" id="dlgClient_acc_no"  name="dlgClient_acc_no" style="width:100px;" /></td>
+        </tr>
+        <tr>
+            <td>Atas Nama</td>
+            <td>:</td>
+            <td><input type="text" id="dlgClient_acc_name"  name="dlgClient_acc_name" style="width:280px;" /></td>
+        </tr>
+        <tr>
+            <td>CIF</td>
+            <td>:</td>
+            <td><input type="text" id="dlgClient_cif"  name="dlgClient_cif" style="width:40px;" /></td>
+        </tr>
+        <tr>
+            <td>Kena Pajak</td>
+            <td>:</td>
+            <td>
+                <select id="dlgClient_tax">
+                    <option value="1">Tidak</option>
+                    <option value="2">Ya</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Mail Group</td>
+            <td>:</td>
+            <td>
+                <select id="dlgClient_group">
+                    <option value="">-None-</option>
+                </select>
+            </td>
+        </tr>
+    </table>                 
+<?php } ?>
