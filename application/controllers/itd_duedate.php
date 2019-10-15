@@ -35,6 +35,30 @@ class Itd_duedate extends CI_Controller {
         $this->data["r_sdata"]= $data;
         echo json_encode($this->data);   
     }
+
+    function filter_data()
+    {
+        $param=$this->input->post();
+        $this->load->model("M_itd_duedate");
+
+        $tday= getdate();
+        $cdt =$tday["mon"]."/".$tday["mday"]."/".$tday["year"];
+
+        if(cek_date($param["trx_sdt"]))
+            $cdt = change_dt_format($param["trx_sdt"]);
+
+        if(cek_date($param["trx_edt"]))
+            $edt = change_dt_format($param["trx_edt"]);
+
+        $data = $this->M_itd_duedate->filter_data($cdt,2,$edt);
+        $fields = array("trx_valuta_date","trx_due_date","trx_create_dt");
+        add_data_dt_str($data,$fields);
+        $this->data["r_success"] = 1;
+        $this->data["r_num_rows"] = count($data);
+        $this->data["r_sdata"]= $data;
+        echo json_encode($this->data);   
+    }
+
     function v_report($m1=0,$m2=0)
     {
         if($this->isLogin)
@@ -55,6 +79,33 @@ class Itd_duedate extends CI_Controller {
                     break;
             } */
         }
+    }
+
+    function save_to_excel($sdt,$edt)
+    {
+        if(cek_date($sdt))
+            $cdt = change_dt_format($sdt);
+
+        if(cek_date($edt))
+            $edt = change_dt_format($edt);
+
+        $this->load->model("M_itd_duedate");
+        $data = $this->M_itd_duedate->filter_data($cdt,2,$edt);
+        
+        $fields = array("trx_valuta_date","trx_due_date","trx_create_dt");
+        add_data_dt_str($data,$fields);
+        $this->data["r_success"] = 1;
+        $this->data["r_num_rows"] = count($data);
+        $this->data["r_sdata"]= $data;
+        // echo json_encode($this->data);
+        
+        $filename="deposito_jatuh_tempo ".$cdt." s.d ".$edt.".xls";
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        
+        $this->load->view('deposito_jatuh_tempo_excel',$this->data);
     }
 }
         

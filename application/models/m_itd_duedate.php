@@ -22,5 +22,11 @@ class M_itd_duedate extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
+    function filter_data($dt,$lte=2,$edt)
+    {
+        $query=$this->db_itd->query("exec list_trx_due '{$dt}','{$lte}','{$edt}' ");
+        $data=$query->result_array();
+        return $data;
+    }
 }
 ?>

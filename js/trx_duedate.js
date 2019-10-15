@@ -51,21 +51,61 @@ function refresh_trx_duedate_grid()
     var obj_post = $.post(uri+"index.php/itd_duedate/list_data",{trx_dt:$("#hbtn_trx_duedate_dt").val()},function(data) {
        //   alert(data);
         for (var i=0; i<data.r_num_rows; i++) {
-           var d = (data_trx_duedate[i] = {});
-           d["trx_duedate_no"] = i+1;
-           d["trx_duedate_id"] = data.r_sdata[i].trx_id;
-           d["trx_duedate_valuta_dt"] = data.r_sdata[i].trx_valuta_date_s;
-           d["trx_duedate_due_dt"] = data.r_sdata[i].trx_due_date_s;
-           d["trx_duedate_code"] = data.r_sdata[i].trx_client_code;
-           d["trx_duedate_to"] = data.r_sdata[i].trx_to;
-           d["trx_duedate_client_name"] = data.r_sdata[i].trx_client_name;
-           d["trx_duedate_type"] = data.r_sdata[i].type_desc;
-           d["trx_duedate_nominal"] = strtomoney(data.r_sdata[i].trx_nominal);  
-           d["trx_duedate_rate"] = data.r_sdata[i].trx_rate + "%";
-           d["trx_duedate_payment"] = data.r_sdata[i].payment_desc;
-           d["trx_duedate_create_dt"] = data.r_sdata[i].trx_create_dt_s;
-           d["trx_duedate_create_by"] = data.r_sdata[i].trx_create_by;
-           
+            var d = (data_trx_duedate[i] = {});
+            d["trx_duedate_no"] = i+1;
+            d["trx_duedate_id"] = data.r_sdata[i].trx_id;
+            d["trx_duedate_valuta_dt"] = data.r_sdata[i].trx_valuta_date_s;
+            d["trx_duedate_due_dt"] = data.r_sdata[i].trx_due_date_s;
+            d["trx_duedate_code"] = data.r_sdata[i].trx_client_code;
+            d["trx_duedate_to"] = data.r_sdata[i].trx_to;
+            d["trx_duedate_client_name"] = data.r_sdata[i].trx_client_name;
+            d["trx_duedate_type"] = data.r_sdata[i].type_desc;
+            d["trx_duedate_nominal"] = strtomoney(data.r_sdata[i].trx_nominal);  
+            d["trx_duedate_rate"] = data.r_sdata[i].trx_rate + "%";
+            d["trx_duedate_payment"] = data.r_sdata[i].payment_desc;
+            d["trx_duedate_create_dt"] = data.r_sdata[i].trx_create_dt_s;
+            d["trx_duedate_create_by"] = data.r_sdata[i].trx_create_by;           
+        }
+    },'json');
+    obj_post.done(function(msg){
+        
+        grid_trx_duedate.invalidateAllRows();
+        grid_trx_duedate.updateRowCount();
+        grid_trx_duedate.render();
+        state_progress(0);
+    });
+    obj_post.fail(function(jqXHR, textStatus) {    
+        alert("Error getting data :" + textStatus);
+        state_progress(0);
+    });
+}
+
+function filter_trx_duedate_grid()
+{
+    state_progress(1);
+    //alert(uri+"/index.php/itd/list_trx");
+    state_progress(1);                       
+    data_trx_duedate.length=0;
+    var obj_post = $.post(uri+"index.php/itd_duedate/filter_data",{
+        trx_sdt : $("#hbtn_trx_duedate_dt_start").val(),
+        trx_edt : $("#hbtn_trx_duedate_dt_end").val()
+    },function(data) {
+       //   alert(data);
+        for (var i=0; i<data.r_num_rows; i++) {
+            var d = (data_trx_duedate[i] = {});
+            d["trx_duedate_no"] = i+1;
+            d["trx_duedate_id"] = data.r_sdata[i].trx_id;
+            d["trx_duedate_valuta_dt"] = data.r_sdata[i].trx_valuta_date_s;
+            d["trx_duedate_due_dt"] = data.r_sdata[i].trx_due_date_s;
+            d["trx_duedate_code"] = data.r_sdata[i].trx_client_code;
+            d["trx_duedate_to"] = data.r_sdata[i].trx_to;
+            d["trx_duedate_client_name"] = data.r_sdata[i].trx_client_name;
+            d["trx_duedate_type"] = data.r_sdata[i].type_desc;
+            d["trx_duedate_nominal"] = strtomoney(data.r_sdata[i].trx_nominal);  
+            d["trx_duedate_rate"] = data.r_sdata[i].trx_rate + "%";
+            d["trx_duedate_payment"] = data.r_sdata[i].payment_desc;
+            d["trx_duedate_create_dt"] = data.r_sdata[i].trx_create_dt_s;
+            d["trx_duedate_create_by"] = data.r_sdata[i].trx_create_by;           
         }
     },'json');
     obj_post.done(function(msg){
@@ -86,5 +126,17 @@ function create_trx_duedate_event()
 {
     $("#hbtn_trx_duedate_reload").click(function(){
         refresh_trx_duedate_grid();
+    });
+
+    $("#hbtn_trx_duedate_filter_reload").click(function(){
+        filter_trx_duedate_grid();
+    });
+
+    $("#hbtn_trx_duedate_save_to_excel").click(function(){
+        filter_trx_duedate_grid();
+
+        var sdt = $("#hbtn_trx_duedate_dt_start").val();
+        var edt = $("#hbtn_trx_duedate_dt_end").val();
+        window.open(uri+"/index.php/itd_duedate/save_to_excel"+'/'+sdt+'/'+edt,"_blank");
     });
 }

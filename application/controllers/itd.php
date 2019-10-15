@@ -9,9 +9,15 @@ class Itd extends CI_Controller {
         $this->load->helper('url');
         $this->load->library('session');      
         $this->isLogin =   $this->is_login();
-         $this->data = array("r_login"=>$this->isLogin,"r_success"=>0, "r_err_desc"=>"", "r_num_rows"=>0, "r_sdata"=>"",
-                "url"=>base_url(),"nm"=>$this->session->userdata('itd_nm'),"lvl"=>$this->session->userdata('itd_lvl'),
-                "itd_key"=>$this->session->userdata('itd_key'),"itd_user_unit"=>$this->session->userdata('itd_user_unit'),
+         $this->data = array("r_login"=>$this->isLogin,"r_success"=>0, 
+                "r_err_desc"=>"", 
+                "r_num_rows"=>0, 
+                "r_sdata"=>"",
+                "url"=>base_url(),
+                "nm"=>$this->session->userdata('itd_nm'),
+                "lvl"=>$this->session->userdata('itd_lvl'),
+                "itd_key"=>$this->session->userdata('itd_key'),
+                "itd_user_unit"=>$this->session->userdata('itd_user_unit'),
                 "uid"=>$this->session->userdata('itd_uid'),
                 "err_login"=>$this->session->userdata('err_login'),
                 "err_pass_count"=>$this->session->userdata('err_pass_count'),
