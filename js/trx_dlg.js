@@ -426,7 +426,7 @@ function do_submit_new_trx()
         alert('Please input Bunga Break!'); return 0;
     }
     var input_check = [
-    {id:"i_trx_to",empty:false,type:"s"}
+     {id:"i_trx_to",empty:false,type:"s"}
     ,{id:"i_trx_up",empty:false,type:"s"}
     ,{id:"i_trx_dt",empty:false,type:"d"}
     ,{id:"i_trx_valuta_dt",empty:false,type:"d"}

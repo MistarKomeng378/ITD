@@ -577,10 +577,11 @@
                 <button id="hbtn_user_refresh">Refresh</button>             
             </div>
             <div id="hbtn_trx_duedate" style="display: none;">
+            <!--    
                 Due Date: <input type="text" class="dtpick" id="hbtn_trx_duedate_dt" style="width: 80px; text-align: center;"  />
                 <button id="hbtn_trx_duedate_reload">Reload</button>   
                 <span style="margin-left: 30px"></span>
-
+                -->
                 Start: <input type="text" class="dtpick" id="hbtn_trx_duedate_dt_start" style="width: 80px; text-align: center;"  />
                 End: <input type="text" class="dtpick" id="hbtn_trx_duedate_dt_end" style="width: 80px; text-align: center;"  />
                 <button id="hbtn_trx_duedate_filter_reload">Reload</button>
