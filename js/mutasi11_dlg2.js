@@ -83,6 +83,7 @@ function get_balance_mutasi11_dlg2(pc_code,pc_accno)
             $("#i_mutasi11_dlg2_ano").val(msg.r_sdata[0].acc_no);
             $("#i_mutasi11_dlg2_nml").val(msg.r_sdata[0].balance_gs);
             $("#i_mutasi11_dlg2_nml1").val(strtomoney(msg.r_sdata[0].balance_gs));
+            rate(msg.r_sdata[0].balance_gs);
         }
         else
         {
@@ -331,4 +332,14 @@ function mutasi11_dlg2_clear()
     $("#i_mutasi11_dlg2_int1").val('');
     $("#i_mutasi11_dlg2_tax1").val('');
     $("#i_mutasi11_dlg2_netint1").val('');
+}
+function rate(nominal) {
+    console.log(nominal);
+    if(nominal >= 100000000 && nominal <=500000000){
+        $("#i_mutasi11_dlg2_rate").val(1.5);
+    }else if(nominal >= 500000000 && nominal <=5000000000){
+        $("#i_mutasi11_dlg2_rate").val(2);
+    }else{
+        $("#i_mutasi11_dlg2_rate").val(2.5);
+    }
 }
