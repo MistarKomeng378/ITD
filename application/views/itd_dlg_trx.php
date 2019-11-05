@@ -66,7 +66,7 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
     <td width="2%">*</td>
     <td width="35%">JENIS TRANSAKSI</td>
     <td width="2%">:</td>
-    <td> <input type="text" name="i_trx_type" id="i_trx_type" /> <span id="s_trx_type"></span>
+    <td> <input type="hidden" name="i_trx_type" id="i_trx_type" /> <span id="s_trx_type"></span>
     <span id="s_trx_tgl_break"><input type="text" id="i_trx_break_dt" name="i_trx_break_dt" style="width:80px;text-align: center;" class="dtpick"  /> (dd-mm-yyyy)</span>
     </td>
 </tr>

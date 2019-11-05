@@ -78,16 +78,17 @@ function create_dlg_dpicker_mutasi11()
                    //,{id:"client_cif", name:"CIF", field:"client_cif",width:60}
                    //,{id:"client_cbest", name:"CBEST", field:"client_cbest",width:100}
                    ,{id:"kena_jasgir", name:"Jasgir", field:"kena_jasgir"}
-                   ,{id:"bank_src", name:"Selling Agent", field:"ket",width:90}
-                   ,{id:"bank_src", name:"Selling Agent", field:"ket",width:90}
-                   ,{id:"subsrd_kategori", name:"Kategori", field:"subsrd_kategori",width:90}
+                   //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
+                   ,{id:"bank_src", name:"Desc", field:"deskripsi",width:90}
+                   ,{id:"coa_Id", name:"Coa Id", field:"subsrd_kategori",width:90}
+                   ,{id:"subsrd_kategori", name:"Kategori", field:"coa_desc",width:90}
             ],
         url: uri+"index.php/mutasi/list_client_by_code",
         setval: function(obj_val){                      
             $("#i_mutasi11_client_code").val(trim(obj_val.client_code));
             $("#i_mutasi11_rek").val(obj_val.acc_no);
             $("#i_mutasi11_client_name").val(obj_val.client_name);
-			$("#i_mutasi11_desc").val(obj_val.ket);
+			$("#i_mutasi11_desc").val(obj_val.deskripsi);
             $("#i_mutasi11_nominal").val(obj_val.subsrd_nominal);
 			$("#i_mutasi11_nominal_a").val(strtomoney($("#i_mutasi11_nominal").val()));
 			

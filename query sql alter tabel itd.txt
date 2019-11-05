@@ -1,3 +1,0 @@
-alter table itd_trx_approved add itd_kategori varchar(30)
-
-alter table itd_trx_unapproved add itd_kategori varchar(30)
