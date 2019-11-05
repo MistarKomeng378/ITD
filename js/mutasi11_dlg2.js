@@ -59,6 +59,7 @@ function get_last_date_mutasi11_dlg2(pc_code,pc_accno,pdt)
             $("#i_mutasi11_dlg2_c_dt1").val(msg.r_sdata[0].last_closed_date_s); 
             $("#i_mutasi11_dlg2_pdt").val(saiki);
             $("#i_mutasi11_dlg2_tenor").val(daysBetween(parseDate(msg.r_sdata[0].last_closed_date_s,'-',1),parseDate(saiki,'-',1)));
+            rate();
         }
         else
         {
@@ -83,7 +84,6 @@ function get_balance_mutasi11_dlg2(pc_code,pc_accno)
             $("#i_mutasi11_dlg2_ano").val(msg.r_sdata[0].acc_no);
             $("#i_mutasi11_dlg2_nml").val(msg.r_sdata[0].balance_gs);
             $("#i_mutasi11_dlg2_nml1").val(strtomoney(msg.r_sdata[0].balance_gs));
-            rate(msg.r_sdata[0].balance_gs);
         }
         else
         {
@@ -333,8 +333,8 @@ function mutasi11_dlg2_clear()
     $("#i_mutasi11_dlg2_tax1").val('');
     $("#i_mutasi11_dlg2_netint1").val('');
 }
-function rate(nominal) {
-    console.log(nominal);
+function rate() {
+    var nominal = $("#i_mutasi11_dlg2_nml").val();
     if(nominal >= 100000000 && nominal <=500000000){
         $("#i_mutasi11_dlg2_rate").val(1.5);
     }else if(nominal >= 500000000 && nominal <=5000000000){
@@ -342,4 +342,27 @@ function rate(nominal) {
     }else{
         $("#i_mutasi11_dlg2_rate").val(2.5);
     }
+
+    var pdt =$("#i_mutasi11_dlg2_pdt").val();
+    var t_or = daysBetween(parseDate($("#i_mutasi11_dlg2_c_dt").val(),'-',1),parseDate(pdt,'-',1));
+    $("#i_mutasi11_dlg2_tenor").val(t_or);
+
+    var nml = $("#i_mutasi11_dlg2_nml").val();
+    var rate = $("#i_mutasi11_dlg2_rate").val();
+    var year = $("#i_mutasi11_dlg2_year").val();
+
+    var i_nt = nml*rate/100/year*t_or;
+    
+    $("#i_mutasi11_dlg2_int").val(i_nt);
+    $("#i_mutasi11_dlg2_int1").val(strtomoney(i_nt));
+
+    var taxnya=20/100;
+    var t_ax = i_nt*taxnya;
+    $("#i_mutasi11_dlg2_tax").val(t_ax);
+    $("#i_mutasi11_dlg2_tax1").val(strtomoney(t_ax));
+
+    var n_int = strtofloat(strtomoney(i_nt))-strtofloat(strtomoney(t_ax));
+    $("#i_mutasi11_dlg2_netint").val(n_int);
+    $("#i_mutasi11_dlg2_netint1").val(strtomoney(n_int));
+    $("#i_mutasi11_dlg2_rate1").val($("#i_mutasi11_dlg2_rate").val());
 }
