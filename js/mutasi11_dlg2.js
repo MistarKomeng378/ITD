@@ -28,18 +28,25 @@ function create_dlg_mutasi11_2()
         }
     });
 }
-function open_dlg_mutasi11_2(ccode,cname,accno,cdt)
-{           
+function open_dlg_mutasi11_2(ccode,cname,accno,cdt,autoOpen)
+{
     mutasi11_dlg2_clear();
     $("#i_mutasi11_dlg2_c_code").val(ccode);
     $("#i_mutasi11_dlg2_c_name").val(cname);
     $("#i_mutasi11_dlg2_acc_no").val(accno);
     
     $("#dialogBox_mutasi11_2").dialog("open");
-    $("#i_mutasi11_dlg2_pdt").val(saiki);
+    $("#i_mutasi11_dlg2_pdt").val(besok());
     get_last_date_mutasi11_dlg2(ccode,accno,cdt);
     get_balance_mutasi11_dlg2(ccode,accno,cdt);
-    get_giro_mutasi11_dlg2(ccode,accno,cdt,saiki);
+    get_giro_mutasi11_dlg2(ccode,accno,cdt,besok());
+    rate();
+
+    //langsung save ketika dlg dibuka
+    if(autoOpen){
+        setTimeout(function(){ act_mutasi11_auto_close(); }, 500);
+    }
+    
 }
 function close_dlg_mutasi11_2()
 {
@@ -57,9 +64,8 @@ function get_last_date_mutasi11_dlg2(pc_code,pc_accno,pdt)
         {
             $("#i_mutasi11_dlg2_c_dt").val(msg.r_sdata[0].last_closed_date_s);
             $("#i_mutasi11_dlg2_c_dt1").val(msg.r_sdata[0].last_closed_date_s); 
-            $("#i_mutasi11_dlg2_pdt").val(saiki);
-            $("#i_mutasi11_dlg2_tenor").val(daysBetween(parseDate(msg.r_sdata[0].last_closed_date_s,'-',1),parseDate(saiki,'-',1)));
-            rate();
+            $("#i_mutasi11_dlg2_pdt").val(besok());
+            $("#i_mutasi11_dlg2_tenor").val(daysBetween(parseDate(msg.r_sdata[0].last_closed_date_s,'-',1),parseDate(besok(),'-',1)));
         }
         else
         {
@@ -322,6 +328,39 @@ function act_mutasi11_2()
         }
     }
 }   
+
+function act_mutasi11_auto_close()
+{
+    if(do_mutasi11_a==0)
+    {
+        do_mutasi11_a=1;
+            var addgir = 0;
+            //if(confirm('Tambahkan juga mutasi giro ini di tanggal '+$("#i_mutasi11_dlg2_pdt").val()+'?'))
+                addgir=1;
+            state_progress(1);
+            var obj_post = $.post(uri+"/index.php/mutasi_dlg/add_mutasi_giro", {
+                v_dt:$("#i_mutasi11_dlg2_c_dt").val(),a_dt:$("#i_mutasi11_dlg2_pdt").val(),c_rate:$("#i_mutasi11_dlg2_rate1").val(),
+                c_tenor:$("#i_mutasi11_dlg2_tenor").val(),c_year:$("#i_mutasi11_dlg2_year").val(),c_tenor:$("#i_mutasi11_dlg2_tenor").val(),
+                c_code:$("#i_mutasi11_dlg2_c_code").val(),c_name:$("#i_mutasi11_dlg2_c_name").val(),c_accno:$("#i_mutasi11_dlg2_acc_no").val(),
+                c_nml:$("#i_mutasi11_dlg2_nml1").val(),c_int:$("#i_mutasi11_dlg2_int1").val(),c_int_tax:$("#i_mutasi11_dlg2_tax1").val(),
+                c_int_net:$("#i_mutasi11_dlg2_netint1").val(),c_add:addgir
+            },function(data) {      
+                do_mutasi11_a=0; //alert(data);
+            },"json"); 
+            obj_post.done(function(msg) {        
+                if(msg.r_num_rows>0)
+                {                                                                 // alert(msg.r_sdata[0].giro_id);
+                    //loadPrintDocument(uri+'index.php/mutasi_dlg/print_1/'+msg.r_sdata[0].giro_id);
+                    close_dlg_mutasi11_2();
+                    // alert('Success membuat jasa giro!');
+                }
+                state_progress(0);
+            });
+            
+            obj_post.fail(function(jqXHR, textStatus) {state_progress(0);do_mutasi11_a=0;});
+    }
+}   
+
 function mutasi11_dlg2_clear()
 {
     $("#i_mutasi11_dlg2_rate").val('');
@@ -365,4 +404,28 @@ function rate() {
     $("#i_mutasi11_dlg2_netint").val(n_int);
     $("#i_mutasi11_dlg2_netint1").val(strtomoney(n_int));
     $("#i_mutasi11_dlg2_rate1").val($("#i_mutasi11_dlg2_rate").val());
+}
+
+function besok() {    
+    var from = saiki.split("-");
+    var f = new Date(from[2], from[1] - 1, from[0]);
+    var dayOfWeek = f.getDay();
+    // hasil dari dayOfWeek
+    // 0 = minggu
+    // 1 = senin
+    // 2 = selasa
+    // 3 = rabu
+    // 4 = kamis
+    // 5 = jumat
+    // 6 = sabtu
+    var addDay = 1;
+    if(dayOfWeek == 5){
+        var addDay = 3;
+    }
+    if(dayOfWeek == 6){
+        var addDay = 2;
+    }
+
+    f.setDate( f.getDate() + addDay );   
+    return ("0" + f.getDate()).slice(-2) +"-"+ ("0" + (f.getMonth() + 1)).slice(-2) +"-"+ f.getFullYear();
 }

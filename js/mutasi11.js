@@ -474,12 +474,15 @@ function create_mutasi11_event()
                         alert("GS Balance harus di isi!");
                     else if(confirm('CLosing balance tidak sama dengan GS Balance, Continue?'))
                           cont =true;
-                }
-                else       
+                }else{
                     cont=true;
+                }     
+                    
         }
-        else
+        else{
             alert("Hanya mutasi berstatus open yang bisa di close!");
+        }
+        
         if(cont)
         {
             var obj_post = $.post(uri+"/index.php/mutasi/get_client_id", {
@@ -488,10 +491,20 @@ function create_mutasi11_event()
                 //alert(data);
             },"json"); 
             obj_post.done(function(msg) { 
-                if(msg.r_num_rows>0)
+                if(msg.r_num_rows>0){
                     close_day_mutasi11();
-                else
+
+                    open_dlg_mutasi11_2(
+                        $("#i_mutasi11_client_code").val(),
+                        $("#i_mutasi11_client_name").val(),
+                        $("#i_mutasi11_rek").val(),
+                        $("#i_mutasi11_client_dt").val(),
+                        true
+                    );
+                }else{
                     alert("Tidak ada client dengan Kode "+$("#i_mutasi11_client_code").val()+" dan no rekening: "+$("#i_mutasi11_rek").val());
+                }
+                   
             });
             
             obj_post.fail(function(jqXHR, textStatus) {alert("Error mengecek client!");});
@@ -586,7 +599,15 @@ function create_mutasi11_event()
                 },"json"); 
                 obj_post.done(function(msg) { 
                     if(msg.r_num_rows>0)
-                        open_dlg_mutasi11_2($("#i_mutasi11_client_code").val(),$("#i_mutasi11_client_name").val(),$("#i_mutasi11_rek").val(),$("#i_mutasi11_client_dt").val());
+                        
+                        //parameter false/true untuk auto close dlg dan auto save jasa giro
+                        open_dlg_mutasi11_2(
+                            $("#i_mutasi11_client_code").val(),
+                            $("#i_mutasi11_client_name").val(),
+                            $("#i_mutasi11_rek").val(),
+                            $("#i_mutasi11_client_dt").val(),
+                            false
+                        );
                     else
                         alert("Tidak ada client dengan Kode "+$("#i_mutasi11_client_code").val()+" dan no rekening: "+$("#i_mutasi11_rek").val());
                 });
