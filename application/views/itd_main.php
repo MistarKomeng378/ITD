@@ -359,7 +359,7 @@
                     <button id="hbtn_client_group_refresh">Refresh</button>
                 </div>
                 <?php }?>
-                
+                <!-- Button Mutasi-->
                 <div id="hbtn_mutasi11" style="display: none;">
                 <button id="hbtn_mutasi11_open_day_all">Awal Hari (All Account)</button> - 
                 <button id="hbtn_mutasi11_open_day">Awal Hari</button>  
@@ -372,6 +372,7 @@
                 <button id="hbtn_mutasi11_c_jasgir">Cetak Jasa Giro</button>  
                 <button id="hbtn_mutasi11_p_rekap">Cetak Rekap Jasa Giro</button>  
                 </div>
+                <!-- End Of Button Mutasi-->
                 <div id="hbtn_report11" style="display: none;">
                 <button id="hbtn_report11_search">Kategori Rekap Instruksi</button>  
                 <button id="hbtn_report11_save">Save Rekap Instruksi</button>  

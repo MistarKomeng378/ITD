@@ -385,7 +385,7 @@ function rate() {
     var pdt =$("#i_mutasi11_dlg2_pdt").val();
     var t_or = daysBetween(parseDate($("#i_mutasi11_dlg2_c_dt").val(),'-',1),parseDate(pdt,'-',1));
     $("#i_mutasi11_dlg2_tenor").val(t_or);
-
+    
     var nml = $("#i_mutasi11_dlg2_nml").val();
     var rate = $("#i_mutasi11_dlg2_rate").val();
     var year = $("#i_mutasi11_dlg2_year").val();
