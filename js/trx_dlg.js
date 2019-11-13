@@ -369,8 +369,21 @@ function load_data_trx(pdata,no_tt)
         $("#i_trx_move_bilyet").attr("checked",true);
     else
         $("#i_trx_move_bilyet").attr("checked",false);
-    ena_break_trx1(pdata.trx_type,pdata.trx_rate_break);
-    
+    ena_break_trx1(pdata.trx_type,pdata.trx_rate_break);    
+     
+    // edit MK
+    if(pdata.nfs_td=='1'){
+        $("#i_trx_nominal").attr("readonly",true);
+        $("#i_trx_rate").attr("readonly",true);
+        $("#i_trx_due_dt").attr("disabled",true);
+        $("#i_trx_valuta_dt").attr("disabled",true);
+    }
+    else{
+        $("#i_trx_nominal").removeAttr("readonly");
+        //$("#i_trx_rate").removeAttr("readonly");
+        $("#i_trx_due_dt").removeAttr("disabled");
+        $("#i_trx_valuta_dt").removeAttr("disabled");
+    }
     
 }
 function clear_input(no_tt)

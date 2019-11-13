@@ -112,9 +112,8 @@ function create_trx_event()
         selected_row_trx  = grid_trx.getActiveCell();
         if(selected_row_trx)
         {
-			//Edit By MK
-            // if(data_trx[selected_row_trx.row].nfs_td=='PTP')
-                // alert("Cannot edit Placement from SINVEST!");
+			// if(data_trx[selected_row_trx.row].nfs_td=='PTP')            
+              //alert("Cannot edit Placement from SINVEST!");
             // else
 				// if(data_trx[selected_row_trx.row].trx_unix_no!=2)
                 // alert("Instruksi belum dipilih!");

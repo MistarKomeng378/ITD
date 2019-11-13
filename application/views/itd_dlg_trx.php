@@ -110,7 +110,7 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
 <tr bgcolor="#ffffff">
     <td align="center">NAMA KLIEN</td>
     <td align="center" width="15%" colspan="2">NOMINAL</td>
-    <td align="center" width="15%">BUNGA / NISBAH</td> <!-- <<<-- Edit MK -->
+    <td align="center" width="15%">BUNGA</td>
     <td align="center" width="15%" id="td_trx_rate_break" style="display: none;">BUNGA BREAK</td>
 </tr>
 <tr bgcolor="#ffffff">
