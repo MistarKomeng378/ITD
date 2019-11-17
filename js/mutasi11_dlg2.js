@@ -34,13 +34,15 @@ function open_dlg_mutasi11_2(ccode,cname,accno,cdt,autoOpen)
     $("#i_mutasi11_dlg2_c_code").val(ccode);
     $("#i_mutasi11_dlg2_c_name").val(cname);
     $("#i_mutasi11_dlg2_acc_no").val(accno);
-    
+
     $("#dialogBox_mutasi11_2").dialog("open");
     $("#i_mutasi11_dlg2_pdt").val(besok());
-    get_last_date_mutasi11_dlg2(ccode,accno,cdt);
-    get_balance_mutasi11_dlg2(ccode,accno,cdt);
-    get_giro_mutasi11_dlg2(ccode,accno,cdt,besok());
-    rate();
+
+    get_balance_mutasi11_dlg2(ccode,accno,cdt).done(
+        get_last_date_mutasi11_dlg2(ccode,accno,cdt).done(
+            get_giro_mutasi11_dlg2(ccode,accno,cdt,besok())
+        )
+    );
 
     //langsung save ketika dlg dibuka
     if(autoOpen){
@@ -72,10 +74,14 @@ function get_last_date_mutasi11_dlg2(pc_code,pc_accno,pdt)
             $("#i_mutasi11_dlg2_c_dt").val('');
             $("#i_mutasi11_dlg2_c_dt1").val('');
         }
+        rate();
         state_progress(0);
     });
     
     obj_post.fail(function(jqXHR, textStatus) {state_progress(0);});
+
+    var r = $.Deferred();
+    return r;
 }
 function get_balance_mutasi11_dlg2(pc_code,pc_accno)
 {
@@ -102,6 +108,9 @@ function get_balance_mutasi11_dlg2(pc_code,pc_accno)
     });
     
     obj_post.fail(function(jqXHR, textStatus) {state_progress(0);});
+
+    var r = $.Deferred();
+    return r;
 }
 function get_giro_mutasi11_dlg2(pc_code,pc_accno,pc_dt,pc_vdt)
 {
@@ -149,6 +158,9 @@ function get_giro_mutasi11_dlg2(pc_code,pc_accno,pc_dt,pc_vdt)
     });
     
     obj_post.fail(function(jqXHR, textStatus) {state_progress(0);});
+
+    var r = $.Deferred();
+    return r;
 }
 function mutasi11_dlg2_create_event()
 {                                 
@@ -339,11 +351,20 @@ function act_mutasi11_auto_close()
                 addgir=1;
             state_progress(1);
             var obj_post = $.post(uri+"/index.php/mutasi_dlg/add_mutasi_giro", {
-                v_dt:$("#i_mutasi11_dlg2_c_dt").val(),a_dt:$("#i_mutasi11_dlg2_pdt").val(),c_rate:$("#i_mutasi11_dlg2_rate1").val(),
-                c_tenor:$("#i_mutasi11_dlg2_tenor").val(),c_year:$("#i_mutasi11_dlg2_year").val(),c_tenor:$("#i_mutasi11_dlg2_tenor").val(),
-                c_code:$("#i_mutasi11_dlg2_c_code").val(),c_name:$("#i_mutasi11_dlg2_c_name").val(),c_accno:$("#i_mutasi11_dlg2_acc_no").val(),
-                c_nml:$("#i_mutasi11_dlg2_nml1").val(),c_int:$("#i_mutasi11_dlg2_int1").val(),c_int_tax:$("#i_mutasi11_dlg2_tax1").val(),
-                c_int_net:$("#i_mutasi11_dlg2_netint1").val(),c_add:addgir
+                v_dt:$("#i_mutasi11_dlg2_c_dt").val(),
+                a_dt:$("#i_mutasi11_dlg2_pdt").val(),
+                c_rate:$("#i_mutasi11_dlg2_rate1").val(),
+                c_tenor:$("#i_mutasi11_dlg2_tenor").val(),
+                c_year:$("#i_mutasi11_dlg2_year").val(),
+                c_tenor:$("#i_mutasi11_dlg2_tenor").val(),
+                c_code:$("#i_mutasi11_dlg2_c_code").val(),
+                c_name:$("#i_mutasi11_dlg2_c_name").val(),
+                c_accno:$("#i_mutasi11_dlg2_acc_no").val(),
+                c_nml:$("#i_mutasi11_dlg2_nml1").val(),
+                c_int:$("#i_mutasi11_dlg2_int1").val(),
+                c_int_tax:$("#i_mutasi11_dlg2_tax1").val(),
+                c_int_net:$("#i_mutasi11_dlg2_netint1").val(),
+                c_add:addgir
             },function(data) {      
                 do_mutasi11_a=0; //alert(data);
             },"json"); 
@@ -372,7 +393,8 @@ function mutasi11_dlg2_clear()
     $("#i_mutasi11_dlg2_tax1").val('');
     $("#i_mutasi11_dlg2_netint1").val('');
 }
-function rate() {
+function rate() {    
+
     var nominal = $("#i_mutasi11_dlg2_nml").val();
     if(nominal >= 100000000 && nominal <=500000000){
         $("#i_mutasi11_dlg2_rate").val(1.5);
