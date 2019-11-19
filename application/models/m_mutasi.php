@@ -186,5 +186,160 @@ class M_mutasi extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
+
+    function SubscribeToMutasi($data)
+    {
+        $client_code = $data['client_code'];
+        $date = $data['date'];
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+
+        $subsrd = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                subsrd
+            WHERE client_code = '".$client_code."' and 
+            subsrd_date = '".$date."' and 
+            acc_no_src = '".$acc_no."'
+        ");
+
+        $mutasi_trx = false;
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa_id."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no_src']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$value['subsrd_kategori']."',
+                        '".$value['subsrd_desc']."',
+                        '".$value['bank_src']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['modified_by']."',
+                        '".$value['modified_dt']->format('Y-m-d H:i:s')."',
+                        '".$value['modified_by']."',
+                        '".$value['modified_dt']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+    function PenempatanToMutasi($data)
+    {
+        $client_code = $data['client_code'];
+        $date = $data['date'];
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_itd->query("
+            SELECT 
+                *
+            FROM 
+                itd_trx_approved
+            WHERE trx_client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            trx_type = 1 and 
+            trx_acc_no = '".$acc_no."'
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['trx_client_code']."',
+                        '".$value['trx_acc_no']."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['trx_to']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['trx_nominal']."',
+                        '".$value['trx_create_by']."',
+                        '".$value['trx_create_dt']->format('Y-m-d H:i:s')."',
+                        '".$value['trx_progress_by']."',
+                        '".$value['trx_modified_dt']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
 }
 ?>
