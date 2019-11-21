@@ -79,3 +79,20 @@ $db['dbnfs']['dbcollat'] = 'utf8_general_ci';
 $db['dbnfs']['swap_pre'] = '';
 $db['dbnfs']['autoinit'] = FALSE;
 $db['dbnfs']['stricton'] = FALSE;
+
+
+$db['dburssim']['hostname'] = 'localhost';
+$db['dburssim']['username'] = 'sa';
+$db['dburssim']['password'] = '1234567890';
+$db['dburssim']['database'] = 'URSSIM';
+$db['dburssim']['dbdriver'] = 'sqlsrv';
+$db['dburssim']['dbprefix'] = '';
+$db['dburssim']['pconnect'] = TRUE;
+$db['dburssim']['db_debug'] = TRUE;
+$db['dburssim']['cache_on'] = FALSE;
+$db['dburssim']['cachedir'] = '';
+$db['dburssim']['char_set'] = 'utf8';
+$db['dburssim']['dbcollat'] = 'utf8_general_ci';
+$db['dburssim']['swap_pre'] = '';
+$db['dburssim']['autoinit'] = FALSE;
+$db['dburssim']['stricton'] = FALSE;

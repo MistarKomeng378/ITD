@@ -581,6 +581,30 @@ class Mutasi extends CI_Controller {
             case 'D002':
                 $data = $this->M_mutasi->PenempatanToMutasi($param);
                 break;
+
+            case 'C003':
+                $data = $this->M_mutasi->PencairanToMutasi($param);
+                break;
+
+            case 'D001':
+                $data = $this->M_mutasi->RedemptionToMutasi($param);
+                break;
+
+            case 'C006':
+                $data = $this->M_mutasi->JualSahamToMutasi($param);
+                break;
+
+            case 'C007':
+                $data = $this->M_mutasi->BeliSahamToMutasi($param);
+                break;
+
+            case 'D016':
+                $data = $this->M_mutasi->WhtCommisionToMutasi($param);
+                break;
+
+            case 'D017':
+                $data = $this->M_mutasi->TaxObligasiToMutasi($param);
+                break;
             
             default:
                 $data = array('msg' => 'coa id tidak dikenali');

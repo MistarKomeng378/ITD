@@ -136,13 +136,16 @@ function dPicker_attach(elmt,obj)
     dPicker_obj.push(obj);
     dPicker_onElmtFocus.push(false);
     elmt.keyup(function(e){
+        
         if (e.keyCode === 13) {
             dPicker_reload_data();
-            if($.trim($(this).val()) == '')
-                dPicker_hide_force();
-            else
-                dPicker_show();
         }
+        if($.trim($(this).val()) == ''){
+            dPicker_hide_force();
+        }else{
+            dPicker_show();
+        }
+
     });
     elmt.blur(function(e){
         sleep(10);
