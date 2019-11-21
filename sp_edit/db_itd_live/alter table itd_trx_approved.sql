@@ -1,0 +1,1 @@
+alter table itd_trx_approved add itd_kategori varchar(30)

@@ -1,0 +1,1 @@
+alter table subsrd add subsrd_kategori varchar(100)
