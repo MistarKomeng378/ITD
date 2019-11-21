@@ -567,6 +567,51 @@ class Mutasi extends CI_Controller {
             $this->load->view("itd_mutasi11_rekaphtml",$this->data);
         }
     }
+
+    public function set_mutasi_trx()
+    {
+        $this->load->model("M_mutasi");
+        $param = $this->input->post();
+
+        switch ($param['coa_id']) {
+            case 'C002':
+                $data = $this->M_mutasi->SubscribeToMutasi($param);
+                break;
+
+            case 'D002':
+                $data = $this->M_mutasi->PenempatanToMutasi($param);
+                break;
+
+            case 'C003':
+                $data = $this->M_mutasi->PencairanToMutasi($param);
+                break;
+
+            case 'D001':
+                $data = $this->M_mutasi->RedemptionToMutasi($param);
+                break;
+
+            case 'C006':
+                $data = $this->M_mutasi->JualSahamToMutasi($param);
+                break;
+
+            case 'C007':
+                $data = $this->M_mutasi->BeliSahamToMutasi($param);
+                break;
+
+            case 'D016':
+                $data = $this->M_mutasi->WhtCommisionToMutasi($param);
+                break;
+
+            case 'D017':
+                $data = $this->M_mutasi->TaxObligasiToMutasi($param);
+                break;
+            
+            default:
+                $data = array('msg' => 'coa id tidak dikenali');
+                break;
+        }
+        echo json_encode($data);
+    }
 }
         
 ?>
