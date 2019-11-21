@@ -192,7 +192,7 @@ class M_mutasi extends CI_Model {
     function SubscribeToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -271,7 +271,7 @@ class M_mutasi extends CI_Model {
     function PenempatanToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -349,7 +349,7 @@ class M_mutasi extends CI_Model {
     function PencairanToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -427,7 +427,7 @@ class M_mutasi extends CI_Model {
     function RedemptionToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -520,7 +520,7 @@ class M_mutasi extends CI_Model {
     function JualSahamToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -610,7 +610,7 @@ class M_mutasi extends CI_Model {
     function BeliSahamToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -700,7 +700,7 @@ class M_mutasi extends CI_Model {
     function WhtCommisionToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -790,7 +790,7 @@ class M_mutasi extends CI_Model {
     function TaxObligasiToMutasi($data)
     {
         $client_code = $data['client_code'];
-        $date = $data['date'];
+        $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
