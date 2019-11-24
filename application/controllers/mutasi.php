@@ -47,11 +47,12 @@ class Mutasi extends CI_Controller {
         
     function list_client_by_code()
     {
-        $this->load->model("M_mutasi");  
+        $this->load->model("M_mutasi");
         $param=$this->input->post();
         sql_quot_all($param);
         //$data = $this->M_itd->list_client_by_code($param["client_code"]);
-        $data = $this->M_mutasi->list_client_by_code($param["q"]);
+        // $data = $this->M_mutasi->list_client_by_code($param["q"]);
+        $data = $this->M_mutasi->ListClient($param["q"]);
         $this->data["r_success"] = 1;
         $this->data["r_num_rows"] = count($data);
         $this->data["r_sdata"]= $data;
@@ -610,6 +611,15 @@ class Mutasi extends CI_Controller {
                 $data = array('msg' => 'coa id tidak dikenali');
                 break;
         }
+        echo json_encode($data);
+    }
+
+    public function debug()
+    {
+        $this->load->model("M_mutasi");
+        $data = $this->M_mutasi->ListIGIncomeTax('000');
+        // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
+        // $data = $this->M_mutasi->list_client_by_code('000D2K');
         echo json_encode($data);
     }
 }
