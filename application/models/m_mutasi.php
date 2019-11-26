@@ -1019,14 +1019,8 @@ class M_mutasi extends CI_Model {
                     a.subsrd_date,
                     SUM ( a.subsrd_nominal ) AS subsrd_nominal,
                     a.acc_no_src AS acc_no ,
-                    ( 
-                        SELECT TOP ( 1 ) subsrd_kategori FROM subsrd WHERE client_code = a.client_code and
-                        acc_no_src = a.acc_no_src and subsrd_date = a.subsrd_date
-                    ) AS subsrd_kategori,
-			        ( 
-                        SELECT TOP ( 1 ) bank_src FROM subsrd WHERE client_code = a.client_code AND 
-                        acc_no_src = a.acc_no_src and subsrd_date = a.subsrd_date
-                    ) AS deskripsi
+                    'C002' AS subsrd_kategori,
+			        'Subscription' AS deskripsi
                 FROM
                     subsrd a 
                 WHERE
