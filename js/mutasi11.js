@@ -78,9 +78,9 @@ function create_dlg_dpicker_mutasi11()
                     }
                    ,{id:"client_code", name:"Code", field:"client_code",width:50}
                    ,{id:"acc_no", name:"Account No", field:"acc_no",width:100}
-                   ,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
-                   ,{id:"client_name", name:"Account Name", field:"client_name",width:180}
+                //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
                    ,{id:"bank_name", name:"Bank Name", field:"bank_name"}
+                   ,{id:"client_name", name:"Account Name", field:"client_name",width:180}
                    ,{id:"subsrd_nominal", name:"Nominal", field:"subsrd_nominal",width:100}
                    //,{id:"client_cif", name:"CIF", field:"client_cif",width:60}
                    //,{id:"client_cbest", name:"CBEST", field:"client_cbest",width:100}
