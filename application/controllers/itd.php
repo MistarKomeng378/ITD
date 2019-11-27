@@ -182,6 +182,15 @@ class Itd extends CI_Controller {
         sql_quot_all($param);
         $this->load->model("M_itd");  
         $data = $this->M_itd->get_trx($this->session->userdata('itd_uid'),$param["trx_id"],$param["trx_unix"]);
+        
+        
+		$data = array_map(function($v){
+			foreach($v as $key => $value){
+				$v[$key] = utf8_encode($value);
+			}
+			return $v;
+		},$data);
+        
         $this->data["r_success"] = 1;
         $this->data["r_num_rows"] = count($data);
         //print_r($data);
