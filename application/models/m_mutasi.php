@@ -11,6 +11,14 @@ class M_mutasi extends CI_Model {
         $this->db_jasgir = $this->load->database('dbjasgir',true);
         $this->db_urssim = $this->load->database('dburssim',true);
         $this->db_nfs = $this->load->database('dbnfs',true);
+        $this->db_batavia = $this->load->database('dbbatavia',true);
+        $this->db_bni = $this->load->database('dbbni',true);
+        $this->db_ereport = $this->load->database('dbereport',true);
+        $this->db_niaga = $this->load->database('dbniaga',true);
+        $this->db_syailendra = $this->load->database('dbsyailendra',true);
+        $this->db_trimegah = $this->load->database('dbtrimegah',true);
+        $this->db_tugu = $this->load->database('dbtugu',true);
+
     }
     function get_login_info($user,$pass)
     {                                                                                
@@ -993,6 +1001,13 @@ class M_mutasi extends CI_Model {
         $ListNfsBeli = $this->ListNfsBeli($client_code);
         $ListWhtCommision = $this->ListWhtCommision($client_code);
         $ListIGIncomeTax = $this->ListIGIncomeTax($client_code);
+        $ListRedemptionBatavia = $this->ListRedemptionBatavia($client_code);
+        $ListRedemptionBni = $this->ListRedemptionBni($client_code);
+       // $ListRedemptionEreport = $this->ListRedemptionEreport($client_code);
+        $ListRedemptionNiaga = $this->ListRedemptionNiaga($client_code);
+        $ListRedemptionSyailendra = $this->ListRedemptionSyailendra($client_code);
+        $ListRedemptionTrimegah = $this->ListRedemptionTrimegah($client_code);
+        $ListRedemptionTugu = $this->ListRedemptionTugu($client_code);
 
         return array_merge(
             $ListSubscribe, 
@@ -1003,7 +1018,14 @@ class M_mutasi extends CI_Model {
             $ListNfsJual,
             $ListNfsBeli,
             $ListWhtCommision,
-            $ListIGIncomeTax
+            $ListIGIncomeTax,
+            $ListRedemptionBatavia,
+            $ListRedemptionBni,
+           // $ListRedemptionEreport,
+            $ListRedemptionNiaga,
+            $ListRedemptionSyailendra,
+            $ListRedemptionTrimegah,
+            $ListRedemptionTugu
         );
 
     }
@@ -1441,6 +1463,1031 @@ class M_mutasi extends CI_Model {
         
         return $return;
     }
+
+    
+    function RedemptionToMutasiBatavia($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_batavia->query("
+            SELECT
+                BATAVIA.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                BATAVIA.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                BATAVIA.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                BATAVIA.dbo.FUND_ID.CODE_BPM AS client_code,
+                BATAVIA.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                BATAVIA.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                BATAVIA.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                BATAVIA.dbo.TXN_POSTING
+                INNER JOIN BATAVIA.dbo.FUND_ID ON BATAVIA.dbo.TXN_POSTING.FUND_LEVEL_CODE = BATAVIA.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND BATAVIA.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = BATAVIA.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND BATAVIA.dbo.TXN_POSTING.FUND_GROUP = BATAVIA.dbo.FUND_ID.FUND_GROUP 
+                AND BATAVIA.dbo.TXN_POSTING.FUND_ID = BATAVIA.dbo.FUND_ID.FUND_ID 
+            WHERE
+                BATAVIA.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                BATAVIA.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                BATAVIA.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                BATAVIA.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+    function RedemptionToMutasiBni($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_bni->query("
+            SELECT
+                BNI.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                BNI.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                BNI.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                BNI.dbo.FUND_ID.CODE_BPM AS client_code,
+                BNI.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                BNI.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                BNI.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                BNI.dbo.TXN_POSTING
+                INNER JOIN BNI.dbo.FUND_ID ON BNI.dbo.TXN_POSTING.FUND_LEVEL_CODE = BNI.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND BNI.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = BNI.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND BNI.dbo.TXN_POSTING.FUND_GROUP = BNI.dbo.FUND_ID.FUND_GROUP 
+                AND BNI.dbo.TXN_POSTING.FUND_ID = BNI.dbo.FUND_ID.FUND_ID 
+            WHERE
+                BNI.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                BNI.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                BNI.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                BNI.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+
+    /*
+    function RedemptionToMutasiEreport($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_ereport->query("
+            SELECT
+                E_REPORT.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                E_REPORT.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                E_REPORT.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                E_REPORT.dbo.FUND_ID.CODE_BPM AS client_code,
+                E_REPORT.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                E_REPORT.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                E_REPORT.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                E_REPORT.dbo.TXN_POSTING
+                INNER JOIN E_REPORT.dbo.FUND_ID ON E_REPORT.dbo.TXN_POSTING.FUND_LEVEL_CODE = E_REPORT.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND E_REPORT.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = E_REPORT.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND E_REPORT.dbo.TXN_POSTING.FUND_GROUP = E_REPORT.dbo.FUND_ID.FUND_GROUP 
+                AND E_REPORT.dbo.TXN_POSTING.FUND_ID = E_REPORT.dbo.FUND_ID.FUND_ID 
+            WHERE
+                E_REPORT.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                E_REPORT.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                E_REPORT.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                E_REPORT.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+    */
+    function RedemptionToMutasiNiaga($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_niaga->query("
+            SELECT
+                NIAGA.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                NIAGA.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                NIAGA.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                NIAGA.dbo.FUND_ID.CODE_BPM AS client_code,
+                NIAGA.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                NIAGA.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                NIAGA.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                NIAGA.dbo.TXN_POSTING
+                INNER JOIN NIAGA.dbo.FUND_ID ON NIAGA.dbo.TXN_POSTING.FUND_LEVEL_CODE = NIAGA.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND NIAGA.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = NIAGA.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND NIAGA.dbo.TXN_POSTING.FUND_GROUP = NIAGA.dbo.FUND_ID.FUND_GROUP 
+                AND NIAGA.dbo.TXN_POSTING.FUND_ID = NIAGA.dbo.FUND_ID.FUND_ID 
+            WHERE
+                NIAGA.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                NIAGA.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                NIAGA.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                NIAGA.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+    function RedemptionToMutasiSyailendra($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_syailendra->query("
+            SELECT
+                SYAILENDRA.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                SYAILENDRA.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                SYAILENDRA.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                SYAILENDRA.dbo.FUND_ID.CODE_BPM AS client_code,
+                SYAILENDRA.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                SYAILENDRA.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                SYAILENDRA.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                SYAILENDRA.dbo.TXN_POSTING
+                INNER JOIN SYAILENDRA.dbo.FUND_ID ON SYAILENDRA.dbo.TXN_POSTING.FUND_LEVEL_CODE = SYAILENDRA.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND SYAILENDRA.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = SYAILENDRA.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND SYAILENDRA.dbo.TXN_POSTING.FUND_GROUP = SYAILENDRA.dbo.FUND_ID.FUND_GROUP 
+                AND SYAILENDRA.dbo.TXN_POSTING.FUND_ID = SYAILENDRA.dbo.FUND_ID.FUND_ID 
+            WHERE
+                SYAILENDRA.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                SYAILENDRA.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                SYAILENDRA.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                SYAILENDRA.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+    function RedemptionToMutasiTrimegah($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_trimegah->query("
+            SELECT
+                TRIMEGAH.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                TRIMEGAH.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                TRIMEGAH.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                TRIMEGAH.dbo.FUND_ID.CODE_BPM AS client_code,
+                TRIMEGAH.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                TRIMEGAH.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                TRIMEGAH.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                TRIMEGAH.dbo.TXN_POSTING
+                INNER JOIN TRIMEGAH.dbo.FUND_ID ON TRIMEGAH.dbo.TXN_POSTING.FUND_LEVEL_CODE = TRIMEGAH.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND TRIMEGAH.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = TRIMEGAH.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND TRIMEGAH.dbo.TXN_POSTING.FUND_GROUP = TRIMEGAH.dbo.FUND_ID.FUND_GROUP 
+                AND TRIMEGAH.dbo.TXN_POSTING.FUND_ID = TRIMEGAH.dbo.FUND_ID.FUND_ID 
+            WHERE
+                TRIMEGAH.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                TRIMEGAH.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                TRIMEGAH.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                TRIMEGAH.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+    function RedemptionToMutasiTugu($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_tugu->query("
+            SELECT
+                TUGU_MANDIRI.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
+                TUGU_MANDIRI.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                TUGU_MANDIRI.dbo.FUND_ID.MODIFIER AS MODIFIER,
+                TUGU_MANDIRI.dbo.FUND_ID.CODE_BPM AS client_code,
+                TUGU_MANDIRI.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                TUGU_MANDIRI.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
+                TUGU_MANDIRI.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                TUGU_MANDIRI.dbo.TXN_POSTING
+                INNER JOIN TUGU_MANDIRI.dbo.FUND_ID ON TUGU_MANDIRI.dbo.TXN_POSTING.FUND_LEVEL_CODE = TUGU_MANDIRI.dbo.FUND_ID.FUND_LEVEL_CODE 
+                AND TUGU_MANDIRI.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = TUGU_MANDIRI.dbo.FUND_ID.FUND_UMBRELLA_CODE 
+                AND TUGU_MANDIRI.dbo.TXN_POSTING.FUND_GROUP = TUGU_MANDIRI.dbo.FUND_ID.FUND_GROUP 
+                AND TUGU_MANDIRI.dbo.TXN_POSTING.FUND_ID = TUGU_MANDIRI.dbo.FUND_ID.FUND_ID 
+            WHERE
+                TUGU_MANDIRI.dbo.TXN_POSTING.TXN_TYPE = 'R' and
+                TUGU_MANDIRI.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
+                TUGU_MANDIRI.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                TUGU_MANDIRI.dbo.FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $mutasi_trx = false;
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$value['MODIFIER']."',
+                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
+                        '".$value['MODIFIER']."',
+                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+
+            }
+        }
+        return $mutasi_trx;
+    }
+
+
+    function ListRedemptionBatavia($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_batavia->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'Batavia' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+
+    function ListRedemptionBni($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_bni->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'Bni' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+
+
+    /*
+    function ListRedemptionEreport($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_ereport->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'E_report' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+    */
+    function ListRedemptionNiaga($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_niaga->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'Niaga' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+
+    
+    function ListRedemptionSyailendra($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_syailendra->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'Syailendra' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+    
+
+    function ListRedemptionTrimegah($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_trimegah->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'Trimegah' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+
+    function ListRedemptionTugu($client_code)
+    {
+        $return = array();
+        if( $this->CheckMutasiClient($client_code) ){
+            $query=$this->db_tugu->query("
+                SELECT TOP
+                    ( 200 ) 
+                    'Tugu' AS src_dt,
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM AS client_code,
+                    FUND_ID.ACC_BANK_OPR AS acc_no,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                    SUM ( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    'D001' AS subsrd_kategori,
+                    'Redemption' AS deskripsi 
+                FROM
+                    TXN_POSTING
+                    INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                    AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                    AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                    AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+                WHERE
+                    TXN_POSTING.TXN_TYPE = 'R' and
+                    FUND_ID.CODE_BPM like '%".$client_code."%' and 
+                    FUND_ID.ACC_BANK_OPR in (".$this->MutasiClientAccNo($client_code).")
+                GROUP BY
+                    TXN_POSTING.TXN_TYPE,
+                    FUND_ID.CODE_BPM,
+                    FUND_ID.ACC_BANK_OPR,
+                    CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) 
+                ORDER BY
+                    subsrd_date DESC
+            ");
+            
+            $data = $query->result_array();
+            $merge = array();
+            foreach ($data as $key => $value) {
+                $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+                array_push($merge, 
+                    array_merge(
+                        $value, 
+                        array('coa_desc'=>$coa_desc),
+                        $this->MutasiClient($client_code, $value['acc_no'])
+                    ) 
+                );
+            }
+            $return = $merge;
+        }
+        
+        return $return;
+    }
+
+
 
 }
 ?>
