@@ -176,6 +176,19 @@ class Itd extends CI_Controller {
         $this->data["r_sdata"]= $data;
         echo json_encode($this->data);
     }
+
+    public function do_map($v)
+    {
+        foreach($v as $key => $value){
+            if(is_object($value)){
+                $this->do_map( (array)$value );
+            }else{
+                $v[$key] = utf8_encode($value);
+            }
+        }
+        return $v;
+    }
+
     function get_trx()
     {
         $param=$this->input->post();
@@ -183,13 +196,7 @@ class Itd extends CI_Controller {
         $this->load->model("M_itd");  
         $data = $this->M_itd->get_trx($this->session->userdata('itd_uid'),$param["trx_id"],$param["trx_unix"]);
         
-        
-		$data = array_map(function($v){
-			foreach($v as $key => $value){
-				$v[$key] = utf8_encode($value);
-			}
-			return $v;
-		},$data);
+		$data = array_map(array($this,'do_map'),$data);
         
         $this->data["r_success"] = 1;
         $this->data["r_num_rows"] = count($data);
