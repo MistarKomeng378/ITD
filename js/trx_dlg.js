@@ -381,9 +381,10 @@ function load_data_trx(pdata,no_tt)
     }
     else{
         $("#i_trx_nominal").removeAttr("disabled");
-        //$("#i_trx_rate").removeAttr("readonly");
+        $("#i_trx_rate").removeAttr("disabled");
         $("#i_trx_due_dt").removeAttr("disabled");
         $("#i_trx_valuta_dt").removeAttr("disabled");
+        $("#i_trx_deposit_tenor").removeAttr("disabled");
     }
     
 }
