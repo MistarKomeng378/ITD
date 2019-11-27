@@ -206,7 +206,7 @@ function add_data_dt_str(&$pdata,$fields)
             if(is_object($pdata[$i][$item]))
                 $pdata[$i][$item."_s"] = date_format($pdata[$i][$item],"d-m-Y");
             else
-                $pdata[$i][$item."_s"] ="";
+                $pdata[$i][$item."_s"] =$pdata[$i][$item];
         }
     }
 }
