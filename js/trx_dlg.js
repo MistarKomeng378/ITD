@@ -373,13 +373,14 @@ function load_data_trx(pdata,no_tt)
      
     // edit MK
     if(pdata.nfs_td=='1'){
-        $("#i_trx_nominal").attr("readonly",true);
-        $("#i_trx_rate").attr("readonly",true);
+        $("#i_trx_nominal").attr("disabled",true);
+        $("#i_trx_rate").attr("disabled",true);
         $("#i_trx_due_dt").attr("disabled",true);
         $("#i_trx_valuta_dt").attr("disabled",true);
+        $("#i_trx_deposit_tenor").attr("disabled",true);
     }
     else{
-        $("#i_trx_nominal").removeAttr("readonly");
+        $("#i_trx_nominal").removeAttr("disabled");
         //$("#i_trx_rate").removeAttr("readonly");
         $("#i_trx_due_dt").removeAttr("disabled");
         $("#i_trx_valuta_dt").removeAttr("disabled");
