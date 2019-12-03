@@ -59,7 +59,14 @@ class M_itd_save extends CI_Model {
         '{$param["trx_dep_type"]}','{$param["trx_val_dt"]}','{$param["trx_due_dt"]}','{$param["trx_tax_status"]}','{$param["trx_pay_type"]}',
         {$param["trx_nominal"]},{$param["trx_rate"]},{$param["trx_due_type"]},'{$param["trx_other"]}','{$param["trx_note"]}','{$param["trx_break_dt"]}','{$param["trx_curr"]}','{$param["trx_mov_bil"]}'";
         return array();*/
-        $query=$this->db->query("exec submit_edit_trx {$param["trx_id"]},'{$user_id}','{$param["trx_to"]}','{$param["trx_remark1"]}','{$param["trx_up"]}',
+
+        $query=$this->db->query("
+            select nfs_td from itd_trx_approved where trx_id='".$param["trx_id"]."'
+        ");
+        $nfd_td = $query->result_array();
+        $nfd_td = count( $nfd_td[0]['nfs_td']);
+
+        $query=$this->db->query("exec submit_edit_trx {$nfd_td}, {$param["trx_id"]},'{$user_id}','{$param["trx_to"]}','{$param["trx_remark1"]}','{$param["trx_up"]}',
         '{$param["trx_telp"]}','{$param["trx_fax"]}','{$param["trx_dt"]}','{$param["trx_client_id"]}','{$param["trx_c_code"]}',
         '{$param["trx_c_name"]}','{$param["trx_acc_no"]}','{$param["trx_acc_name"]}','{$param["trx_bank_name"]}','{$param["trx_type"]}',
         '{$param["trx_dep_type"]}','{$param["trx_val_dt"]}','{$param["trx_due_dt"]}','{$param["trx_tax_status"]}','{$param["trx_pay_type"]}',
