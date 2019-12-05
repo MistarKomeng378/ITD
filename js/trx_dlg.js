@@ -379,15 +379,9 @@ function load_data_trx(pdata,no_tt)
         $("#i_trx_valuta_dt").attr("disabled",true);
         $("#i_trx_deposit_tenor").attr("disabled",true);
         $("#i_trx_client_code").attr("disabled",true);
+        $("#i_trx_curr").attr("disabled",true);
     }
-    else{
-        $("#i_trx_nominal").removeAttr("disabled");
-        $("#i_trx_rate").removeAttr("disabled");
-        $("#i_trx_due_dt").removeAttr("disabled");
-        $("#i_trx_valuta_dt").removeAttr("disabled");
-        $("#i_trx_deposit_tenor").removeAttr("disabled");
-        $("#i_trx_client_code").removeAttr("disabled");
-    }
+    
     
 }
 function clear_input(no_tt)
@@ -421,7 +415,7 @@ function enable_input_trx(no)
             "i_trx_client_acc_no","i_trx_client_bank_name","i_trx_client_acc_name","i_trx_dt","i_trx_valuta_dt","i_trx_due_dt",
             "i_trx_trx_other","i_trx_trx_note","i_trx_nominal","i_trx_rate","i_trx_type","i_trx_break_dt","i_trx_deposit_type",
             "i_trx_deposit_tenor","i_trx_valuta_dt","i_trx_due_dt","i_trx_client_code","i_trx_curr","i_trx_tax_status",
-            "i_trx_payment_type","i_trx_due_dt_status","i_trx_other"];
+            "i_trx_payment_type","i_trx_due_dt_status","i_trx_other",];
     for(var i=0;i<input_list.length;i++)
     {
         $("#"+input_list[i]).removeAttr('disabled');
@@ -429,7 +423,11 @@ function enable_input_trx(no)
 }
 function disable_input_trx()
 {                                        
-       var input_list = [];
+       var input_list = ["i_trx_to","i_trx_remark1","i_trx_up","i_trx_telp","i_trx_fax","i_trx_client_code","i_trx_client_name",
+       "i_trx_client_acc_no","i_trx_client_bank_name","i_trx_client_acc_name","i_trx_dt","i_trx_valuta_dt","i_trx_due_dt",
+       "i_trx_trx_other","i_trx_trx_note","i_trx_nominal","i_trx_rate","i_trx_break_dt","i_trx_deposit_type",
+       "i_trx_deposit_tenor","i_trx_valuta_dt","i_trx_due_dt","i_trx_client_code","i_trx_curr","i_trx_tax_status",
+       "i_trx_payment_type","i_trx_due_dt_status","i_trx_other"];
 			
     for(var i=0;i<input_list.length;i++)
     {

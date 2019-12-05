@@ -51,8 +51,8 @@ Bilyet Tetap : <input type="checkbox" id="i_trx_move_bilyet" value="1" /> YA
 </tr>
 
 <tr>
-    <td colspan="6"><br />Rekening Tujuan : <input type="text" name="i_trx_dst_rek"  id="i_trx_dst_rek" readonly /> 
-    a/n <input type="text" name="i_trx_dst_acc_name"  id="i_trx_dst_acc_name" style="width:320px;" readonly />
+    <td colspan="6"><br />Rekening Tujuan : <input type="text" name="i_trx_dst_rek"  id="i_trx_dst_rek" disabled /> 
+    a/n <input type="text" name="i_trx_dst_acc_name"  id="i_trx_dst_acc_name" style="width:320px;" disabled />
     <input type="hidden" name="h_trx_pic_id"  id="h_trx_pic_id" /></td>
 </tr>
 
