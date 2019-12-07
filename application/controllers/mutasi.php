@@ -589,6 +589,13 @@ class Mutasi extends CI_Controller {
 
             case 'D001':
                 $data = $this->M_mutasi->RedemptionToMutasi($param);
+                // $data = $this->M_mutasi->RedemptionToMutasiBatavia($param);
+                // $data = $this->M_mutasi->RedemptionToMutasiBni($param);
+                // //$data = $this->M_mutasi->RedemptionToMutasiEreport($param);
+                // $data = $this->M_mutasi->RedemptionToMutasiNiaga($param);
+                // $data = $this->M_mutasi->RedemptionToMutasiSyailendra($param);
+                // $data = $this->M_mutasi->RedemptionToMutasiTrimegah($param);
+                // $data = $this->M_mutasi->RedemptionToMutasiTugu($param);
                 break;
             
             case 'C006':

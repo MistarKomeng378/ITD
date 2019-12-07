@@ -208,7 +208,16 @@ class Itd_save extends CI_Controller {
         {
             $rdata = array("r_success"=>false,"lvl"=>$this->get_login_lvl());
             $param=$this->input->post();
-            sql_quot_all($param);           //print_r($param);                       
+            sql_quot_all($param);           //print_r($param);    
+            
+            // $this->load->database('default');
+            // $query=$this->db->query("
+            //     select nfs_td from itd_trx_approved where trx_id='".$param["trx_id"]."'
+            // ");
+            // $nfd_td = $query->result_array();
+            // echo json_encode( count( $nfd_td[0]['nfs_td'])  );
+            // die();
+
             $this->load->model("M_itd_save");
             if($param["trx_break_dt"]=="")
                 $param["trx_break_dt"]='01/01/2011';
@@ -220,6 +229,7 @@ class Itd_save extends CI_Controller {
             $param["trx_val_dt"] = change_dt_format($param["trx_val_dt"]);
             $param["trx_due_dt"] = change_dt_format($param["trx_due_dt"]);
             $param["trx_break_dt"] = change_dt_format($param["trx_break_dt"]);
+           // $param["PTP"]==
             //print_r($param);
             $this->load->model("M_itd_save");
             $data=$this->M_itd_save->submit_edit_trx($this->session->userdata('itd_uid'),$param);

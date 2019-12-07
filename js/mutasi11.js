@@ -1059,7 +1059,7 @@ function list_trx_mutasi_by_group(client_code,acc_no,coa_no)
                 'subsrd_nominal'    : strtomoney(data[index].subsrd_nominal),
                 'kena_jasgir'       : data[index].kena_jasgir,
                 'subsrd_kategori'   : data[index].subsrd_kategori,
-                'coa_desc'          : data[index].coa_desc,
+                'coa_desc'          : data[index].deskripsi,
                 'client_name'       : data[index].client_name
             };
         }
