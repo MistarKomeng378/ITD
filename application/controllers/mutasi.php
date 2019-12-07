@@ -590,13 +590,21 @@ class Mutasi extends CI_Controller {
             case 'D001':
                 $data = $this->M_mutasi->RedemptionToMutasi($param);
                 break;
-
+            
             case 'C006':
                 $data = $this->M_mutasi->JualSahamToMutasi($param);
                 break;
 
             case 'C007':
+                $data = $this->M_mutasi->JualObligasiToMutasi($param);
+                break;
+
+            case 'D004':
                 $data = $this->M_mutasi->BeliSahamToMutasi($param);
+                break;
+
+            case 'D005':
+                $data = $this->M_mutasi->BeliObligasiToMutasi($param);
                 break;
 
             case 'D016':
@@ -614,13 +622,152 @@ class Mutasi extends CI_Controller {
         echo json_encode($data);
     }
 
-    public function debug()
+    public function mutasi_client()
+    {
+       return $this->load->view('mutasi_client');
+    }
+
+    public function mutasi_client_code()
     {
         $this->load->model("M_mutasi");
-        $data = $this->M_mutasi->ListIGIncomeTax('000');
-        // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
-        // $data = $this->M_mutasi->list_client_by_code('000D2K');
+        $param=$this->input->post();
+        sql_quot_all($param);
+        $data = $this->M_mutasi->list_client_by_code($param["q"]);
+        $this->data["r_success"] = 1;
+        $this->data["r_num_rows"] = count($data);
+        $this->data["r_sdata"]= $data;
+        echo json_encode($this->data);
+    }
+
+    public function check_kategori()
+    {
+        $this->load->model("M_mutasi");
+        $param = $this->input->post();
+        sql_quot_all($param);
+        $data = $this->M_mutasi->check_kategori($param);
         echo json_encode($data);
+    }
+
+    public function list_mutasi_by_group()
+    {
+        $this->load->model("M_mutasi");
+        $param = $this->input->post();
+        sql_quot_all($param);
+
+        switch ($param['coa_no']) {
+            case 'C001':
+                $data = $this->M_mutasi->ListJasaGiro($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'C002':
+                $data = $this->M_mutasi->ListSubscribe($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'D002':
+                $data = $this->M_mutasi->ListPenempatan($param['client_code'],$param['acc_no']);
+                break;
+                
+            case 'C003':
+                $data = $this->M_mutasi->ListPencairan($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'D001':
+                $data = $this->M_mutasi->ListRedemption($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'C006':
+                $data = $this->M_mutasi->ListJualSaham($param['client_code'],$param['acc_no']);
+                break;
+            case 'C007':
+                $data = $this->M_mutasi->ListJualObligasi($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'D004':
+                $data = $this->M_mutasi->ListBeliSaham($param['client_code'],$param['acc_no']);
+                break;
+            case 'D005':
+                $data = $this->M_mutasi->ListBeliObligasi($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'D016':
+                $data = $this->M_mutasi->ListTaxBroker($param['client_code'],$param['acc_no']);
+                break;
+
+            case 'D017':
+                $data = $this->M_mutasi->ListTaxObligasi($param['client_code'],$param['acc_no']);
+                break;
+            
+            default:
+                $data = array();
+                break;
+        }
+
+        echo json_encode($data);
+    }
+
+    public function list_mutasi_detail()
+    {
+        $this->load->model("M_mutasi");
+        $param = $this->input->post();
+        sql_quot_all($param);
+        
+        switch ($param['coa_no']) {
+
+            case 'C002':
+                $data = $this->M_mutasi->ListSubscribeDetail($param['client_code'], $param['acc_no'], $param['date']);
+                break;
+            
+            case 'D002':
+                $data = $this->M_mutasi->ListPenempatanDetail($param['client_code'], $param['acc_no'], $param['date']);
+                break;
+
+            case 'C003':
+                $data = $this->M_mutasi->ListPencairanDetail($param['client_code'], $param['acc_no'], $param['date']);
+                break;
+
+            case 'D001':
+                $data = $this->M_mutasi->ListRedemptionDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+            case 'C006':
+                $data = $this->M_mutasi->ListJualSahamDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+
+            case 'C007':
+                $data = $this->M_mutasi->ListJualObligasiDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+
+            case 'D004':
+                $data = $this->M_mutasi->ListBeliSahamDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+
+            case 'D005':
+                $data = $this->M_mutasi->ListBeliObligasiDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+
+            case 'D016':
+                $data = $this->M_mutasi->ListTaxBrokerDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+
+            case 'D017':
+                $data = $this->M_mutasi->ListTaxObligasiDetail($param['client_code'],$param['acc_no'], $param['date']);
+                break;
+            
+            default:
+                $data = array();
+                break;
+        }
+
+        echo json_encode($data);
+    }
+
+    public function debug()
+    {
+        // $this->load->model("M_mutasi");
+        // $data = $this->M_mutasi->ListIGIncomeTax('000');
+        // // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
+        // // $data = $this->M_mutasi->list_client_by_code('000D2K');
+        echo json_encode($this->session->all_userdata());
+        echo json_encode($this->session->userdata('itd_uid'));
     }
 }
         

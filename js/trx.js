@@ -15,6 +15,7 @@ function initiate_trx()
     $("#i_trx_list_dt").val(saiki);
     show_sections('tbl_slick_trx');      
     create_dlg_trx_approve();
+    create_dlg_mutasi_client_search();
 }
 
 function create_trx_grid()

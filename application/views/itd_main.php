@@ -762,6 +762,7 @@
 <DIV id="dialogBox_frm_trx_ticket_nfs"></DIV> 
 <DIV id="dialogBox_trx_approve_nfs"></DIV> 
 
+<div id="dialogBox_mutasi_client_kode"></div>
 
 <!-- DIALOG BOX w/ User -->
 <!-- DIALOG BOX w/ pic -->
