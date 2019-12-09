@@ -118,13 +118,7 @@ function create_dlg_dpicker_mutasi11()
             get_balance_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt);
             //show_hide_add_mutasi11(1);
             reload_coa_mutasi11(obj_val.subsrd_kategori)
-            
-            setMutasiTRx(
-                obj_val.subsrd_kategori,
-                obj_val.client_code,
-                obj_val.subsrd_date.date,
-                obj_val.acc_no
-            );
+
             list_trx_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt)
 
         }
@@ -132,7 +126,7 @@ function create_dlg_dpicker_mutasi11()
     dPicker_attach($("#i_mutasi11_client_code"),dpick_opt_mutasi11);
 }
 
-function setMutasiTRx(coa_id,client_code,date,acc_no) {
+function setMutasiTRx(coa_id,client_code,date,acc_no,trx_date) {
 
     var d = date;
     var tahun = d.substr(0,4);
@@ -144,9 +138,10 @@ function setMutasiTRx(coa_id,client_code,date,acc_no) {
         coa_id:coa_id,
         client_code:client_code,
         date:date,
-        acc_no:acc_no
+        acc_no:acc_no,
+        trx_date:trx_date
     }, function(data, status) {
-        list_trx_mutasi11(client_code,acc_no,c_dt)
+        list_trx_mutasi11(client_code,acc_no,trx_date);
     });
     
 }
@@ -989,6 +984,37 @@ function dlg_mutasi_client() {
             ],
             url: uri+"index.php/mutasi/mutasi_client_code",
             setval: function(obj_val){
+                $("#i_mutasi11_client_code").val(trim(obj_val.client_code));
+                $("#i_mutasi11_rek").val(obj_val.acc_no);
+                $("#i_mutasi11_client_name").val(obj_val.client_name);
+                $("#i_mutasi11_desc").val(obj_val.deskripsi);
+                $("#i_mutasi11_nominal").val(obj_val.subsrd_nominal);
+                $("#i_mutasi11_nominal_a").val(strtomoney($("#i_mutasi11_nominal").val()));
+
+                mutasi11_kena_jasgir= obj_val.kena_jasgir;
+
+                var c_dt=$("#i_mutasi11_client_dt").val();
+                clear_balance_mutasi11();
+                get_last_date_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt);
+                get_balance_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt);
+                reload_coa_mutasi11(obj_val.subsrd_kategori)
+                list_trx_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt)
+                
+                //====== set tabel pada pop up dialog agar kosong ======
+                if(grid_mutasi_by_group !== undefined){
+                    mutasi_by_group.length=0;
+                    grid_mutasi_by_group.invalidateAllRows();
+                    grid_mutasi_by_group.updateRowCount();
+                    grid_mutasi_by_group.render();
+                }
+                if(grid_mutasi_detail !== undefined){
+                    mutasi_detail.length=0;
+                    grid_mutasi_detail.invalidateAllRows();
+                    grid_mutasi_detail.updateRowCount();
+                    grid_mutasi_detail.render();
+                }
+
+                //====== set data untuk pop up dialog =========
                 $('#i_mutasi_kategori').find('option').remove();
                 $('#i_mutasi_kategori').append('<option value="">Pilih Kategori</option>');
 
@@ -1017,6 +1043,7 @@ function dlg_mutasi_client() {
                     create_list_mutasi_by_group();
                     
                 });
+                //====== set data untuk pop up dialog =========
             }
         }
         dPicker_attach($("#i_mutasi11_client_code2"),dpick_opt_mutasi22);
@@ -1118,12 +1145,6 @@ function create_list_mutasi_by_group()
         $("#i_mutasi11_nominal_a").val(strtomoney($("#i_mutasi11_nominal").val()));
 
         mutasi11_kena_jasgir= dataSelected.kena_jasgir;
-        
-        var d = dataSelected.date;
-        var tahun = d.substr(0,4);
-        var bulan = d.substr(5,2);
-        var hari = d.substr(8,2);
-        $("#i_mutasi11_client_dt").val(hari+'-'+bulan+'-'+tahun);
 
         var c_dt=$("#i_mutasi11_client_dt").val();
         clear_balance_mutasi11();
@@ -1131,7 +1152,7 @@ function create_list_mutasi_by_group()
         get_balance_mutasi11(dataSelected.client_code,dataSelected.acc_no,c_dt);
         reload_coa_mutasi11(dataSelected.subsrd_kategori);
         
-        list_trx_mutasi11(dataSelected.client_code,dataSelected.acc_no,c_dt)
+        list_trx_mutasi11(dataSelected.client_code,dataSelected.acc_no,c_dt);
         
         list_trx_mutasi_detail(dataSelected.client_code, dataSelected.acc_no, dataSelected.subsrd_kategori, dataSelected.date);
         create_list_mutasi_detail();
@@ -1152,11 +1173,12 @@ function list_trx_mutasi_detail(client_code,acc_no,coa_no,date)
     },'json'); 
 
     obj_post.done(function(data) { 
+        
         for (let index = 0; index < data.length; index++) {
             mutasi_detail[index] = {
                 'coa_id'         : data[index].subsrd_kategori,
                 'coa_desc'       : data[index].coa_desc,
-                'trx_desc'       : data[index].bank_name +' - '+data[index].deskripsi,
+                'trx_desc'       : data[index].bank_name +' - '+data[index].coa_desc,
                 'trx_dc'         : data[index].coa_dc,
                 'trx_nominal_d'  : data[index].coa_dc=='D' ? strtomoney(data[index].subsrd_nominal):'',
                 'trx_nominal_c'  : data[index].coa_dc=='C' ? strtomoney(data[index].subsrd_nominal):'',
@@ -1214,7 +1236,8 @@ function create_list_mutasi_detail() {
                 dataSelected.coa_id,
                 $("#i_mutasi11_client_code").val(),
                 dataSelected.create_dt,
-                $("#i_mutasi11_rek").val()
+                $("#i_mutasi11_rek").val(),
+                $("#i_mutasi11_client_dt").val()
             );
         }
         

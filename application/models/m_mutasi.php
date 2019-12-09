@@ -201,6 +201,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -257,7 +258,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no_dst']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$value['subsrd_kategori']."',
                         '".$value['subsrd_desc']."',
                         '".$value['bank_src']."',
@@ -280,6 +281,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -339,7 +341,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['trx_client_code']."',
                         '".$value['trx_acc_no']."',
-                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['trx_from']."',
@@ -363,6 +365,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -422,7 +425,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['trx_client_code']."',
                         '".$value['trx_acc_no']."',
-                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['trx_from']."',
@@ -445,6 +448,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -515,7 +519,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -538,6 +542,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -605,7 +610,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -628,6 +633,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -695,7 +701,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -718,6 +724,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -785,7 +792,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -808,6 +815,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -875,7 +883,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -898,6 +906,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -965,7 +974,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -988,6 +997,7 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
+        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -1085,7 +1095,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$trx_date."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -1246,7 +1256,7 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DATE, trx_date ) AS subsrd_date,
                 SUM(trx_nominal) AS subsrd_nominal,
                 'D002' AS subsrd_kategori,
-                'Capital Gain Tax' AS deskripsi,
+                'Penempatan TD di Bank' AS deskripsi,
                 trx_acc_no AS acc_no
             FROM
                 itd_trx_approved 
@@ -1289,7 +1299,8 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DATE, trx_date ) AS subsrd_date,
                 sum(trx_nominal) AS subsrd_nominal,
                 'C003' AS subsrd_kategori,
-                trx_acc_no AS acc_no 
+                trx_acc_no AS acc_no,
+                'Pencairan TD dari Bank' AS deskripsi
             FROM
                 itd_trx_approved 
             WHERE
