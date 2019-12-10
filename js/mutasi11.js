@@ -36,7 +36,7 @@ function get_content_mutasi11()
     });
     obj_post.done(function(msg) { 
         create_mutasi11_grid(); 
-        // create_dlg_dpicker_mutasi11();
+        create_dlg_dpicker_mutasi11();
         reload_coa_mutasi11();
         create_mutasi11_event();
         $("#i_mutasi11_client_dt").val(saiki);
@@ -75,24 +75,18 @@ function create_dlg_dpicker_mutasi11()
 {
     var dpick_opt_mutasi11 ={
         cols : [         
-                    
-                    {id:"subsrd_date", name:"Date", field:"subsrd_date", width:50, 
-                        formatter: function (row, cell, value, columnDef, dataContext) {
-                            return dataContext.subsrd_date.date;
-                        }
-                    }
-                   ,{id:"client_code", name:"Code", field:"client_code",width:50}
-                   ,{id:"acc_no", name:"Account No", field:"acc_no",width:100}
+                {id:"client_code", name:"Code", field:"client_code",width:50}
+                ,{id:"acc_no", name:"Account No", field:"acc_no",width:100}
                 //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
-                   ,{id:"bank_name", name:"Bank Name", field:"bank_name"}
-                   ,{id:"client_name", name:"Account Name", field:"client_name",width:180}
-                   ,{id:"subsrd_nominal", name:"Nominal", field:"subsrd_nominal",width:100}
-                   //,{id:"client_cif", name:"CIF", field:"client_cif",width:60}
-                   //,{id:"client_cbest", name:"CBEST", field:"client_cbest",width:100}
-                   ,{id:"kena_jasgir", name:"Jasgir", field:"kena_jasgir"}
-                   //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
-                   ,{id:"coa_Id", name:"Coa Id", field:"subsrd_kategori",width:90}
-                   ,{id:"subsrd_kategori", name:"Kategori", field:"coa_desc",width:90}
+                ,{id:"bank_name", name:"Bank Name", field:"bank_name"}
+                ,{id:"client_name", name:"Account Name", field:"client_name",width:180}
+                // ,{id:"subsrd_nominal", name:"Nominal", field:"subsrd_nominal",width:100}
+                //,{id:"client_cif", name:"CIF", field:"client_cif",width:60}
+                //,{id:"client_cbest", name:"CBEST", field:"client_cbest",width:100}
+                ,{id:"kena_jasgir", name:"Jasgir", field:"kena_jasgir"}
+                //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
+                // ,{id:"coa_Id", name:"Coa Id", field:"subsrd_kategori",width:90}
+                // ,{id:"subsrd_kategori", name:"Kategori", field:"coa_desc",width:90}
             ],
         url: uri+"index.php/mutasi/list_client_by_code",
         setval: function(obj_val){                      
@@ -103,13 +97,7 @@ function create_dlg_dpicker_mutasi11()
             $("#i_mutasi11_nominal").val(obj_val.subsrd_nominal);
             $("#i_mutasi11_nominal_a").val(strtomoney($("#i_mutasi11_nominal").val()));
 
-            mutasi11_kena_jasgir= obj_val.kena_jasgir;
-            
-            var d = obj_val.subsrd_date.date;
-            var tahun = d.substr(0,4);
-            var bulan = d.substr(5,2);
-            var hari = d.substr(8,2);
-            $("#i_mutasi11_client_dt").val(hari+'-'+bulan+'-'+tahun);
+            mutasi11_kena_jasgir = obj_val.kena_jasgir;
 
             var c_dt=$("#i_mutasi11_client_dt").val();
             clear_balance_mutasi11();
@@ -965,9 +953,6 @@ function fee_book_mutasi11(p_ccode,p_accno,p_cname,p_dt,p_cat,p_cat_desc,p_desc,
 }
 
 function dlg_mutasi_client() {
-    $("#i_mutasi11_client_code").click(function () {        
-        $("#dialogBox_mutasi_client_kode").dialog("open");
-    });
 
     var mutClient = $.post(uri+"index.php/mutasi/mutasi_client",{},function(data) {
         $("#dialogBox_mutasi_client_kode").html(data);

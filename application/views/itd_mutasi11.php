@@ -58,6 +58,7 @@
                     <input type="button" value="Ubah" id="b_mutasi11_edit" style="display: none;" />
                     <input type="button" value="Hapus" id="b_mutasi11_del" style="display: none;" />
                     <input type="button" value="Batal" id="b_mutasi11_cancel" style="display: none;" />
+                    <input type="button" value="Tampilkan Data" id="b_dlg_mutasi11" />
                 </div>
                 </td>
             </tr>

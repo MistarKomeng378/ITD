@@ -51,8 +51,8 @@ class Mutasi extends CI_Controller {
         $param=$this->input->post();
         sql_quot_all($param);
         //$data = $this->M_itd->list_client_by_code($param["client_code"]);
-        // $data = $this->M_mutasi->list_client_by_code($param["q"]);
-        $data = $this->M_mutasi->ListClient($param["q"]);
+        $data = $this->M_mutasi->list_client_by_code($param["q"]);
+        // $data = $this->M_mutasi->ListClient($param["q"]);
         $this->data["r_success"] = 1;
         $this->data["r_num_rows"] = count($data);
         $this->data["r_sdata"]= $data;
