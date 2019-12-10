@@ -11,14 +11,17 @@
                 <td width="1%">Rekening</td>
                 <td width="1%">Atas Nama</td>
                 <td width="1%">Last Date</td>  
-                <td>Last Date Status</td>  
+                <td>Last Date Status</td>
             </tr>
             <tr>
                 <td><input type="text" id="i_mutasi11_client_code" style="width:60px;text-align: center;"  /></td>
                 <td><input type="text" id="i_mutasi11_rek" style="width:120px;text-align: center;" readonly /></td>
                 <td><input type="text" id="i_mutasi11_client_name" style="width:320px;text-align: left;" readonly  /></td>
                 <td><input type="text" id="i_mutasi11_client_last_date" style="width:90px;text-align: center;" readonly  /></td>
-                <td><input type="text" id="i_mutasi11_client_status" style="width:90px;text-align: center;" readonly  /></td>
+                <td>
+                    <input type="text" id="i_mutasi11_client_status" style="width:90px;text-align: center;" readonly  />
+                    <input type="button" value="Tambah Transaski" id="b_dlg_mutasi11" />
+                </td>
             </tr>
         </table>
         <input type="hidden" id="i_mutasi11_dstatus" value="0">
@@ -49,16 +52,15 @@
                         <option value="D">D</option>
                     </select>
                 </td>
-                <td><input type="text" id="i_mutasi11_desc" style="width:110px;" readonly  /></td>
-                <td><input type="text" id="i_mutasi11_nominal" style="width:90px;text-align: right;" readonly /></td>
-                <td><input type="text" id="i_mutasi11_nominal_a" style="width:100px;text-align: right;" readonly /></td>
+                <td><input type="text" id="i_mutasi11_desc" style="width:110px;"  /></td>
+                <td><input type="text" id="i_mutasi11_nominal" style="width:90px;text-align: right;" /></td>
+                <td><input type="text" id="i_mutasi11_nominal_a" style="width:100px;text-align: right;" readonly/></td>
                 <td>
                 <div>
                     <input type="button" value="Tambah" id="b_mutasi11_add" />
                     <input type="button" value="Ubah" id="b_mutasi11_edit" style="display: none;" />
                     <input type="button" value="Hapus" id="b_mutasi11_del" style="display: none;" />
                     <input type="button" value="Batal" id="b_mutasi11_cancel" style="display: none;" />
-                    <input type="button" value="Tampilkan Data" id="b_dlg_mutasi11" />
                 </div>
                 </td>
             </tr>

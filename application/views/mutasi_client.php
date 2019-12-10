@@ -1,15 +1,5 @@
 <table width="100%">
 	<tr>
-		<td width="25%">Klien</td>
-		<td width="1%">:</td>
-		<td><input type="text" id="i_mutasi11_client_code2" style="width:100%"  /></td>
-	</tr>
-	<tr>
-		<td>Rekening</td>
-		<td>:</td>
-		<td><input type="text" id="i_mutasi11_rek2" style="width:100%"  /></td>
-	</tr>
-	<tr>
 		<td>Kategori</td>
 		<td>:</td>
 		<td>

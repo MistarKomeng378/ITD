@@ -201,7 +201,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -258,7 +257,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no_dst']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$value['subsrd_kategori']."',
                         '".$value['subsrd_desc']."',
                         '".$value['bank_src']."',
@@ -281,7 +280,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -341,7 +339,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['trx_client_code']."',
                         '".$value['trx_acc_no']."',
-                        '".$trx_date."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['trx_from']."',
@@ -365,7 +363,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -425,7 +422,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['trx_client_code']."',
                         '".$value['trx_acc_no']."',
-                        '".$trx_date."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['trx_from']."',
@@ -448,7 +445,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -519,7 +515,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -542,7 +538,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -610,7 +605,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -633,7 +628,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -701,7 +695,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -724,7 +718,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -792,7 +785,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -815,7 +808,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -883,7 +875,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -906,7 +898,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -974,7 +965,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -997,7 +988,6 @@ class M_mutasi extends CI_Model {
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
-        $trx_date = date('Y-m-d H:i:s', strtotime($data['trx_date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
 
@@ -1095,7 +1085,7 @@ class M_mutasi extends CI_Model {
                     )VALUES(
                         '".$value['client_code']."',
                         '".$value['acc_no']."',
-                        '".$trx_date."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
@@ -1662,63 +1652,63 @@ class M_mutasi extends CI_Model {
 
     function check_kategori($param)
     {
-        $subscription = $this->db_jasgir->query("
-            SELECT TOP ( 1 ) a.client_code, a.acc_no_dst AS acc_no
-            FROM subsrd a 
-            WHERE client_code = '".$param['client_code']."' and a.acc_no_dst = '".$param['acc_no']."'
-        ");
-        $res_subscription = array();
-        if (count( $subscription->result_array() ) == 1) {
-            $res_subscription = $this->CoaDescription('C002');
-        }
+        // $subscription = $this->db_jasgir->query("
+        //     SELECT TOP ( 1 ) a.client_code, a.acc_no_dst AS acc_no
+        //     FROM subsrd a 
+        //     WHERE client_code = '".$param['client_code']."' and a.acc_no_dst = '".$param['acc_no']."'
+        // ");
+        // $res_subscription = array();
+        // if (count( $subscription->result_array() ) == 1) {
+        //     $res_subscription = $this->CoaDescription('C002');
+        // }
 
-        $jasa_giro = $this->db_jasgir->query("
-            SELECT TOP ( 1 ) client_code, acc_no
-            FROM mutasi_giro
-            WHERE client_code = '".$param['client_code']."' and acc_no = '".$param['acc_no']."'
-        ");
-        $res_jasa_giro = array();
-        if (count( $jasa_giro->result_array() ) == 1) {
-            $res_jasa_giro = $this->CoaDescription('C001');
-        }
+        // $jasa_giro = $this->db_jasgir->query("
+        //     SELECT TOP ( 1 ) client_code, acc_no
+        //     FROM mutasi_giro
+        //     WHERE client_code = '".$param['client_code']."' and acc_no = '".$param['acc_no']."'
+        // ");
+        // $res_jasa_giro = array();
+        // if (count( $jasa_giro->result_array() ) == 1) {
+        //     $res_jasa_giro = $this->CoaDescription('C001');
+        // }
 
-        $penempatan = $this->db_itd->query("
-            SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
-            FROM itd_trx_approved 
-            WHERE trx_type = '1' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
-        ");
-        $res_penempatan = array();
-        if (count( $penempatan->result_array() ) == 1) {
-            $res_penempatan = $this->CoaDescription('D002');
-        }
+        // $penempatan = $this->db_itd->query("
+        //     SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
+        //     FROM itd_trx_approved 
+        //     WHERE trx_type = '1' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
+        // ");
+        // $res_penempatan = array();
+        // if (count( $penempatan->result_array() ) == 1) {
+        //     $res_penempatan = $this->CoaDescription('D002');
+        // }
 
-        $pencairan = $this->db_itd->query("
-            SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
-            FROM itd_trx_approved 
-            WHERE trx_type = '3' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
-        ");
-        $res_pencairan = array();
-        if (count( $pencairan->result_array() ) == 1) {
-            $res_pencairan = $this->CoaDescription('C003');
-        }
+        // $pencairan = $this->db_itd->query("
+        //     SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
+        //     FROM itd_trx_approved 
+        //     WHERE trx_type = '3' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
+        // ");
+        // $res_pencairan = array();
+        // if (count( $pencairan->result_array() ) == 1) {
+        //     $res_pencairan = $this->CoaDescription('C003');
+        // }
         
-        $redemption = $this->db_urssim->query("
-            SELECT TOP ( 1 ) FUND_ID.CODE_BPM AS client_code, FUND_ID.ACC_BANK_OPR AS acc_no 
-            FROM
-                TXN_POSTING
-                INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
-                AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
-                AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
-                AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
-            WHERE
-                TXN_POSTING.TXN_TYPE = 'R' and
-                FUND_ID.CODE_BPM = '".$param['client_code']."' and 
-                FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
-        ");
-        $res_redemption = array();
-        if (count( $redemption->result_array() ) == 1) {
-            $res_redemption = $this->CoaDescription('D001');
-        }
+        // $redemption = $this->db_urssim->query("
+        //     SELECT TOP ( 1 ) FUND_ID.CODE_BPM AS client_code, FUND_ID.ACC_BANK_OPR AS acc_no 
+        //     FROM
+        //         TXN_POSTING
+        //         INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+        //         AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+        //         AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+        //         AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+        //     WHERE
+        //         TXN_POSTING.TXN_TYPE = 'R' and
+        //         FUND_ID.CODE_BPM = '".$param['client_code']."' and 
+        //         FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+        // ");
+        // $res_redemption = array();
+        // if (count( $redemption->result_array() ) == 1) {
+        //     $res_redemption = $this->CoaDescription('D001');
+        // }
 
         $jual_saham = $this->db_nfs->query("
             SELECT TOP ( 1 ) A.HIPORT_CODE AS client_code, B.FUND_OPR_ACCT_NO AS acc_no 
@@ -1823,11 +1813,11 @@ class M_mutasi extends CI_Model {
         }
         
         return array(
-            $res_subscription,
-            $res_jasa_giro,
-            $res_penempatan,
-            $res_pencairan,
-            $res_redemption,
+            // $res_subscription,
+            // $res_jasa_giro,
+            // $res_penempatan,
+            // $res_pencairan,
+            // $res_redemption,
             $res_jual_saham,
             $res_jual_obligasi,
             $res_beli_saham,

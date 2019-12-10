@@ -77,13 +77,13 @@ function create_dlg_dpicker_mutasi11()
         cols : [         
                 {id:"client_code", name:"Code", field:"client_code",width:50}
                 ,{id:"acc_no", name:"Account No", field:"acc_no",width:100}
-                //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
                 ,{id:"bank_name", name:"Bank Name", field:"bank_name"}
                 ,{id:"client_name", name:"Account Name", field:"client_name",width:180}
+                ,{id:"kena_jasgir", name:"Jasgir", field:"kena_jasgir"}
                 // ,{id:"subsrd_nominal", name:"Nominal", field:"subsrd_nominal",width:100}
                 //,{id:"client_cif", name:"CIF", field:"client_cif",width:60}
                 //,{id:"client_cbest", name:"CBEST", field:"client_cbest",width:100}
-                ,{id:"kena_jasgir", name:"Jasgir", field:"kena_jasgir"}
+                //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
                 //,{id:"bank_src", name:"Selling Agent", field:"deskripsi",width:90}
                 // ,{id:"coa_Id", name:"Coa Id", field:"subsrd_kategori",width:90}
                 // ,{id:"subsrd_kategori", name:"Kategori", field:"coa_desc",width:90}
@@ -109,12 +109,54 @@ function create_dlg_dpicker_mutasi11()
 
             list_trx_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt)
 
+            //====== set tabel pada pop up dialog agar kosong ======
+            if(grid_mutasi_by_group !== undefined){
+                mutasi_by_group.length=0;
+                grid_mutasi_by_group.invalidateAllRows();
+                grid_mutasi_by_group.updateRowCount();
+                grid_mutasi_by_group.render();
+            }
+            if(grid_mutasi_detail !== undefined){
+                mutasi_detail.length=0;
+                grid_mutasi_detail.invalidateAllRows();
+                grid_mutasi_detail.updateRowCount();
+                grid_mutasi_detail.render();
+            }
+            
+            //====== set data untuk pop up dialog =========
+            $('#i_mutasi_kategori').find('option').remove();
+            $('#i_mutasi_kategori').append('<option value="">Pilih Kategori</option>');
+
+            $.post(uri+"index.php/mutasi/check_kategori",{
+                client_code : obj_val.client_code,
+                acc_no : obj_val.acc_no
+            },function(data) {
+
+                var obj = JSON.parse(data);
+                for (let index = 0; index < obj.length; index++) {                            
+                    if(obj[index].length !== 0 ){
+                        $('#i_mutasi_kategori').append('<option value="'+obj[index].coa_no+'">'+obj[index].coa_desc+'</option>');
+                    }
+                }
+                
+                $('#get_data_mutasi_by_group').click(function () {
+                    list_trx_mutasi_by_group(
+                        $('#i_mutasi11_client_code').val(),
+                        $('#i_mutasi11_rek').val(),
+                        $('#i_mutasi_kategori').val()
+                    );                            
+                })
+                create_list_mutasi_by_group();
+                
+            });
+            //====== set data untuk pop up dialog =========
+
         }
     }; 
     dPicker_attach($("#i_mutasi11_client_code"),dpick_opt_mutasi11);
 }
 
-function setMutasiTRx(coa_id,client_code,date,acc_no,trx_date) {
+function setMutasiTRx(coa_id,client_code,date,acc_no) {
 
     var d = date;
     var tahun = d.substr(0,4);
@@ -126,8 +168,7 @@ function setMutasiTRx(coa_id,client_code,date,acc_no,trx_date) {
         coa_id:coa_id,
         client_code:client_code,
         date:date,
-        acc_no:acc_no,
-        trx_date:trx_date
+        acc_no:acc_no
     }, function(data, status) {
         list_trx_mutasi11(client_code,acc_no,trx_date);
     });
@@ -953,6 +994,9 @@ function fee_book_mutasi11(p_ccode,p_accno,p_cname,p_dt,p_cat,p_cat_desc,p_desc,
 }
 
 function dlg_mutasi_client() {
+    $("#b_dlg_mutasi11").click(function () {        
+        $("#dialogBox_mutasi_client_kode").dialog("open");
+    });
 
     var mutClient = $.post(uri+"index.php/mutasi/mutasi_client",{},function(data) {
         $("#dialogBox_mutasi_client_kode").html(data);
@@ -969,36 +1013,6 @@ function dlg_mutasi_client() {
             ],
             url: uri+"index.php/mutasi/mutasi_client_code",
             setval: function(obj_val){
-                $("#i_mutasi11_client_code").val(trim(obj_val.client_code));
-                $("#i_mutasi11_rek").val(obj_val.acc_no);
-                $("#i_mutasi11_client_name").val(obj_val.client_name);
-                $("#i_mutasi11_desc").val(obj_val.deskripsi);
-                $("#i_mutasi11_nominal").val(obj_val.subsrd_nominal);
-                $("#i_mutasi11_nominal_a").val(strtomoney($("#i_mutasi11_nominal").val()));
-
-                mutasi11_kena_jasgir= obj_val.kena_jasgir;
-
-                var c_dt=$("#i_mutasi11_client_dt").val();
-                clear_balance_mutasi11();
-                get_last_date_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt);
-                get_balance_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt);
-                reload_coa_mutasi11(obj_val.subsrd_kategori)
-                list_trx_mutasi11(obj_val.client_code,obj_val.acc_no,c_dt)
-                
-                //====== set tabel pada pop up dialog agar kosong ======
-                if(grid_mutasi_by_group !== undefined){
-                    mutasi_by_group.length=0;
-                    grid_mutasi_by_group.invalidateAllRows();
-                    grid_mutasi_by_group.updateRowCount();
-                    grid_mutasi_by_group.render();
-                }
-                if(grid_mutasi_detail !== undefined){
-                    mutasi_detail.length=0;
-                    grid_mutasi_detail.invalidateAllRows();
-                    grid_mutasi_detail.updateRowCount();
-                    grid_mutasi_detail.render();
-                }
-
                 //====== set data untuk pop up dialog =========
                 $('#i_mutasi_kategori').find('option').remove();
                 $('#i_mutasi_kategori').append('<option value="">Pilih Kategori</option>');
@@ -1221,8 +1235,7 @@ function create_list_mutasi_detail() {
                 dataSelected.coa_id,
                 $("#i_mutasi11_client_code").val(),
                 dataSelected.create_dt,
-                $("#i_mutasi11_rek").val(),
-                $("#i_mutasi11_client_dt").val()
+                $("#i_mutasi11_rek").val()
             );
         }
         
