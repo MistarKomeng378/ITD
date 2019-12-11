@@ -573,7 +573,7 @@ class M_mutasi extends CI_Model {
             NFS_INQ_EQUITY_TEMP A
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
         WHERE
-            A.BUY_SELL = '1' and
+            A.BUY_SELL = '2' and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."'
@@ -670,7 +670,7 @@ class M_mutasi extends CI_Model {
             NFS_INQ_EQUITY_TEMP A
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
         WHERE
-            A.BUY_SELL = '2' and
+            A.BUY_SELL = '1' and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."'
@@ -765,7 +765,7 @@ class M_mutasi extends CI_Model {
             NFS_FI_INS_INQ_TEMP A
             INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
         WHERE
-            A.BUY_SELL = '1'  and
+            A.BUY_SELL = '2'  and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."'
@@ -860,7 +860,7 @@ class M_mutasi extends CI_Model {
             NFS_FI_INS_INQ_TEMP A
             INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
         WHERE
-            A.BUY_SELL = '2'  and
+            A.BUY_SELL = '1'  and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."'
@@ -1427,7 +1427,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '1' 
+                A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
             GROUP BY
@@ -1475,7 +1475,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '2' 
+                A.BUY_SELL = '1' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
             GROUP BY
@@ -1520,7 +1520,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '1' 
+                A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
             GROUP BY
@@ -1551,7 +1551,7 @@ class M_mutasi extends CI_Model {
     function ListBeliObligasi($client_code,$acc_no)
     {
         // NFS_FI_INS_INQ_TEMP = obligasi
-        // buy sell = 1 jual 2 beli
+        // buy sell = 1 beli 2 jual
         
         $return = array();
         $query=$this->db_nfs->query("
@@ -1568,7 +1568,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '2' 
+                A.BUY_SELL = '1' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
             GROUP BY
@@ -1756,7 +1756,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '1' 
+                A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
         ");
@@ -1772,7 +1772,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '2'
+                A.BUY_SELL = '1'
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
         ");
@@ -1788,7 +1788,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '1' 
+                A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
         ");
@@ -1804,7 +1804,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '2'
+                A.BUY_SELL = '1'
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
         ");
@@ -2039,7 +2039,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '1' 
+                A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
@@ -2081,7 +2081,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '1' 
+                A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE )  = '".$date."'
@@ -2126,7 +2126,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '2' 
+                A.BUY_SELL = '1' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
@@ -2171,7 +2171,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                A.BUY_SELL = '2' 
+                A.BUY_SELL = '1' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE )  = '".$date."'
