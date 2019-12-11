@@ -751,7 +751,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_nfs->query("
         SELECT
-            A.SI_REFF,
+            A.SI_REFERENCE AS SI_REFF,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -846,7 +846,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_nfs->query("
         SELECT
-            A.SI_REFF,
+            A.SI_REFERENCE AS SI_REFF,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -1040,7 +1040,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
             SELECT
-                A.SI_REFF,
+                A.SI_REFERENCE AS SI_REFF,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DEC, A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
@@ -1067,7 +1067,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
-                    A.SI_REFF,
+                    A.SI_REFERENCE AS SI_REFF,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DEC, A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
