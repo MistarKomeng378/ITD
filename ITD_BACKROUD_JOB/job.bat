@@ -1,0 +1,1 @@
+wget https://itd.dev/index.php/mutasi/backgroundToMutasi?date=2018-08-14 --no-check-certificate
