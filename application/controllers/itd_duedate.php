@@ -27,7 +27,7 @@ class Itd_duedate extends CI_Controller {
         $cdt =$tday["mon"]."/".$tday["mday"]."/".$tday["year"];
         if(cek_date($param["trx_dt"]))
             $cdt = change_dt_format($param["trx_dt"]);
-        $data = $this->M_itd_duedate->list_data($cdt,1);
+        $data = $this->M_itd_duedate->list_data($cdt,0);
         $fields = array("trx_valuta_date","trx_due_date","trx_create_dt");
         add_data_dt_str($data,$fields);
         $this->data["r_success"] = 1;
@@ -107,6 +107,16 @@ class Itd_duedate extends CI_Controller {
         
         $this->load->view('deposito_jatuh_tempo_excel',$this->data);
     }
+
+    public function debug()
+    {
+        $this->load->model("M_itd_duedate");
+        $tday= getdate();
+        $cdt =$tday["mon"]."/".$tday["mday"]."/".$tday["year"];
+        $data = $this->M_itd_duedate->list_data($cdt,1);
+        echo json_encode($data);
+    }
+    
 }
         
 ?>
