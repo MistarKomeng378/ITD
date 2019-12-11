@@ -66,7 +66,7 @@
             </tr>
         </table>
     </div>
-    <div id="tbl_slick_mutasi11" style="height: 150px;"></div>
+    <div id="tbl_slick_mutasi11" style="height: 200px;"></div>
     <div style="display:block; border: 1px solid #580058;margin:5px; padding: 3px; font-weight: bold; font-size: 120%;" align="center">
         <span id="s_mutasi11_dc">D= 000,000,000.00 *** K= 000,000,000,000.00</span>
     </div>

@@ -569,34 +569,88 @@ class Mutasi extends CI_Controller {
         }
     }
 
+    public function backgroundToMutasi()
+    {
+        if (!$this->session->userdata('itd_uid')) {
+            $this->session->set_userdata(array('itd_uid' => 'system'));
+        }
+
+        $this->load->model("M_mutasi");
+        $date = $this->input->get('date') ? $this->input->get('date') : date('Y-m-d') ;
+        $mutasi_client = $this->M_mutasi->coaXmutasiClient($date);
+        foreach ($mutasi_client as $key => $value) {
+            $start_date = date('Y-m-d H:i:s');
+            switch ($value['coa_id']) {                
+                case 'C006':
+                    $data = $this->M_mutasi->JualSahamToMutasi($value);
+                    break;
+    
+                case 'C007':
+                    $data = $this->M_mutasi->JualObligasiToMutasi($value);
+                    break;
+    
+                case 'D004':
+                    $data = $this->M_mutasi->BeliSahamToMutasi($value);
+                    break;
+    
+                case 'D005':
+                    $data = $this->M_mutasi->BeliObligasiToMutasi($value);
+                    break;
+    
+                case 'D016':
+                    $data = $this->M_mutasi->TaxBrokerToMutasi($value);
+                    break;
+    
+                case 'D017':
+                    $data = $this->M_mutasi->TaxObligasiToMutasi($value);
+                    break;
+                
+                default:
+                    $data = array('msg' => 'coa id tidak dikenali');
+                    break;
+            }
+            $end_date = date('Y-m-d H:i:s');
+            $this->M_mutasi->backgroudLog(
+                $value['coa_id'],
+                $value['client_code'],
+                $value['acc_no'],
+                $date,
+                json_encode($data),
+                $start_date,
+                $end_date
+            );
+        }
+        echo json_encode($data);
+    }
+
     public function set_mutasi_trx()
     {
         $this->load->model("M_mutasi");
         $param = $this->input->post();
 
         switch ($param['coa_id']) {
-            case 'C002':
-                $data = $this->M_mutasi->SubscribeToMutasi($param);
-                break;
+            // case 'C002':
+            //     $data = $this->M_mutasi->SubscribeToMutasi($param);
+            //     break;
 
-            case 'D002':
-                $data = $this->M_mutasi->PenempatanToMutasi($param);
-                break;
+            // case 'D002':
+            //     $data = $this->M_mutasi->PenempatanToMutasi($param);
+            //     break;
 
-            case 'C003':
-                $data = $this->M_mutasi->PencairanToMutasi($param);
-                break;
+            // case 'C003':
+            //     $data = $this->M_mutasi->PencairanToMutasi($param);
+            //     break;
 
-            case 'D001':
-                $data = $this->M_mutasi->RedemptionToMutasi($param);
-                // $data = $this->M_mutasi->RedemptionToMutasiBatavia($param);
-                // $data = $this->M_mutasi->RedemptionToMutasiBni($param);
-                // //$data = $this->M_mutasi->RedemptionToMutasiEreport($param);
-                // $data = $this->M_mutasi->RedemptionToMutasiNiaga($param);
-                // $data = $this->M_mutasi->RedemptionToMutasiSyailendra($param);
-                // $data = $this->M_mutasi->RedemptionToMutasiTrimegah($param);
-                // $data = $this->M_mutasi->RedemptionToMutasiTugu($param);
-                break;
+            // case 'D001':
+            //     $data = $this->M_mutasi->RedemptionToMutasi($param);
+            //     // $data = $this->M_mutasi->RedemptionToMutasiBatavia($param);
+            //     // $data = $this->M_mutasi->RedemptionToMutasiBni($param);
+            //     // //$data = $this->M_mutasi->RedemptionToMutasiEreport($param);
+            //     // $data = $this->M_mutasi->RedemptionToMutasiNiaga($param);
+            //     // $data = $this->M_mutasi->RedemptionToMutasiSyailendra($param);
+            //     // $data = $this->M_mutasi->RedemptionToMutasiTrimegah($param);
+            //     // $data = $this->M_mutasi->RedemptionToMutasiTugu($param);
+            //     break;
             
             case 'C006':
                 $data = $this->M_mutasi->JualSahamToMutasi($param);
@@ -615,7 +669,7 @@ class Mutasi extends CI_Controller {
                 break;
 
             case 'D016':
-                $data = $this->M_mutasi->WhtCommisionToMutasi($param);
+                $data = $this->M_mutasi->TaxBrokerToMutasi($param);
                 break;
 
             case 'D017':
@@ -773,8 +827,16 @@ class Mutasi extends CI_Controller {
         // $data = $this->M_mutasi->ListIGIncomeTax('000');
         // // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
         // // $data = $this->M_mutasi->list_client_by_code('000D2K');
-        echo json_encode($this->session->all_userdata());
-        echo json_encode($this->session->userdata('itd_uid'));
+        
+        if ($this->session->userdata('itd_uid')) {
+            echo var_dump($this->session->all_userdata());
+        }else{
+            // $this->session->set_userdata(array('itd_uid' => 'system'));
+            echo var_dump($this->session->all_userdata());
+        }
+        
+        
+        // echo json_encode($this->session->userdata('itd_uid'));
     }
 }
         

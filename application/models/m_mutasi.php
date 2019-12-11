@@ -26,7 +26,7 @@ class M_mutasi extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
-    function list_client_by_code($client_code)
+    function list_client_by_code($client_code = '')
     {
         //edit By MK
         $query=$this->db_jasgir->query("exec mutasi_list_client_by_code '{$client_code}'");
@@ -203,6 +203,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -223,8 +224,6 @@ class M_mutasi extends CI_Model {
             acc_no_dst = '".$acc_no."'
         ");
         
-        $mutasi_trx = false;
-
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -255,8 +254,8 @@ class M_mutasi extends CI_Model {
                         [modified_dt],
                         [trx_status]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no_dst']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no_dst'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$value['subsrd_kategori']."',
                         '".$value['subsrd_desc']."',
@@ -270,8 +269,10 @@ class M_mutasi extends CI_Model {
                         1
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -282,6 +283,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -307,7 +309,6 @@ class M_mutasi extends CI_Model {
             trx_acc_no = '".$acc_no."'
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -337,8 +338,8 @@ class M_mutasi extends CI_Model {
                         [modified_dt],
                         [trx_status]
                     )VALUES(
-                        '".$value['trx_client_code']."',
-                        '".$value['trx_acc_no']."',
+                        '".trim($value['trx_client_code'])."',
+                        '".trim($value['trx_acc_no'])."',
                         '".$value['trx_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -352,9 +353,10 @@ class M_mutasi extends CI_Model {
                         1
                     );
                 ");
-                    
-                
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -365,6 +367,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -390,7 +393,6 @@ class M_mutasi extends CI_Model {
             trx_acc_no = '".$acc_no."'
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -420,8 +422,8 @@ class M_mutasi extends CI_Model {
                         [modified_dt],
                         [trx_status]
                     )VALUES(
-                        '".$value['trx_client_code']."',
-                        '".$value['trx_acc_no']."',
+                        '".trim($value['trx_client_code'])."',
+                        '".trim($value['trx_acc_no'])."',
                         '".$value['trx_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -435,8 +437,10 @@ class M_mutasi extends CI_Model {
                         1
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -447,6 +451,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -483,7 +488,6 @@ class M_mutasi extends CI_Model {
                 subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -513,8 +517,8 @@ class M_mutasi extends CI_Model {
                         [modified_dt],
                         [trx_status]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -528,8 +532,10 @@ class M_mutasi extends CI_Model {
                         1
                     );
                 ");
-
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
             }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -540,6 +546,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -549,9 +556,10 @@ class M_mutasi extends CI_Model {
             WHERE coa_no = '".$coa_id."'
         ");
         $coa = $coa->result();
-        
+
         $subsrd = $this->db_nfs->query("
         SELECT
+            A.SI_REFF,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -573,7 +581,6 @@ class M_mutasi extends CI_Model {
             subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -584,6 +591,7 @@ class M_mutasi extends CI_Model {
             coa_no = '".$coa[0]->coa_no."' and 
             acc_no = '".$acc_no."'
         ");
+        
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
                 
@@ -601,10 +609,11 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -615,12 +624,16 @@ class M_mutasi extends CI_Model {
                         '".date('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['SI_REFF']."'
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+        
         return $mutasi_trx;
     }
 
@@ -630,6 +643,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -642,6 +656,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_nfs->query("
         SELECT
+            A.SI_REFF,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -663,7 +678,6 @@ class M_mutasi extends CI_Model {
             subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -691,10 +705,11 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -705,11 +720,14 @@ class M_mutasi extends CI_Model {
                         '".date('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['SI_REFF']."'
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -720,7 +738,8 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
-
+        $mutasi_trx = array();
+        
         $coa = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -732,6 +751,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_nfs->query("
         SELECT
+            A.SI_REFF,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -753,7 +773,6 @@ class M_mutasi extends CI_Model {
             subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -781,10 +800,11 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -795,11 +815,14 @@ class M_mutasi extends CI_Model {
                         '".date('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['SI_REFF']."'
                     );
-                ");
-
+                ");    
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -810,7 +833,8 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
-
+        $mutasi_trx = array();
+        
         $coa = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -822,6 +846,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_nfs->query("
         SELECT
+            A.SI_REFF,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -843,7 +868,6 @@ class M_mutasi extends CI_Model {
             subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -871,10 +895,11 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
@@ -885,21 +910,25 @@ class M_mutasi extends CI_Model {
                         '".date('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['SI_REFF']."'
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
 
-    function WhtCommisionToMutasi($data)
+    function TaxBrokerToMutasi($data)
     {
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -912,6 +941,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_nfs->query("
             SELECT 
+                A.SI_REFF,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DEC, A.WHT_COMMISION ) AS subsrd_nominal,
@@ -933,7 +963,6 @@ class M_mutasi extends CI_Model {
                 subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -961,25 +990,29 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
                         '".$coa[0]->coa_dc."',
                         '".$value['subsrd_nominal']."',
-                        '".$value['MODIFIER']."',
-                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
-                        '".$value['MODIFIER']."',
-                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
-                        1
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -990,6 +1023,7 @@ class M_mutasi extends CI_Model {
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
         $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
 
         $coa = $this->db_jasgir->query("
             SELECT 
@@ -1006,6 +1040,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
             SELECT
+                A.SI_REFF,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DEC, A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
@@ -1032,6 +1067,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
+                    A.SI_REFF,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DEC, A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
@@ -1053,7 +1089,6 @@ class M_mutasi extends CI_Model {
             
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -1081,25 +1116,29 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."',
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
                         '".$coa[0]->coa_desc."',
                         '".$value['deskripsi']."',
                         '".$coa[0]->coa_dc."',
                         '".$value['subsrd_nominal']."',
-                        '".$value['MODIFIER']."',
-                        '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
-                        '".$value['MODIFIER']."',
-                        '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
-                        1
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
                     );
                 ");
-
             }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
     }
@@ -2269,7 +2308,35 @@ class M_mutasi extends CI_Model {
         
         return $return;
     }
-    
+
+    function coaXmutasiClient($date)
+    {
+        $query=$this->db_jasgir->query("
+            SELECT
+                a.coa_no as coa_id,
+                b.client_code,
+                b.acc_no,
+                '".$date."' as date
+            FROM
+                coa a
+                CROSS JOIN mutasi_client b
+            WHERE
+                a.coa_enable = 1 AND
+                b.client_enable = 1 AND
+                a.coa_no in ('C006','C007','D004','D005','D016','D017')
+        ");
+        $data=$query->result_array();
+        return $data;
+    }
+
+    function backgroudLog($coa_id,$client_code,$acc_no, $date, $desc, $start_date, $end_date)
+    {
+        $query=$this->db_jasgir->query("
+            INSERT INTO [dbo].[backgroud_log]([coa_id], [client_code], [acc_no], [trx_date], [desc], [start_date], [end_date]) 
+            VALUES ( '".$coa_id."','".$client_code."','".$acc_no."','".$date."','".$desc."', '".$start_date."', '".$end_date."' );
+        ");
+        return $query;
+    }
     // function RedemptionToMutasiBatavia($data)
     // {
     //     $client_code = $data['client_code'];
@@ -2312,7 +2379,7 @@ class M_mutasi extends CI_Model {
     //             subsrd_date DESC
     //     ");
 
-    //     $mutasi_trx = false;
+    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -2342,7 +2409,7 @@ class M_mutasi extends CI_Model {
     //                     [modified_dt],
     //                     [trx_status]
     //                 )VALUES(
-    //                     '".$value['client_code']."',
+    //                     '".trim($value['client_code'])."',
     //                     '".$value['acc_no']."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
@@ -2405,7 +2472,7 @@ class M_mutasi extends CI_Model {
     //             subsrd_date DESC
     //     ");
 
-    //     $mutasi_trx = false;
+    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -2435,7 +2502,7 @@ class M_mutasi extends CI_Model {
     //                     [modified_dt],
     //                     [trx_status]
     //                 )VALUES(
-    //                     '".$value['client_code']."',
+    //                     '".trim($value['client_code'])."',
     //                     '".$value['acc_no']."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
@@ -2500,7 +2567,6 @@ class M_mutasi extends CI_Model {
                 subsrd_date DESC
         ");
 
-        $mutasi_trx = false;
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
@@ -2530,7 +2596,7 @@ class M_mutasi extends CI_Model {
                         [modified_dt],
                         [trx_status]
                     )VALUES(
-                        '".$value['client_code']."',
+                        '".trim($value['client_code'])."',
                         '".$value['acc_no']."',
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$coa[0]->coa_no."',
@@ -2593,7 +2659,7 @@ class M_mutasi extends CI_Model {
     //             subsrd_date DESC
     //     ");
 
-    //     $mutasi_trx = false;
+    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -2623,7 +2689,7 @@ class M_mutasi extends CI_Model {
     //                     [modified_dt],
     //                     [trx_status]
     //                 )VALUES(
-    //                     '".$value['client_code']."',
+    //                     '".trim($value['client_code'])."',
     //                     '".$value['acc_no']."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
@@ -2686,7 +2752,7 @@ class M_mutasi extends CI_Model {
     //             subsrd_date DESC
     //     ");
 
-    //     $mutasi_trx = false;
+    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -2716,7 +2782,7 @@ class M_mutasi extends CI_Model {
     //                     [modified_dt],
     //                     [trx_status]
     //                 )VALUES(
-    //                     '".$value['client_code']."',
+    //                     '".trim($value['client_code'])."',
     //                     '".$value['acc_no']."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
@@ -2779,7 +2845,7 @@ class M_mutasi extends CI_Model {
     //             subsrd_date DESC
     //     ");
 
-    //     $mutasi_trx = false;
+    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -2809,7 +2875,7 @@ class M_mutasi extends CI_Model {
     //                     [modified_dt],
     //                     [trx_status]
     //                 )VALUES(
-    //                     '".$value['client_code']."',
+    //                     '".trim($value['client_code'])."',
     //                     '".$value['acc_no']."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
@@ -2872,7 +2938,7 @@ class M_mutasi extends CI_Model {
     //             subsrd_date DESC
     //     ");
 
-    //     $mutasi_trx = false;
+    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -2902,7 +2968,7 @@ class M_mutasi extends CI_Model {
     //                     [modified_dt],
     //                     [trx_status]
     //                 )VALUES(
-    //                     '".$value['client_code']."',
+    //                     '".trim($value['client_code'])."',
     //                     '".$value['acc_no']."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
