@@ -1177,7 +1177,7 @@ function list_trx_mutasi_detail(client_code,acc_no,coa_no,date)
             mutasi_detail[index] = {
                 'coa_id'         : data[index].subsrd_kategori,
                 'coa_desc'       : data[index].coa_desc,
-                'trx_desc'       : data[index].bank_name +' - '+data[index].coa_desc,
+                'trx_desc'       : data[index].bank_name +' - '+data[index].deskripsi,
                 'trx_dc'         : data[index].coa_dc,
                 'trx_nominal_d'  : data[index].coa_dc=='D' ? strtomoney(data[index].subsrd_nominal):'',
                 'trx_nominal_c'  : data[index].coa_dc=='C' ? strtomoney(data[index].subsrd_nominal):'',
