@@ -199,6 +199,7 @@ class M_mutasi extends CI_Model {
 
     function SubscribeToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -221,7 +222,8 @@ class M_mutasi extends CI_Model {
                 subsrd
             WHERE client_code = '".$client_code."' and 
             subsrd_date = '".$date."' and 
-            acc_no_dst = '".$acc_no."'
+            acc_no_dst = '".$acc_no."' and
+            subsrd_id = '".$id."'
         ");
         
         $check_mutasi = $this->db_jasgir->query("
@@ -232,7 +234,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa_id."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and
+            subsrd_id = '".$id."'
         ");
 
         if( count( $check_mutasi->result_array() ) == 0 ){
@@ -279,6 +282,7 @@ class M_mutasi extends CI_Model {
 
     function PenempatanToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -306,7 +310,8 @@ class M_mutasi extends CI_Model {
             WHERE trx_client_code = '".$client_code."' and 
             CONVERT ( DATE, trx_date ) = '".$date."' and
             trx_type = 1 and 
-            trx_acc_no = '".$acc_no."'
+            trx_acc_no = '".$acc_no."' and
+            trx_id = '".$id."'
         ");
 
         $check_mutasi = $this->db_jasgir->query("
@@ -317,7 +322,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and 
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -363,6 +369,7 @@ class M_mutasi extends CI_Model {
 
     function PencairanToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -390,7 +397,8 @@ class M_mutasi extends CI_Model {
             WHERE trx_client_code = '".$client_code."' and 
             CONVERT ( DATE, trx_date ) = '".$date."' and
             trx_type = 3 and 
-            trx_acc_no = '".$acc_no."'
+            trx_acc_no = '".$acc_no."' and
+            trx_id = '".$id."'
         ");
 
         $check_mutasi = $this->db_jasgir->query("
@@ -401,7 +409,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and 
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -542,6 +551,7 @@ class M_mutasi extends CI_Model {
 
     function JualSahamToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -563,7 +573,7 @@ class M_mutasi extends CI_Model {
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DEC, A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+            CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
             A.MODIFIER,
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
@@ -576,7 +586,8 @@ class M_mutasi extends CI_Model {
             A.BUY_SELL = '2' and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+            B.FUND_OPR_ACCT_NO = '".$acc_no."' AND
+            A.SI_REFF = '".$id."'
         ORDER BY
             subsrd_date DESC
         ");
@@ -589,7 +600,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and
+            subsrd_id = '".$id."'
         ");
         
         if( count( $check_mutasi->result_array() ) == 0 ){
@@ -639,6 +651,7 @@ class M_mutasi extends CI_Model {
 
     function BeliSahamToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -660,7 +673,7 @@ class M_mutasi extends CI_Model {
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DEC, A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+            CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
             A.MODIFIER,
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
@@ -673,7 +686,8 @@ class M_mutasi extends CI_Model {
             A.BUY_SELL = '1' and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+            B.FUND_OPR_ACCT_NO = '".$acc_no."' AND
+            A.SI_REFF = '".$id."'
         ORDER BY
             subsrd_date DESC
         ");
@@ -686,7 +700,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and 
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -734,6 +749,7 @@ class M_mutasi extends CI_Model {
     
     function JualObligasiToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -755,7 +771,7 @@ class M_mutasi extends CI_Model {
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DEC, A.NET_PROCEEDS ) AS subsrd_nominal,
+            CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
             A.MODIFIER,
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
@@ -768,7 +784,8 @@ class M_mutasi extends CI_Model {
             A.BUY_SELL = '2'  and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+            B.FUND_OPR_ACCT_NO = '".$acc_no."' and
+            A.SI_REFERENCE = '".$id."'
         ORDER BY
             subsrd_date DESC
         ");
@@ -781,7 +798,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and 
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -829,6 +847,7 @@ class M_mutasi extends CI_Model {
 
     function BeliObligasiToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -850,7 +869,7 @@ class M_mutasi extends CI_Model {
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DEC, A.NET_PROCEEDS ) AS subsrd_nominal,
+            CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
             A.MODIFIER,
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
@@ -863,7 +882,8 @@ class M_mutasi extends CI_Model {
             A.BUY_SELL = '1'  and
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+            B.FUND_OPR_ACCT_NO = '".$acc_no."' and 
+            A.SI_REFERENCE = '".$acc_no."'
         ORDER BY
             subsrd_date DESC
         ");
@@ -876,7 +896,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and 
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -924,6 +945,7 @@ class M_mutasi extends CI_Model {
 
     function TaxBrokerToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -944,7 +966,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFF,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.WHT_COMMISION ) AS subsrd_nominal,
+                CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) AS subsrd_nominal,
                 A.MODIFIER,
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
@@ -955,10 +977,11 @@ class M_mutasi extends CI_Model {
                 NFS_INQ_EQUITY_TEMP A
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
             WHERE
-                CONVERT ( DEC, A.WHT_COMMISION ) > 0 
+                CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) > 0 
                 AND A.HIPORT_CODE = '".$client_code."' 
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
-                AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+                AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND A.SI_REFF = '".$id."'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -971,7 +994,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -1019,6 +1043,7 @@ class M_mutasi extends CI_Model {
 
     function TaxObligasiToMutasi($data)
     {
+        $id = $data['id'];
         $client_code = $data['client_code'];
         $date = date('Y-m-d', strtotime($data['date']) );
         $coa_id = $data['coa_id'];
@@ -1043,7 +1068,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFERENCE AS SI_REFF,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
+                CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
                 A.MODIFIER,
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
@@ -1054,10 +1079,12 @@ class M_mutasi extends CI_Model {
                 NFS_FI_INS_INQ_TEMP A
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
             WHERE
-                CONVERT ( DEC, A.CAPITAL_GAIN_TAX ) > 0 
+                CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) > 0  
                 AND A.HIPORT_CODE = '".$client_code."' 
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+                AND A.SI_REFERENCE = '".$id."'
+                AND BUY_SELL = '1'
             ) AS CAPITAL_GAIN_TAX
 
             UNION ALL
@@ -1070,7 +1097,7 @@ class M_mutasi extends CI_Model {
                     A.SI_REFERENCE AS SI_REFF,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                    CONVERT ( DEC, A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
+                    CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
                     A.MODIFIER,
                     A.CREATION_DATE,
                     A.MODIFICATION_DATE,
@@ -1081,10 +1108,12 @@ class M_mutasi extends CI_Model {
                     NFS_FI_INS_INQ_TEMP A
                     INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 WHERE
-                    CONVERT ( DEC, A.INTEREST_INCOME_TAX ) > 0 
+                    CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) > 0 
                     AND A.HIPORT_CODE = '".$client_code."' 
                     AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
-                    AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+                    AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                    AND A.SI_REFERENCE = '".$id."'
+                    AND BUY_SELL = '1' 
             ) AS INTEREST_INCOME_TAX
             
         ");
@@ -1097,7 +1126,8 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and
+            subsrd_id = '".$id."'
         ");
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
@@ -1419,7 +1449,7 @@ class M_mutasi extends CI_Model {
                 'C006' AS subsrd_kategori,
                 'Hasil Jual Saham' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                SUM ( CONVERT ( DEC, A.NET_SETTLEMENT_AMOUNT ) ) AS subsrd_nominal,
+                SUM ( CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -1458,7 +1488,7 @@ class M_mutasi extends CI_Model {
     function ListBeliSaham($client_code,$acc_no)
     {
         // EQUITY = saham
-        // buy sell = 1 jual 2 beli
+        // buy sell = 2 jual 1 beli
         
         $return = array();
         $query=$this->db_nfs->query("
@@ -1467,7 +1497,7 @@ class M_mutasi extends CI_Model {
                 'D004' AS subsrd_kategori,
                 'Beli Saham' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                SUM ( CONVERT ( DEC, A.NET_SETTLEMENT_AMOUNT ) ) AS subsrd_nominal,
+                SUM ( CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -1512,7 +1542,7 @@ class M_mutasi extends CI_Model {
                 'C007' AS subsrd_kategori,
                 'Hasil Jual Obligasi' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                SUM ( CONVERT ( DEC, A.NET_PROCEEDS ) ) AS subsrd_nominal,
+                SUM ( CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -1560,7 +1590,7 @@ class M_mutasi extends CI_Model {
                 'D005' AS subsrd_kategori,
                 'Beli Obligasi' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                SUM ( CONVERT ( DEC, A.NET_PROCEEDS ) ) AS subsrd_nominal,
+                SUM ( CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -1608,7 +1638,7 @@ class M_mutasi extends CI_Model {
                 'D016' AS subsrd_kategori,
                 'Wht Commision' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                sum( CONVERT ( DEC, WHT_COMMISION ) ) AS subsrd_nominal,
+                sum( CONVERT ( DECIMAL(16,2), WHT_COMMISION ) ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -1616,7 +1646,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                CONVERT ( DEC, WHT_COMMISION ) > 0
+                CONVERT ( DECIMAL(16,2), WHT_COMMISION ) > 0
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
             GROUP BY
@@ -1653,7 +1683,10 @@ class M_mutasi extends CI_Model {
                 'D017' AS subsrd_kategori,
                 'Interst/Gain Income Tax' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                SUM ( CONVERT ( DEC, INTEREST_INCOME_TAX ) + CONVERT ( DEC, CAPITAL_GAIN_TAX ) ) AS subsrd_nominal,
+                SUM (
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(INTEREST_INCOME_TAX, 0) ) + 
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(CAPITAL_GAIN_TAX, 0) )
+                ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -1661,7 +1694,11 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS= 1 
             WHERE
-                ( CONVERT ( DEC, INTEREST_INCOME_TAX ) > 0 or CONVERT ( DEC, CAPITAL_GAIN_TAX ) > 0 )
+                A.BUY_SELL = '1'
+                AND ( 
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(INTEREST_INCOME_TAX, 0) ) > 0 or 
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(CAPITAL_GAIN_TAX, 0) ) > 0 
+                )
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
             GROUP BY
@@ -1823,7 +1860,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS = 1 
             WHERE
-                CONVERT ( DEC, WHT_COMMISION ) > 0
+                CONVERT ( DECIMAL ( 16, 2 ), WHT_COMMISION ) > 0
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
         ");
@@ -1842,7 +1879,11 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS= 1 
             WHERE
-                ( CONVERT ( DEC, INTEREST_INCOME_TAX ) > 0 or CONVERT ( DEC, CAPITAL_GAIN_TAX ) > 0 )
+                A.BUY_SELL = '1'
+                AND ( 
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(INTEREST_INCOME_TAX, 0) ) > 0 or 
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(CAPITAL_GAIN_TAX, 0) ) > 0 
+                )
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
         ");
@@ -1870,6 +1911,7 @@ class M_mutasi extends CI_Model {
     {
         $query=$this->db_jasgir->query("
             SELECT 
+                a.subsrd_id as id,
                 'subsrd' AS src_dt,
                 a.client_code,
                 a.subsrd_date,
@@ -1906,6 +1948,7 @@ class M_mutasi extends CI_Model {
     {
         $query=$this->db_itd->query("
             SELECT
+                trx_id as id,
                 'itd_Penempatan' AS src_dt,
                 trx_client_code AS client_code,
                 CONVERT ( DATE, trx_date ) AS subsrd_date,
@@ -1943,6 +1986,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_itd->query("
             SELECT 
+                trx_id as id,
                 'itd_Pencairan ' AS src_dt,
                 trx_client_code AS client_code,
                 CONVERT ( DATE, trx_date ) AS subsrd_date,
@@ -2027,11 +2071,12 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_nfs->query("
             SELECT 
+                A.SI_REFF AS id,
                 'nfs_jual' AS src_dt,
                 'C006' AS subsrd_kategori,
                 'Hasil Jual Saham' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+                CONVERT ( DECIMAL ( 16, 2 ), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no
             FROM
@@ -2069,11 +2114,12 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_nfs->query("
             SELECT 
+                A.SI_REFERENCE AS id,
                 'nfs_jual' AS src_dt,
                 'C007' AS subsrd_kategori,
                 'Hasil Jual Obligasi' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.NET_PROCEEDS ) AS subsrd_nominal,
+                CONVERT ( DECIMAL ( 16, 2 ), A.NET_PROCEEDS ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -2114,11 +2160,12 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_nfs->query("
             SELECT 
+                A.SI_REFF AS id,
                 'nfs_jual' AS src_dt,
                 'D004' AS subsrd_kategori,
                 'Beli Saham' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+                CONVERT ( DECIMAL ( 16, 2 ), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -2159,11 +2206,12 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_nfs->query("
             SELECT 
+                A.SI_REFERENCE AS id,
                 'nfs_jual' AS src_dt,
                 'D005' AS subsrd_kategori,
                 'Beli Obligasi' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.NET_PROCEEDS ) AS subsrd_nominal,
+                CONVERT ( DECIMAL ( 16, 2 ), A.NET_PROCEEDS ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -2204,11 +2252,12 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_nfs->query("
             SELECT
+                A.SI_REFF AS id,
                 'nfs_Wht_Commision' AS src_dt,
                 'D016' AS subsrd_kategori,
                 'Wht Commision' AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, WHT_COMMISION ) AS subsrd_nominal,
+                CONVERT ( DECIMAL ( 16, 2 ), WHT_COMMISION ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -2250,9 +2299,10 @@ class M_mutasi extends CI_Model {
             FROM
             (
             SELECT
+                A.SI_REFERENCE AS id,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                CONVERT ( DEC, A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
+                CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.CAPITAL_GAIN_TAX, 0) ) AS subsrd_nominal,
                 'D017' AS subsrd_kategori,
                 'Capital Gain Tax' AS deskripsi,
                 B.FUND_OPR_ACCT_NO AS acc_no 
@@ -2261,7 +2311,8 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 AND B.ACTIVE_STATUS= 1 
             WHERE
-                CONVERT ( DEC, A.CAPITAL_GAIN_TAX ) > 0 
+                A.BUY_SELL = '1'
+                AND CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.CAPITAL_GAIN_TAX, 0) ) > 0 
                 AND A.HIPORT_CODE = '".$client_code."' 
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
@@ -2274,9 +2325,10 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
+                    A.SI_REFERENCE AS id,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-                    CONVERT ( DEC, A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
+                    CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.INTEREST_INCOME_TAX, 0) ) AS subsrd_nominal,
                     'D017' AS subsrd_kategori,
                     'Interst Income Tax' AS deskripsi,
                     B.FUND_OPR_ACCT_NO AS acc_no 
@@ -2285,7 +2337,8 @@ class M_mutasi extends CI_Model {
                     INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                     AND B.ACTIVE_STATUS= 1 
                 WHERE
-                    CONVERT ( DEC, A.INTEREST_INCOME_TAX ) > 0 
+                    A.BUY_SELL = '1'
+                    AND CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.INTEREST_INCOME_TAX, 0) ) > 0 
                     AND A.HIPORT_CODE = '".$client_code."' 
                     AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                     AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 

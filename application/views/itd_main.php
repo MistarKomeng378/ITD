@@ -764,6 +764,7 @@
 <DIV id="dialogBox_trx_approve_nfs"></DIV> 
 
 <div id="dialogBox_mutasi_client_kode"></div>
+<div id="alert_send_to_mutasi"></div>
 
 <!-- DIALOG BOX w/ User -->
 <!-- DIALOG BOX w/ pic -->

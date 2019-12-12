@@ -156,21 +156,26 @@ function create_dlg_dpicker_mutasi11()
     dPicker_attach($("#i_mutasi11_client_code"),dpick_opt_mutasi11);
 }
 
-function setMutasiTRx(coa_id,client_code,date,acc_no) {
+function setMutasiTRx(id,coa_id,client_code,date,acc_no) {
 
     var d = date;
     var tahun = d.substr(0,4);
     var bulan = d.substr(5,2);
     var hari = d.substr(8,2);
     var c_dt = hari+'-'+bulan+'-'+tahun;
-    
+    $("#alert_send_to_mutasi").html("");
+
     $.post(uri+"index.php/mutasi/set_mutasi_trx",{
+        id:id,
         coa_id:coa_id,
         client_code:client_code,
         date:date,
         acc_no:acc_no
     }, function(data, status) {
-        list_trx_mutasi11(client_code,acc_no,trx_date);
+        var obj = JSON.parse(data);
+        $("#alert_send_to_mutasi").append(obj.msg+' <br> '+id+' - '+client_code+' - '+acc_no+' - '+date+' <br> ');
+
+        list_trx_mutasi11(client_code,acc_no,date);
     });
     
 }
@@ -994,7 +999,7 @@ function fee_book_mutasi11(p_ccode,p_accno,p_cname,p_dt,p_cat,p_cat_desc,p_desc,
 }
 
 function dlg_mutasi_client() {
-    $("#b_dlg_mutasi11").click(function () {        
+    $("#b_dlg_mutasi11").click(function () {
         $("#dialogBox_mutasi_client_kode").dialog("open");
     });
 
@@ -1060,6 +1065,18 @@ function create_dlg_mutasi_client_search()
         closeOnEsc  : true,
         modal       : true
     }).dialog("widget").draggable("option","containment","none");
+
+    $("#alert_send_to_mutasi").dialog({ 
+        title       : 'Pesan',
+        width       : 300,
+        height      : 150,
+        autoOpen    : false,
+        resizable   : false,
+        closeOnEsc  : true,
+        modal       : true,
+        draggable   : false,
+        position    : { my: "left top", at: "left bottom" }
+    }); 
 }
 
 
@@ -1175,6 +1192,7 @@ function list_trx_mutasi_detail(client_code,acc_no,coa_no,date)
         
         for (let index = 0; index < data.length; index++) {
             mutasi_detail[index] = {
+                'id'             : data[index].id,
                 'coa_id'         : data[index].subsrd_kategori,
                 'coa_desc'       : data[index].coa_desc,
                 'trx_desc'       : data[index].bank_name +' - '+data[index].deskripsi,
@@ -1204,9 +1222,10 @@ function create_list_mutasi_detail() {
     var columns = [];
     var options = [] ; 
     columns = [         
-        {id:"coa_id", name:"Coa ID", field:"coa_id",width:50}
+        {id:"id", name:"ID", field:"id",width:50}
+        ,{id:"coa_id", name:"Coa ID", field:"coa_id",width:50}
         ,{id:"coa_desc", name:"Kategori", field:"coa_desc",width:140}
-        ,{id:"trx_desc", name:"Description", field:"trx_desc",width:140}
+        ,{id:"trx_desc", name:"Description", field:"trx_desc",width:200}
         ,{id:"trx_dc", name:"D/C", field:"trx_dc",width:50,cssClass:"cell_center"}
         ,{id:"trx_nominal_d", name:"Debet", field:"trx_nominal_d",width:100,cssClass:"cell_right"}
         ,{id:"trx_nominal_c", name:"Kredit", field:"trx_nominal_c",width:100,cssClass:"cell_right"}
@@ -1225,19 +1244,36 @@ function create_list_mutasi_detail() {
     grid_mutasi_detail = new Slick.Grid("#tbl_list_mutasi_detail", mutasi_detail, columns, options);
     grid_mutasi_detail.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow:true}));        
     grid_mutasi_detail.onDblClick.subscribe(function (e, args) {
+        var allData = args.grid.getData();
         var rowSelected = args.grid.getActiveCell().row;
         var dataSelected = args.grid.getDataItem(rowSelected);
         var balance_status = $("#s_mutasi11_dstatus").html();
-        if(balance_status !== 'Open'){
-            alert('Status Bukan Open');
-        }else{
-            setMutasiTRx(
-                dataSelected.coa_id,
-                $("#i_mutasi11_client_code").val(),
-                dataSelected.create_dt,
-                $("#i_mutasi11_rek").val()
-            );
-        }
+        var dateOpen = $('#i_mutasi11_client_dt').val();
+        var dateTrx = dataSelected.create_dt;
         
+        if(balance_status !== 'Open'){            
+            alert('Status Bukan Open');
+            throw ('Status Bukan Open');
+        }
+
+        dateOpen = new Date(dateOpen);
+        dateTrx  = new Date(dateTrx);
+        if(dateOpen.toString() !== dateTrx.toString()){
+            alert("Tanggal Open tidak sama dengan tanggal transaksi");
+            throw ("Tanggal Open tidak sama dengan tanggal transaksi");         
+        }
+
+        $("#alert_send_to_mutasi").dialog("open");
+        for (let index = 0; index < allData.length; index++) {
+            if(balance_status == 'Open' && dateOpen.toString() == dateTrx.toString()){
+                setMutasiTRx(
+                    dataSelected.id,
+                    dataSelected.coa_id,
+                    $("#i_mutasi11_client_code").val(),
+                    dataSelected.create_dt,
+                    $("#i_mutasi11_rek").val()
+                );
+            }
+        }
     });
 }
