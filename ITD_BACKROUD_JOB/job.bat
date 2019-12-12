@@ -1,1 +1,1 @@
-wget http://localhost:8088/itd/index.php/mutasi/backgroundToMutasi?date=2018-08-15 --no-check-certificate
+wget --no-check-certificate --spider https://itd.dev/index.php/mutasi/backgroundToMutasi?date=2018-11-14

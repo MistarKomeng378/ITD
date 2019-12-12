@@ -621,7 +621,6 @@ class Mutasi extends CI_Controller {
                 $end_date
             );
         }
-        echo json_encode($data);
     }
 
     public function set_mutasi_trx()
