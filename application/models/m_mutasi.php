@@ -583,11 +583,11 @@ class M_mutasi extends CI_Model {
             NFS_INQ_EQUITY_TEMP A
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
         WHERE
-            A.BUY_SELL = '2' and
-            A.HIPORT_CODE = '".$client_code."' and 
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."' AND
-            A.SI_REFF = '".$id."'
+            A.BUY_SELL = '2'
+            AND A.HIPORT_CODE = '".$client_code."'
+            AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+            AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+            AND A.SI_REFF = '".$id."'
         ORDER BY
             subsrd_date DESC
         ");
@@ -883,7 +883,7 @@ class M_mutasi extends CI_Model {
             A.HIPORT_CODE = '".$client_code."' and 
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."' and 
-            A.SI_REFERENCE = '".$acc_no."'
+            A.SI_REFERENCE = '".$id."'
         ORDER BY
             subsrd_date DESC
         ");
@@ -1172,7 +1172,959 @@ class M_mutasi extends CI_Model {
         }
         return $mutasi_trx;
     }
+    
+    // background job start
 
+    function SubscribeToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+
+        $subsrd = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                subsrd
+            WHERE client_code = '".$client_code."' and 
+            subsrd_date = '".$date."' and 
+            acc_no_dst = '".$acc_no."'
+        ");
+        
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa_id."' and 
+            acc_no = '".$acc_no."'
+        ");
+
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no_dst'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$value['subsrd_kategori']."',
+                        '".$value['subsrd_desc']."',
+                        '".$value['bank_src']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function PenempatanToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_itd->query("
+            SELECT 
+                trx_client_code,
+                trx_acc_no,
+                CONVERT ( DATE, trx_date ) as trx_date,
+                trx_from,
+                trx_nominal
+            FROM 
+                itd_trx_approved
+            WHERE trx_client_code = '".$client_code."' and 
+            CONVERT ( DATE, trx_date ) = '".$date."' and
+            trx_type = 1 and 
+            trx_acc_no = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".trim($value['trx_client_code'])."',
+                        '".trim($value['trx_acc_no'])."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['trx_from']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['trx_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function PencairanToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_itd->query("
+            SELECT 
+                trx_client_code,
+                trx_acc_no,
+                CONVERT ( DATE, trx_date ) as trx_date,
+                trx_from,
+                trx_nominal
+            FROM 
+                itd_trx_approved
+            WHERE trx_client_code = '".$client_code."' and 
+            CONVERT ( DATE, trx_date ) = '".$date."' and
+            trx_type = 3 and 
+            trx_acc_no = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".trim($value['trx_client_code'])."',
+                        '".trim($value['trx_acc_no'])."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['trx_from']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['trx_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function RedemptionToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_urssim->query("
+            SELECT
+                FUND_ID.CREATION_DATE AS CREATION_DATE,
+                FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
+                FUND_ID.MODIFIER AS MODIFIER,
+                FUND_ID.CODE_BPM AS client_code,
+                FUND_ID.ACC_BANK_OPR AS acc_no,
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
+                TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                'D001' AS subsrd_kategori,
+                'Redemption' AS deskripsi 
+            FROM
+                TXN_POSTING
+                INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID
+            WHERE
+                TXN_POSTING.TXN_TYPE = 'R' and
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE )  = '".$date."' and 
+                FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
+                FUND_ID.CODE_BPM = '".$client_code."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1
+                    );
+                ");
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function JualSahamToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+
+        $subsrd = $this->db_nfs->query("
+        SELECT
+            A.SI_REFF,
+            A.HIPORT_CODE AS client_code,
+            B.FUND_OPR_ACCT_NO AS acc_no,
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+            CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+            A.MODIFIER,
+            A.CREATION_DATE,
+            A.MODIFICATION_DATE,
+            'C006' AS subsrd_kategori,
+            'Hasil Jual Saham' AS deskripsi
+        FROM
+            NFS_INQ_EQUITY_TEMP A
+            INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
+        WHERE
+            A.BUY_SELL = '2'
+            AND A.HIPORT_CODE = '".$client_code."'
+            AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+            AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+        ORDER BY
+            subsrd_date DESC
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        
+        return $mutasi_trx;
+    }
+
+    function BeliSahamToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_nfs->query("
+        SELECT
+            A.SI_REFF,
+            A.HIPORT_CODE AS client_code,
+            B.FUND_OPR_ACCT_NO AS acc_no,
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+            CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+            A.MODIFIER,
+            A.CREATION_DATE,
+            A.MODIFICATION_DATE,
+            'D004' AS subsrd_kategori,
+            'Beli Saham' AS deskripsi
+        FROM
+            NFS_INQ_EQUITY_TEMP A
+            INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
+        WHERE
+            A.BUY_SELL = '1' and
+            A.HIPORT_CODE = '".$client_code."' and 
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
+            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+        ORDER BY
+            subsrd_date DESC
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+    
+    function JualObligasiToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+        
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_nfs->query("
+        SELECT
+            A.SI_REFERENCE AS SI_REFF,
+            A.HIPORT_CODE AS client_code,
+            B.FUND_OPR_ACCT_NO AS acc_no,
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+            CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
+            A.MODIFIER,
+            A.CREATION_DATE,
+            A.MODIFICATION_DATE,
+            'C007' AS subsrd_kategori,
+            'Hasil Jual Obligasi' AS deskripsi 
+        FROM
+            NFS_FI_INS_INQ_TEMP A
+            INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+        WHERE
+            A.BUY_SELL = '2'  and
+            A.HIPORT_CODE = '".$client_code."' and 
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
+            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+        ORDER BY
+            subsrd_date DESC
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
+                    );
+                ");    
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function BeliObligasiToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+        
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_nfs->query("
+        SELECT
+            A.SI_REFERENCE AS SI_REFF,
+            A.HIPORT_CODE AS client_code,
+            B.FUND_OPR_ACCT_NO AS acc_no,
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+            CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
+            A.MODIFIER,
+            A.CREATION_DATE,
+            A.MODIFICATION_DATE,
+            'D005' AS subsrd_kategori,
+            'Beli Obligasi' AS deskripsi 
+        FROM
+            NFS_FI_INS_INQ_TEMP A
+            INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+        WHERE
+            A.BUY_SELL = '1'  and
+            A.HIPORT_CODE = '".$client_code."' and 
+            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
+            B.FUND_OPR_ACCT_NO = '".$acc_no."'
+        ORDER BY
+            subsrd_date DESC
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function TaxBrokerToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_nfs->query("
+            SELECT 
+                A.SI_REFF,
+                A.HIPORT_CODE AS client_code,
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+                CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) AS subsrd_nominal,
+                A.MODIFIER,
+                A.CREATION_DATE,
+                A.MODIFICATION_DATE,
+                'D016' AS subsrd_kategori,
+                'Wht Commision' AS deskripsi,
+                B.FUND_OPR_ACCT_NO AS acc_no 
+            FROM
+                NFS_INQ_EQUITY_TEMP A
+                INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+            WHERE
+                CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) > 0 
+                AND A.HIPORT_CODE = '".$client_code."' 
+                AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
+                AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+            ORDER BY
+                subsrd_date DESC
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    function TaxObligasiToMutasiBackground($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_nfs->query("
+            SELECT
+                * 
+            FROM
+            (
+            SELECT
+                A.SI_REFERENCE AS SI_REFF,
+                A.HIPORT_CODE AS client_code,
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+                CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
+                A.MODIFIER,
+                A.CREATION_DATE,
+                A.MODIFICATION_DATE,
+                'D017' AS subsrd_kategori,
+                'Capital Gain Tax' AS deskripsi,
+                B.FUND_OPR_ACCT_NO AS acc_no 
+            FROM
+                NFS_FI_INS_INQ_TEMP A
+                INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+            WHERE
+                CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) > 0  
+                AND A.HIPORT_CODE = '".$client_code."' 
+                AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
+                AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND BUY_SELL = '1'
+            ) AS CAPITAL_GAIN_TAX
+
+            UNION ALL
+
+            SELECT
+                * 
+            FROM
+            (
+                SELECT
+                    A.SI_REFERENCE AS SI_REFF,
+                    A.HIPORT_CODE AS client_code,
+                    CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+                    CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
+                    A.MODIFIER,
+                    A.CREATION_DATE,
+                    A.MODIFICATION_DATE,
+                    'D017' AS subsrd_kategori,
+                    'Interst Income Tax' AS deskripsi,
+                    B.FUND_OPR_ACCT_NO AS acc_no 
+                FROM
+                    NFS_FI_INS_INQ_TEMP A
+                    INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+                WHERE
+                    CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) > 0 
+                    AND A.HIPORT_CODE = '".$client_code."' 
+                    AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
+                    AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                    AND BUY_SELL = '1' 
+            ) AS INTEREST_INCOME_TAX
+            
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."'
+        ");
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['SI_REFF']."'
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
+
+    // background job end
+    
     function MutasiClient($client_code, $accc_no)
     {
         $query = $this->db_jasgir->query("

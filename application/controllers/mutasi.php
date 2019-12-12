@@ -578,31 +578,32 @@ class Mutasi extends CI_Controller {
         $this->load->model("M_mutasi");
         $date = $this->input->get('date') ? $this->input->get('date') : date('Y-m-d') ;
         $mutasi_client = $this->M_mutasi->coaXmutasiClient($date);
+
         foreach ($mutasi_client as $key => $value) {
             $start_date = date('Y-m-d H:i:s');
             switch ($value['coa_id']) {                
                 case 'C006':
-                    $data = $this->M_mutasi->JualSahamToMutasi($value);
+                    $data = $this->M_mutasi->JualSahamToMutasiBackground($value);
                     break;
     
                 case 'C007':
-                    $data = $this->M_mutasi->JualObligasiToMutasi($value);
+                    $data = $this->M_mutasi->JualObligasiToMutasiBackground($value);
                     break;
     
                 case 'D004':
-                    $data = $this->M_mutasi->BeliSahamToMutasi($value);
+                    $data = $this->M_mutasi->BeliSahamToMutasiBackground($value);
                     break;
     
                 case 'D005':
-                    $data = $this->M_mutasi->BeliObligasiToMutasi($value);
+                    $data = $this->M_mutasi->BeliObligasiToMutasiBackground($value);
                     break;
     
                 case 'D016':
-                    $data = $this->M_mutasi->TaxBrokerToMutasi($value);
+                    $data = $this->M_mutasi->TaxBrokerToMutasiBackground($value);
                     break;
     
                 case 'D017':
-                    $data = $this->M_mutasi->TaxObligasiToMutasi($value);
+                    $data = $this->M_mutasi->TaxObligasiToMutasiBackground($value);
                     break;
                 
                 default:
