@@ -175,7 +175,7 @@ function setMutasiTRx(id,coa_id,client_code,date,acc_no) {
         var obj = JSON.parse(data);
         $("#alert_send_to_mutasi").append(obj.msg+' <br> '+id+' - '+client_code+' - '+acc_no+' - '+date+' <br> ');
 
-        list_trx_mutasi11(client_code,acc_no,date);
+        list_trx_mutasi11(client_code,acc_no,c_dt);
     });
     
 }
@@ -1248,16 +1248,19 @@ function create_list_mutasi_detail() {
         var rowSelected = args.grid.getActiveCell().row;
         var dataSelected = args.grid.getDataItem(rowSelected);
         var balance_status = $("#s_mutasi11_dstatus").html();
-        var dateOpen = $('#i_mutasi11_client_dt').val();
+
         var dateTrx = dataSelected.create_dt;
-        
+        var dateOpen = $('#i_mutasi11_client_dt').val();
+
+        dateOpen = dateOpen.substring(6,10)+'-'+dateOpen.substring(3,5)+'-'+dateOpen.substring(0,2)+' 00:00:00';
+        dateOpen = new Date(dateOpen);
+        dateTrx  = new Date(dateTrx);
+
         if(balance_status !== 'Open'){            
             alert('Status Bukan Open');
             throw ('Status Bukan Open');
         }
 
-        dateOpen = new Date(dateOpen);
-        dateTrx  = new Date(dateTrx);
         if(dateOpen.toString() !== dateTrx.toString()){
             alert("Tanggal Open tidak sama dengan tanggal transaksi");
             throw ("Tanggal Open tidak sama dengan tanggal transaksi");         
@@ -1267,10 +1270,10 @@ function create_list_mutasi_detail() {
         for (let index = 0; index < allData.length; index++) {
             if(balance_status == 'Open' && dateOpen.toString() == dateTrx.toString()){
                 setMutasiTRx(
-                    dataSelected.id,
-                    dataSelected.coa_id,
+                    allData[index].id,
+                    allData[index].coa_id,
                     $("#i_mutasi11_client_code").val(),
-                    dataSelected.create_dt,
+                    allData[index].create_dt,
                     $("#i_mutasi11_rek").val()
                 );
             }
