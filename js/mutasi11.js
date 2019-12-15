@@ -1157,7 +1157,7 @@ function create_list_mutasi_by_group()
         $("#i_mutasi11_rek").val(dataSelected.acc_no);
         $("#i_mutasi11_client_name").val(dataSelected.client_name);
         $("#i_mutasi11_desc").val(dataSelected.deskripsi);
-        $("#i_mutasi11_nominal").val(dataSelected.subsrd_nominal);
+        $("#i_mutasi11_nominal").val(clearFormatNumber(dataSelected.subsrd_nominal) );
         $("#i_mutasi11_nominal_a").val(strtomoney($("#i_mutasi11_nominal").val()));
 
         mutasi11_kena_jasgir= dataSelected.kena_jasgir;
@@ -1261,14 +1261,16 @@ function create_list_mutasi_detail() {
             throw ('Status Bukan Open');
         }
 
-        if(dateOpen.toString() !== dateTrx.toString()){
-            alert("Tanggal Open tidak sama dengan tanggal transaksi");
-            throw ("Tanggal Open tidak sama dengan tanggal transaksi");         
-        }
+        //Jika kategori subscribe(C002) tidak melihat apakah tangal open sama dengan tanggal transaski.
+        //Hanya melihat apakah open atau tidak
+        if (dataSelected.coa_id !== 'C002') {
+            if(dateOpen.toString() !== dateTrx.toString()){
+                alert("Tanggal Open tidak sama dengan tanggal transaksi");
+                throw ("Tanggal Open tidak sama dengan tanggal transaksi");         
+            }
 
-        $("#alert_send_to_mutasi").dialog("open");
-        for (let index = 0; index < allData.length; index++) {
-            if(balance_status == 'Open' && dateOpen.toString() == dateTrx.toString()){
+            $("#alert_send_to_mutasi").dialog("open");
+            for (let index = 0; index < allData.length; index++) {
                 setMutasiTRx(
                     allData[index].id,
                     allData[index].coa_id,
@@ -1277,6 +1279,22 @@ function create_list_mutasi_detail() {
                     $("#i_mutasi11_rek").val()
                 );
             }
+
+        }else{
+            var dateOpen = $('#i_mutasi11_client_dt').val();
+            var dt = dateOpen.substr(6,4)+'-'+dateOpen.substr(3,2)+'-'+dateOpen.substr(0,2);
+            
+            $("#alert_send_to_mutasi").dialog("open");
+            for (let index = 0; index < allData.length; index++) {
+                setMutasiTRx(
+                    allData[index].id,
+                    allData[index].coa_id,
+                    $("#i_mutasi11_client_code").val(),
+                    dt,
+                    $("#i_mutasi11_rek").val()
+                );
+            }
         }
+        
     });
 }

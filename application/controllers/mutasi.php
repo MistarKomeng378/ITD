@@ -629,9 +629,9 @@ class Mutasi extends CI_Controller {
         $param = $this->input->post();
 
         switch ($param['coa_id']) {
-            // case 'C002':
-            //     $data = $this->M_mutasi->SubscribeToMutasi($param);
-            //     break;
+            case 'C002':
+                $data = $this->M_mutasi->SubscribeToMutasi($param);
+                break;
 
             // case 'D002':
             //     $data = $this->M_mutasi->PenempatanToMutasi($param);

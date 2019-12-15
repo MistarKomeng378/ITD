@@ -206,13 +206,7 @@ class M_mutasi extends CI_Model {
         $acc_no = $data['acc_no'];
         $mutasi_trx = array();
 
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
+        $coa = $this->db_jasgir->query(" SELECT * FROM coa WHERE coa_no = '".$coa_id."' ");
         $coa = $coa->result();
 
         $subsrd = $this->db_jasgir->query("
@@ -220,22 +214,22 @@ class M_mutasi extends CI_Model {
                 * 
             FROM 
                 subsrd
-            WHERE client_code = '".$client_code."' and 
-            subsrd_date = '".$date."' and 
-            acc_no_dst = '".$acc_no."' and
-            subsrd_id = '".$id."'
+            WHERE 
+                client_code = '".$client_code."' and 
+                acc_no_dst = '".$acc_no."' and
+                subsrd_id = '".$id."'
         ");
-        
+
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
                 * 
             FROM 
                 mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa_id."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = '".$id."'
+            WHERE 
+                client_code = '".$client_code."' and 
+                coa_no = '".$coa_id."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$id."'
         ");
 
         if( count( $check_mutasi->result_array() ) == 0 ){
@@ -255,11 +249,12 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
                         '".trim($value['client_code'])."',
                         '".trim($value['acc_no_dst'])."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$date."',
                         '".$value['subsrd_kategori']."',
                         '".$value['subsrd_desc']."',
                         '".$value['bank_src']."',
@@ -269,11 +264,12 @@ class M_mutasi extends CI_Model {
                         '".date('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$id."'
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -2680,15 +2676,15 @@ class M_mutasi extends CI_Model {
 
     function check_kategori($param)
     {
-        // $subscription = $this->db_jasgir->query("
-        //     SELECT TOP ( 1 ) a.client_code, a.acc_no_dst AS acc_no
-        //     FROM subsrd a 
-        //     WHERE client_code = '".$param['client_code']."' and a.acc_no_dst = '".$param['acc_no']."'
-        // ");
-        // $res_subscription = array();
-        // if (count( $subscription->result_array() ) == 1) {
-        //     $res_subscription = $this->CoaDescription('C002');
-        // }
+        $subscription = $this->db_jasgir->query("
+            SELECT TOP ( 1 ) a.client_code, a.acc_no_dst AS acc_no
+            FROM subsrd a 
+            WHERE client_code = '".$param['client_code']."' and a.acc_no_dst = '".$param['acc_no']."'
+        ");
+        $res_subscription = array();
+        if (count( $subscription->result_array() ) == 1) {
+            $res_subscription = $this->CoaDescription('C002');
+        }
 
         // $jasa_giro = $this->db_jasgir->query("
         //     SELECT TOP ( 1 ) client_code, acc_no
@@ -2845,7 +2841,7 @@ class M_mutasi extends CI_Model {
         }
         
         return array(
-            // $res_subscription,
+            $res_subscription,
             // $res_jasa_giro,
             // $res_penempatan,
             // $res_pencairan,

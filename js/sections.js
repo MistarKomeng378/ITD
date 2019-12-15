@@ -145,6 +145,12 @@ function strtomoney(amount)
     if(isNaN(i)) { i = 0.00; }   
     return i.formatMoney(2,'.',',');
 }
+
+function clearFormatNumber(amount) {
+    var a = amount;
+    a = a.replace(/\,/g,'');
+    return Number(a);
+}
 function strtofloat(str)
 {
     var i = parseFloat(str.replace(/,/g,''));
