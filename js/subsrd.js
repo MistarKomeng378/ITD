@@ -396,8 +396,8 @@ function create_subsrd_event()
                         if(msg.r_sdata[0].err==0)
                         {
                             alert('Close day success!');
-                            subsrd_get_status($("#i_subsrd_client_code_h").val());  
-                            setMutasiTRx();
+                            subsrd_get_status($("#i_subsrd_client_code_h").val());
+                            subsrdToMutasi();
                         }
                         else
                             alert('Close day error!');
@@ -594,7 +594,7 @@ function do_print_instruksi()
     //$("#frm_subsrd_instruksi_cs").submit();
 }
 
-function setMutasiTRx() {
+function subsrdToMutasi() {
 
     var coa_id = 'C002';
     var date = $('#i_subsrd_client_dt').val();
