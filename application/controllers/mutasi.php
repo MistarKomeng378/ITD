@@ -828,15 +828,29 @@ class Mutasi extends CI_Controller {
         // // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
         // // $data = $this->M_mutasi->list_client_by_code('000D2K');
         
-        if ($this->session->userdata('itd_uid')) {
-            echo var_dump($this->session->all_userdata());
-        }else{
-            // $this->session->set_userdata(array('itd_uid' => 'system'));
-            echo var_dump($this->session->all_userdata());
-        }
+        // if ($this->session->userdata('itd_uid')) {
+        //     echo var_dump($this->session->all_userdata());
+        // }else{
+        //     // $this->session->set_userdata(array('itd_uid' => 'system'));
+        //     echo var_dump($this->session->all_userdata());
+        // }
         
         
         // echo json_encode($this->session->userdata('itd_uid'));
+        $date = '24-12-2019';
+        $dayOfWeek = date('w', strtotime($date));
+        switch ($dayOfWeek) {
+            case 5:
+                $date = date('Y-m-d', strtotime($date.'+3 day'));
+                break;
+            case 6:
+                $date = date('Y-m-d', strtotime($date.'+2 day'));
+                break;
+            default:
+                $date = date('Y-m-d', strtotime($date.'+1 day'));
+                break;
+        }
+        echo $date;
     }
 }
         

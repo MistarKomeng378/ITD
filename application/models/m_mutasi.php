@@ -356,7 +356,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -443,7 +443,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -537,7 +537,7 @@ class M_mutasi extends CI_Model {
                         1
                     );
                 ");
-                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
             }
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
@@ -637,7 +637,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -736,7 +736,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -834,7 +834,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");    
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -932,7 +932,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1030,7 +1030,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1162,7 +1162,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1244,7 +1244,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1328,7 +1328,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1412,7 +1412,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1506,7 +1506,7 @@ class M_mutasi extends CI_Model {
                         1
                     );
                 ");
-                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
             }
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
@@ -1603,7 +1603,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1699,7 +1699,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1794,7 +1794,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");    
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1889,7 +1889,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -1984,7 +1984,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
@@ -2112,7 +2112,7 @@ class M_mutasi extends CI_Model {
                     );
                 ");
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Tidak ada data');
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }

@@ -186,5 +186,100 @@ class M_subsrd extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
+
+    function SubscribeToMutasi($data)
+    {
+        $date           = date('Y-m-d', strtotime($data['date']) );
+        $client_code    = $data['client_code'];
+        $coa_id         = $data['coa_id'];
+        $acc_no         = $data['acc_no'];
+        $mutasi_trx     = array();
+
+        $coa = $this->db_jasgir->query(" SELECT * FROM coa WHERE coa_no = '".$coa_id."' ");
+        $coa = $coa->result();
+
+        $subsrd = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                subsrd
+            WHERE 
+                client_code = '".$client_code."' and
+                subsrd_date = '".$date."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE 
+                client_code = '".$client_code."' and 
+                coa_no = '".$coa_id."' and 
+                acc_no = '".$acc_no."' and
+                trx_date = '".$date."'
+        ");
+
+        // saat insert ke mutasi trx jika :
+        // jumat h+3
+        // sabtu h+2
+        // senin-kamis dan minggu H+1
+        $date = $data['date'];
+        $dayOfWeek = date('w', strtotime($date));
+        switch ($dayOfWeek) {
+            case 5:
+                $date = date('Y-m-d', strtotime($date.'+3 day'));
+                break;
+            case 6:
+                $date = date('Y-m-d', strtotime($date.'+2 day'));
+                break;
+            default:
+                $date = date('Y-m-d', strtotime($date.'+1 day'));
+                break;
+        }
+
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no_dst'])."',
+                        '".$date."',
+                        '".$value['subsrd_kategori']."',
+                        '".$value['subsrd_desc']."',
+                        '".$value['bank_src']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['subsrd_id']."'
+                    );
+                ");
+            }
+            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    }
 }
 ?>

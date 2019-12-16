@@ -396,7 +396,8 @@ function create_subsrd_event()
                         if(msg.r_sdata[0].err==0)
                         {
                             alert('Close day success!');
-                            subsrd_get_status($("#i_subsrd_client_code_h").val());      
+                            subsrd_get_status($("#i_subsrd_client_code_h").val());  
+                            setMutasiTRx();
                         }
                         else
                             alert('Close day error!');
@@ -591,4 +592,22 @@ function do_print_instruksi()
 {
     
     //$("#frm_subsrd_instruksi_cs").submit();
+}
+
+function setMutasiTRx() {
+
+    var coa_id = 'C002';
+    var date = $('#i_subsrd_client_dt').val();
+    var acc_no = $('#i_subsrd_acc_dest').val();
+    var client_code = $('#i_subsrd_client_code').val();
+
+    $.post(uri+"index.php/subsrd/set_mutasi_trx",{
+        coa_id:coa_id,
+        client_code:client_code,
+        date:date,
+        acc_no:acc_no
+    }, function(data, status) {
+        
+    });
+    
 }

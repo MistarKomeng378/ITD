@@ -292,6 +292,13 @@ class Subsrd extends CI_Controller {
        echo @json_encode($this->data);
     }
     
+    public function set_mutasi_trx()
+    {
+        $this->load->model("M_subsrd");
+        $param  = $this->input->post();
+        $data   = $this->M_subsrd->SubscribeToMutasi($param);
+        echo @json_encode($data);
+    }
     
 }
         
