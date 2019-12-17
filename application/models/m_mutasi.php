@@ -2696,25 +2696,25 @@ class M_mutasi extends CI_Model {
         //     $res_jasa_giro = $this->CoaDescription('C001');
         // }
 
-        // $penempatan = $this->db_itd->query("
-        //     SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
-        //     FROM itd_trx_approved 
-        //     WHERE trx_type = '1' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
-        // ");
-        // $res_penempatan = array();
-        // if (count( $penempatan->result_array() ) == 1) {
-        //     $res_penempatan = $this->CoaDescription('D002');
-        // }
+        $penempatan = $this->db_itd->query("
+            SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
+            FROM itd_trx_approved 
+            WHERE trx_type = '1' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
+        ");
+        $res_penempatan = array();
+        if (count( $penempatan->result_array() ) == 1) {
+            $res_penempatan = $this->CoaDescription('D002');
+        }
 
-        // $pencairan = $this->db_itd->query("
-        //     SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
-        //     FROM itd_trx_approved 
-        //     WHERE trx_type = '3' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
-        // ");
-        // $res_pencairan = array();
-        // if (count( $pencairan->result_array() ) == 1) {
-        //     $res_pencairan = $this->CoaDescription('C003');
-        // }
+        $pencairan = $this->db_itd->query("
+            SELECT TOP ( 1 ) trx_client_code AS client_code, trx_acc_no AS acc_no
+            FROM itd_trx_approved 
+            WHERE trx_type = '3' and trx_client_code = '".$param['client_code']."' and trx_acc_no = '".$param['acc_no']."'
+        ");
+        $res_pencairan = array();
+        if (count( $pencairan->result_array() ) == 1) {
+            $res_pencairan = $this->CoaDescription('C003');
+        }
         
         // $redemption = $this->db_urssim->query("
         //     SELECT TOP ( 1 ) FUND_ID.CODE_BPM AS client_code, FUND_ID.ACC_BANK_OPR AS acc_no 
@@ -2843,8 +2843,8 @@ class M_mutasi extends CI_Model {
         return array(
             $res_subscription,
             // $res_jasa_giro,
-            // $res_penempatan,
-            // $res_pencairan,
+            $res_penempatan,
+            $res_pencairan,
             // $res_redemption,
             $res_jual_saham,
             $res_jual_obligasi,
