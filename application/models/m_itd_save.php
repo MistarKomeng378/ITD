@@ -125,7 +125,7 @@ class M_itd_save extends CI_Model {
                 trx_id_unapproved = '".$unapprove_id."'
                 and trx_type = 1
         ");
-        
+
         $mutasi_trx = '';
         foreach ($subsrd->result_array() as $key => $value) {
                 
@@ -164,7 +164,64 @@ class M_itd_save extends CI_Model {
             ");
 
         }
-        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Penempatan berhasil masuk ke mutasi') : array('msg' => 'Data Penempatan Gagal Masuk ke Mutasi');
+        return $mutasi_trx;
+    }
+
+    function PencairanToMutasi($unapprove_id)
+    {
+        $coa = $this->db_jasgir->query(" SELECT * FROM coa WHERE coa_no = 'C003' ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db->query("
+            SELECT 
+                *
+            FROM 
+                itd_trx_approved
+            WHERE
+                trx_id_unapproved = '".$unapprove_id."'
+                and trx_type = 3
+        ");
+
+        $mutasi_trx = '';
+        foreach ($subsrd->result_array() as $key => $value) {
+                
+            $mutasi_trx = $this->db_jasgir->query("
+                INSERT INTO [dbo].[mutasi_trx] (
+                    [client_code],
+                    [acc_no],
+                    [trx_date],
+                    [coa_no],
+                    [coa_desc],
+                    [trx_desc],
+                    [trx_dc],
+                    [trx_nominal],
+                    [created_by],
+                    [created_dt],
+                    [modified_by],
+                    [modified_dt],
+                    [trx_status],
+                    [subsrd_id]
+                )VALUES(
+                    '".trim($value['trx_client_code'])."',
+                    '".trim($value['trx_acc_no'])."',
+                    '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                    '".$coa[0]->coa_no."',
+                    '".$coa[0]->coa_desc."',
+                    '".$value['trx_from']."',
+                    '".$coa[0]->coa_dc."',
+                    '".$value['trx_nominal']."',
+                    '".$value['trx_create_by']."',
+                    '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                    '".$this->session->userdata('itd_uid')."',
+                    '".date('Y-m-d H:i:s')."',
+                    1,
+                    '".$value['trx_id']."'
+                );
+            ");
+
+        }
+        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : array('msg' => 'Data Pencairan Gagal Masuk ke Mutasi');
         return $mutasi_trx;
     }
 
