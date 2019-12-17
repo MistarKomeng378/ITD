@@ -93,12 +93,6 @@ class M_itd_save extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
-    function submit_cancel_trx($user_id="",$trx_id="",$trx_note)
-    {
-        $query=$this->db->query("exec submit_cancel_trx '{$user_id}','{$trx_id}','{$trx_note}'");
-        $data=$query->result_array();
-        return $data;
-    }
     function submit_trx_ticket_print($user_id="",$param)
     {
         $query=$this->db->query("exec set_print_f '{$user_id}','{$param["trx_code"]}','{$param["trx_cname"]}','{$param["trx_type"]}'
@@ -223,6 +217,65 @@ class M_itd_save extends CI_Model {
         }
         $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : array('msg' => 'Data Pencairan Gagal Masuk ke Mutasi');
         return $mutasi_trx;
+    }
+
+    public function submit_cancel_trx($user_id="",$trx_id="",$trx_note)
+    {
+        $deleting = false;
+        $cekMutasi = $this->CheckDataMutasi($trx_id);
+        $data = array('msg' => '');
+
+        // Jika data pencairan / penempatan ada pada mutasi maka check status mutasi Open/tidak
+        // Jika data mutasi open maka data bisa di hapus dan jika tidak open maka data tidak bisa di hapus
+        // Jika data pencairan / penempatan tidak ada pada mutasi data bisa di hapus
+        if(count( $cekMutasi ) > 0){
+
+            $checkStatusMutasi = $this->get_last_balance_date(
+                $cekMutasi[0]['client_code'],
+                $cekMutasi[0]['acc_no'],
+                $cekMutasi[0]['trx_date']->format('Y-m-d')
+            );
+
+            // jika data status mutasi 0 / data mutasi belum pernah di open / close mmaka data bisa di hapus
+            if(count($checkStatusMutasi) == 0){
+                $deleting = true;
+            }else{
+                // jika data status mutasi = 1 / open maka data bisa dihapus
+                // selain status = 1 / open data tidak bisa di hapus
+                if($checkStatusMutasi[0]['curr_status'] == 1){
+                    $deleting = true;
+                }else{
+                    $deleting = false;
+                    $data = array('msg' => 'Data mutasi status bukan open');
+                }
+            }
+
+        }else{
+            $deleting = true;
+        }
+
+
+        if($deleting){
+            $query  = $this->db_jasgir->query("DELETE FROM mutasi_trx WHERE subsrd_id = '".$trx_id."' ");
+            $query  = $this->db->query("exec submit_cancel_trx '{$user_id}','{$trx_id}','{$trx_note}'");
+            $data   = $query->result_array();
+            $data = $query ? array('msg' => 'Data berhasil di hapus') : array('msg' => 'Data gagal di hapus');
+        }
+
+        return $data;
+    }
+
+    public function CheckDataMutasi($subsd_id)
+    {
+        $data = $this->db_jasgir->query(" select * from mutasi_trx where subsrd_id = '".$subsd_id."' ");
+        return $data->result_array();
+    }
+
+    public function get_last_balance_date($client_code='',$acc_no='',$cdt='',$status=0)
+    {
+        $query=$this->db_jasgir->query("exec [get_last_balance_date] '{$client_code}','{$acc_no}','{$cdt}',{$status}");
+        $data=$query->result_array();
+        return $data;
     }
 
    

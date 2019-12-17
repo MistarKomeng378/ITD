@@ -626,8 +626,11 @@ function do_submit_cancel_trx()
             { trx_id:trxid,trx_note:$("#i_trx_note").val()},function(data) {
                 
         },"json");
-        obj_post.done(function(msg) { 
-            alert("Pembatalan sukses!");
+        obj_post.done(function(data) { 
+
+            // alert("Pembatalan sukses!");
+            alert(data.r_sdata.msg);
+
             state_progress(0);
             close_dlg_trx();
             refresh_trx_grid();   
