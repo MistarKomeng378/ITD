@@ -393,6 +393,8 @@ class Itd extends CI_Controller {
         sql_quot_all($param);                              
         //$data = $this->M_itd->list_client_by_code($param["client_code"]);
         $data = $this->M_itd->list_client_by_code($param["q"]);
+        $data = array_map(array($this,'do_map'),$data);
+
         $this->data["r_success"] = 1;
         $this->data["r_num_rows"] = count($data);
         $this->data["r_sdata"]= $data;
