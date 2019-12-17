@@ -2902,7 +2902,8 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DATE, trx_date ) AS subsrd_date,
                 trx_nominal AS subsrd_nominal,
                 trx_acc_no AS acc_no,
-                'D002' AS subsrd_kategori
+                'D002' AS subsrd_kategori,
+                'Penempatan TD di Bank' AS deskripsi
             FROM
                 itd_trx_approved
             WHERE
@@ -2940,7 +2941,8 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DATE, trx_date ) AS subsrd_date,
                 trx_nominal AS subsrd_nominal,
                 trx_acc_no AS acc_no,
-                'C003' AS subsrd_kategori
+                'C003' AS subsrd_kategori,
+                'Pencairan TD dari Bank' AS deskripsi
             FROM
                 itd_trx_approved 
             WHERE
