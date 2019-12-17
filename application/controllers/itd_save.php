@@ -275,6 +275,7 @@ class Itd_save extends CI_Controller {
                 $rdata["r_success"] = true;
                 $rdata["r_numrows"] = count($data);
                 $rdata["r_sdata"] = $data;
+                $rdata["penempatan_to_mutasi"] = $this->PenempatanToMutasi($param["trx_id"]);
             //}
             echo json_encode($rdata);
         }
@@ -297,6 +298,7 @@ class Itd_save extends CI_Controller {
                 $rdata["r_success"] = true;
                 $rdata["r_numrows"] = count($data);
                 $rdata["r_sdata"] = $data;
+                $rdata["penempatan_to_mutasi"] = $this->PenempatanToMutasi($param["trx_id"]);
             //}
             echo json_encode($rdata);
         }
@@ -357,6 +359,13 @@ class Itd_save extends CI_Controller {
             $this->data["r_sdata"]= $data;
             echo json_encode($this->data);*/
         }
+    }
+
+    public function PenempatanToMutasi($unapprove_id)
+    {
+        $this->load->model("M_itd_save");
+        $data = $this->M_itd_save->PenempatanToMutasi($unapprove_id);
+        return $data;
     }
     
 }
