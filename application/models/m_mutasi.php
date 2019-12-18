@@ -296,6 +296,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_itd->query("
             SELECT 
+                trx_id,
                 trx_client_code,
                 trx_acc_no,
                 CONVERT ( DATE, trx_date ) as trx_date,
@@ -338,7 +339,9 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
+                        
                     )VALUES(
                         '".trim($value['trx_client_code'])."',
                         '".trim($value['trx_acc_no'])."',
@@ -349,10 +352,11 @@ class M_mutasi extends CI_Model {
                         '".$coa[0]->coa_dc."',
                         '".$value['trx_nominal']."',
                         '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['trx_id']."'
                     );
                 ");
             }
@@ -383,6 +387,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_itd->query("
             SELECT 
+                trx_id,
                 trx_client_code,
                 trx_acc_no,
                 CONVERT ( DATE, trx_date ) as trx_date,
@@ -425,7 +430,8 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
                         '".trim($value['trx_client_code'])."',
                         '".trim($value['trx_acc_no'])."',
@@ -436,10 +442,11 @@ class M_mutasi extends CI_Model {
                         '".$coa[0]->coa_dc."',
                         '".$value['trx_nominal']."',
                         '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['trx_id']."'
                     );
                 ");
             }
@@ -2716,23 +2723,23 @@ class M_mutasi extends CI_Model {
             $res_pencairan = $this->CoaDescription('C003');
         }
         
-        // $redemption = $this->db_urssim->query("
-        //     SELECT TOP ( 1 ) FUND_ID.CODE_BPM AS client_code, FUND_ID.ACC_BANK_OPR AS acc_no 
-        //     FROM
-        //         TXN_POSTING
-        //         INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
-        //         AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
-        //         AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
-        //         AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
-        //     WHERE
-        //         TXN_POSTING.TXN_TYPE = 'R' and
-        //         FUND_ID.CODE_BPM = '".$param['client_code']."' and 
-        //         FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
-        // ");
-        // $res_redemption = array();
-        // if (count( $redemption->result_array() ) == 1) {
-        //     $res_redemption = $this->CoaDescription('D001');
-        // }
+        $redemption = $this->db_urssim->query("
+            SELECT TOP ( 1 ) FUND_ID.CODE_BPM AS client_code, FUND_ID.ACC_BANK_OPR AS acc_no 
+            FROM
+                TXN_POSTING
+                INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
+                AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
+                AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
+                AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
+            WHERE
+                TXN_POSTING.TXN_TYPE = 'R' and
+                FUND_ID.CODE_BPM = '".$param['client_code']."' and 
+                FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+        ");
+        $res_redemption = array();
+        if (count( $redemption->result_array() ) == 1) {
+            $res_redemption = $this->CoaDescription('D001');
+        }
 
         $jual_saham = $this->db_nfs->query("
             SELECT TOP ( 1 ) A.HIPORT_CODE AS client_code, B.FUND_OPR_ACCT_NO AS acc_no 
@@ -2845,7 +2852,7 @@ class M_mutasi extends CI_Model {
             // $res_jasa_giro,
             $res_penempatan,
             $res_pencairan,
-            // $res_redemption,
+            $res_redemption,
             $res_jual_saham,
             $res_jual_obligasi,
             $res_beli_saham,

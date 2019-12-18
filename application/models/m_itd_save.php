@@ -52,31 +52,7 @@ class M_itd_save extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
-    function submit_edit_trx($user_id="",$param)
-    {   
-        /*echo "exec submit_edit_trx {$param["trx_id"]},'{$user_id}','{$param["trx_to"]}','{$param["trx_remark1"]}','{$param["trx_up"]}',
-        '{$param["trx_telp"]}','{$param["trx_fax"]}','{$param["trx_dt"]}','{$param["trx_client_id"]}','{$param["trx_c_code"]}',
-        '{$param["trx_c_name"]}','{$param["trx_acc_no"]}','{$param["trx_acc_name"]}','{$param["trx_bank_name"]}','{$param["trx_type"]}',
-        '{$param["trx_dep_type"]}','{$param["trx_val_dt"]}','{$param["trx_due_dt"]}','{$param["trx_tax_status"]}','{$param["trx_pay_type"]}',
-        {$param["trx_nominal"]},{$param["trx_rate"]},{$param["trx_due_type"]},'{$param["trx_other"]}','{$param["trx_note"]}','{$param["trx_break_dt"]}','{$param["trx_curr"]}','{$param["trx_mov_bil"]}'";
-        return array();*/
 
-        $query=$this->db->query("
-            select nfs_td from itd_trx_approved where trx_id='".$param["trx_id"]."'
-        ");
-        $nfd_td = $query->result_array();
-        $nfd_td = count( $nfd_td[0]['nfs_td']);
-
-        $query=$this->db->query("exec submit_edit_trx {$nfd_td}, {$param["trx_id"]},'{$user_id}','{$param["trx_to"]}','{$param["trx_remark1"]}','{$param["trx_up"]}',
-        '{$param["trx_telp"]}','{$param["trx_fax"]}','{$param["trx_dt"]}','{$param["trx_client_id"]}','{$param["trx_c_code"]}',
-        '{$param["trx_c_name"]}','{$param["trx_acc_no"]}','{$param["trx_acc_name"]}','{$param["trx_bank_name"]}','{$param["trx_type"]}',
-        '{$param["trx_dep_type"]}','{$param["trx_val_dt"]}','{$param["trx_due_dt"]}','{$param["trx_tax_status"]}','{$param["trx_pay_type"]}',
-        {$param["trx_nominal"]},{$param["trx_rate"]},{$param["trx_due_type"]},'{$param["trx_other"]}','{$param["trx_note"]}',
-        '{$param["trx_break_dt"]}','{$param["trx_curr"]}','{$param["trx_mov_bil"]}','{$param["bank_rek"]}','{$param["bank_rek_name"]}'
-        ,'{$param["pic_pid"]}','{$param["trx_rbreak"]}'");
-        $data=$query->result_array();
-        return $data;
-    }
     function submit_revise_trx($user_id="",$param)
     {
         $query=$this->db->query("exec submit_revise_trx '{$user_id}','{$param["trx_id"]}','{$param["trx_note"]}'");
@@ -217,6 +193,102 @@ class M_itd_save extends CI_Model {
         }
         $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : array('msg' => 'Data Pencairan Gagal Masuk ke Mutasi');
         return $mutasi_trx;
+    }
+
+    public function submit_edit_trx($user_id="",$param)
+    {
+        $deleting = false;
+        $cekMutasi = $this->CheckDataMutasi($param["trx_id"]);
+        $data = array('msg' => '');
+
+        // Jika data pencairan / penempatan ada pada mutasi maka check status mutasi Open/tidak
+        // Jika data mutasi open maka data bisa di hapus dan jika tidak open maka data tidak bisa di hapus
+        // Jika data pencairan / penempatan tidak ada pada mutasi data bisa di hapus
+        if(count( $cekMutasi ) > 0){
+
+            $checkStatusMutasi = $this->get_last_balance_date(
+                $cekMutasi[0]['client_code'],
+                $cekMutasi[0]['acc_no'],
+                $cekMutasi[0]['trx_date']->format('Y-m-d')
+            );
+
+            // jika data status mutasi 0 / data mutasi belum pernah di open / close mmaka data bisa di hapus
+            if(count($checkStatusMutasi) == 0){
+                $deleting = true;
+            }else{
+                // jika data status mutasi = 1 / open maka data bisa dihapus
+                // selain status = 1 / open data tidak bisa di hapus
+                if($checkStatusMutasi[0]['curr_status'] == 1){
+                    $deleting = true;
+                }else{
+                    $deleting = false;
+                    $data = array('msg' => 'Data mutasi status bukan open');
+                }
+            }
+
+        }else{
+            $deleting = true;
+        }
+
+
+        if($deleting){
+            $query  = $this->db_jasgir->query("
+                UPDATE [mutasi_trx] 
+                    SET 
+                        [client_code]   = '".$param["trx_c_code"]."',
+                        [acc_no]        = '".$param["trx_acc_no"]."',
+                        [trx_date]      = '".date('Y-m-d',strtotime($param["trx_val_dt"]))."',
+                        [trx_nominal]   = ".$param["trx_nominal"].",
+                        [modified_by]   = '".$this->session->userdata('itd_uid')."',
+                        [modified_dt]   = '".date('Y-m-d H:i:s')."',
+                        [trx_status]    = 1
+                WHERE
+                    [subsrd_id] = '".$param["trx_id"]."'
+            ");
+            $query  = $this->db->query(" select nfs_td from itd_trx_approved where trx_id='".$param["trx_id"]."' ");
+            $nfd_td = $query->result_array();
+            $nfd_td = count( $nfd_td[0]['nfs_td']);
+
+            $query=$this->db->query("exec submit_edit_trx  
+                {$nfd_td},
+                {$param["trx_id"]},
+                '{$user_id}',
+                '{$param["trx_to"]}',
+                '{$param["trx_remark1"]}',
+                '{$param["trx_up"]}',
+                '{$param["trx_telp"]}',
+                '{$param["trx_fax"]}',
+                '{$param["trx_dt"]}',
+                '{$param["trx_client_id"]}',
+                '{$param["trx_c_code"]}',
+                '{$param["trx_c_name"]}',
+                '{$param["trx_acc_no"]}',
+                '{$param["trx_acc_name"]}',
+                '{$param["trx_bank_name"]}',
+                '{$param["trx_type"]}',
+                '{$param["trx_dep_type"]}',
+                '{$param["trx_val_dt"]}',
+                '{$param["trx_due_dt"]}',
+                '{$param["trx_tax_status"]}',
+                '{$param["trx_pay_type"]}',
+                {$param["trx_nominal"]},
+                {$param["trx_rate"]},
+                {$param["trx_due_type"]},
+                '{$param["trx_other"]}',
+                '{$param["trx_note"]}',
+                '{$param["trx_break_dt"]}',
+                '{$param["trx_curr"]}',
+                '{$param["trx_mov_bil"]}',
+                '{$param["bank_rek"]}',
+                '{$param["bank_rek_name"]}',
+                '{$param["pic_pid"]}',
+                '{$param["trx_rbreak"]}'
+            ");
+            $data   = $query->result_array();
+            $data   = $query ? array('msg' => 'Data berhasil di Update') : array('msg' => 'Data gagal di Update');
+        }
+
+        return $data;
     }
 
     public function submit_cancel_trx($user_id="",$trx_id="",$trx_note)

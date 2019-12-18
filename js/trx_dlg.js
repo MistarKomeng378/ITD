@@ -546,8 +546,9 @@ function do_submit_edit_trx()
                 ,trx_rbreak:$("#i_trx_rate_break").val()
             },function(data){
         },"json");
-        obj_post.done(function(msg) { 
-            alert("Submit instruction success!"); 
+        obj_post.done(function(data) { 
+            alert(data.r_sdata.msg);
+            // alert("Submit instruction success!"); 
             state_progress(0);
             close_dlg_trx();
             close_dlg_trx();
