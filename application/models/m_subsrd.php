@@ -267,7 +267,7 @@ class M_subsrd extends CI_Model {
                         '".$coa[0]->coa_dc."',
                         '".$value['subsrd_nominal']."',
                         '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
                         1,
