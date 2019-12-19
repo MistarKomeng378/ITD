@@ -475,14 +475,14 @@ class M_mutasi extends CI_Model {
         $coa = $coa->result();
         
         $subsrd = $this->db_urssim->query("
-            SELECT
-                FUND_ID.CREATION_DATE AS CREATION_DATE,
-                FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
-                FUND_ID.MODIFIER AS MODIFIER,
+            SELECT 
+                'URSSIM_".date('Ymd', strtotime($date))."' as id,
+                'urssim' AS src_dt,
+                TXN_POSTING.TXN_TYPE,
                 FUND_ID.CODE_BPM AS client_code,
                 FUND_ID.ACC_BANK_OPR AS acc_no,
-                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
-                TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE) AS subsrd_date,
+                sum( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 'D001' AS subsrd_kategori,
                 'Redemption' AS deskripsi 
             FROM
@@ -490,12 +490,17 @@ class M_mutasi extends CI_Model {
                 INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
                 AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
                 AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
-                AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID
+                AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID 
             WHERE
                 TXN_POSTING.TXN_TYPE = 'R' and
-                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE )  = '".$date."' and 
-                FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
-                FUND_ID.CODE_BPM = '".$client_code."'
+                FUND_ID.CODE_BPM = '".$client_code."' and 
+                FUND_ID.ACC_BANK_OPR = '".$acc_no."' and
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) = '".$date."'
+            GROUP BY
+                TXN_POSTING.TXN_TYPE,
+                FUND_ID.CODE_BPM,
+                FUND_ID.ACC_BANK_OPR,
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE )
             ORDER BY
                 subsrd_date DESC
         ");
@@ -508,8 +513,10 @@ class M_mutasi extends CI_Model {
             WHERE client_code = '".$client_code."' and 
             trx_date = '".$date."' and
             coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
+            acc_no = '".$acc_no."' and
+            subsrd_id = 'URSSIM_".date('Ymd', strtotime($date))."'
         ");
+        
         if( count( $check_mutasi->result_array() ) == 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
                 
@@ -527,7 +534,8 @@ class M_mutasi extends CI_Model {
                         [created_dt],
                         [modified_by],
                         [modified_dt],
-                        [trx_status]
+                        [trx_status],
+                        [subsrd_id]
                     )VALUES(
                         '".trim($value['client_code'])."',
                         '".trim($value['acc_no'])."',
@@ -541,7 +549,8 @@ class M_mutasi extends CI_Model {
                         '".date('Y-m-d H:i:s')."',
                         '".$this->session->userdata('itd_uid')."',
                         '".date('Y-m-d H:i:s')."',
-                        1
+                        1,
+                        '".$value['id']."'
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
@@ -2983,12 +2992,13 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_urssim->query("
             SELECT 
+                'URSSIM_".date('Ymd', strtotime($date))."' as id,
                 'urssim' AS src_dt,
                 TXN_POSTING.TXN_TYPE,
                 FUND_ID.CODE_BPM AS client_code,
                 FUND_ID.ACC_BANK_OPR AS acc_no,
-                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
-                TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE) AS subsrd_date,
+                sum( TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 'D001' AS subsrd_kategori,
                 'Redemption' AS deskripsi 
             FROM
@@ -3002,6 +3012,11 @@ class M_mutasi extends CI_Model {
                 FUND_ID.CODE_BPM = '".$client_code."' and 
                 FUND_ID.ACC_BANK_OPR = '".$acc_no."' and
                 CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) = '".$date."'
+            GROUP BY
+                TXN_POSTING.TXN_TYPE,
+                FUND_ID.CODE_BPM,
+                FUND_ID.ACC_BANK_OPR,
+                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE )
             ORDER BY
                 subsrd_date DESC
         ");
