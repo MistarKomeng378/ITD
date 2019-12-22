@@ -3507,7 +3507,20 @@ class M_mutasi extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
-
+    public function check_jasgir($client_code, $acc_no)
+    {
+        $query=$this->db_jasgir->query("
+            SELECT
+                *
+            FROM
+                mutasi_client
+            where
+                client_code = '".$client_code."' and
+                acc_no = '".$acc_no."'
+        ");
+        $data = $query->result_array();
+        return $data;
+    }
     function backgroudLog($coa_id,$client_code,$acc_no, $date, $desc, $start_date, $end_date)
     {
         $query=$this->db_jasgir->query("
@@ -3516,6 +3529,86 @@ class M_mutasi extends CI_Model {
         ");
         return $query;
     }
+
+    public function SetMutasiGiro($data)
+    {
+        $this->db_jasgir->query("
+            INSERT INTO [dbo].[mutasi_giro] (
+                [giro_val_date],
+                [giro_asof_date],
+                [giro_rate],
+                [giro_tenor],
+                [giro_year],
+                [client_code],
+                [client_name],
+                [acc_no],
+                [giro_nominal],
+                [giro_interest],
+                [giro_interest_tax],
+                [giro_interest_net],
+                [created_by],
+                [created_dt]
+            )
+            VALUES
+            (
+                '".$data['giro_val_date']."',
+                '".$data['giro_asof_date']."',
+                ".$data['giro_rate'].",
+                '".$data['giro_tenor']."',
+                '".$data['giro_year']."',
+                '".$data['client_code']."',
+                '".$data['client_name']."',
+                '".$data['acc_no']."',
+                '".$data['giro_nominal']."',
+                '".$data['giro_interest']."',
+                '".$data['giro_interest_tax']."',
+                '".$data['giro_interest_net']."',
+                '".$data['created_by']."',
+                '".$data['created_dt']."'
+            );
+        ");
+    }
+    public function JasgirToMutasi()
+    {
+        $query = $this->db_jasgir->query("
+            SELECT TOP (1) * FROM mutasi_giro ORDER BY giro_id DESC; 
+        ");
+        $data = $query->result_array();
+        $mutasi_trx = $this->db_jasgir->query("
+            INSERT INTO [dbo].[mutasi_trx] (
+                [client_code],
+                [acc_no],
+                [trx_date],
+                [coa_no],
+                [coa_desc],
+                [trx_desc],
+                [trx_dc],
+                [trx_nominal],
+                [created_by],
+                [created_dt],
+                [modified_by],
+                [modified_dt],
+                [trx_status],
+                [subsrd_id]
+            )VALUES(
+                '".$data[0]['client_code']."',
+                '".$data[0]['acc_no']."',
+                '".$data[0]['giro_asof_date']->format('Y-m-d H:i:s')."',
+                'C001',
+                'Jasa Giro',
+                '".$data[0]['client_name']."',
+                'C',
+                '".$data[0]['giro_interest_net']."',
+                '".$this->session->userdata('itd_uid')."',
+                '".$data[0]['giro_val_date']->format('Y-m-d H:i:s')."',
+                '".$this->session->userdata('itd_uid')."',
+                '".date('Y-m-d H:i:s')."',
+                1,
+                '".$data[0]['giro_id']."'
+            );
+        ");
+    }
+
     // function RedemptionToMutasiBatavia($data)
     // {
     //     $client_code = $data['client_code'];
