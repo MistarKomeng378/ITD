@@ -829,17 +829,17 @@ function close_day_mutasi11()
                         get_balance_mutasi11(c_ccode,c_accno,c_cdt);
 
                         // membuat jasa giro ketika akhir hari
-                        var gs_balace = Number( $('#i_mutasi11_gbal2').val() );
+                        // var gs_balace = Number( $('#i_mutasi11_gbal2').val() );
 
-                        if (mutasi11_kena_jasgir == 1 && gs_balace >= 100000000){
-                            open_dlg_mutasi11_2(
-                                $("#i_mutasi11_client_code").val(),
-                                $("#i_mutasi11_client_name").val(),
-                                $("#i_mutasi11_rek").val(),
-                                $("#i_mutasi11_client_dt").val(),
-                                true
-                            );
-                        }
+                        // if (mutasi11_kena_jasgir == 1 && gs_balace >= 100000000){
+                        //     open_dlg_mutasi11_2(
+                        //         $("#i_mutasi11_client_code").val(),
+                        //         $("#i_mutasi11_client_name").val(),
+                        //         $("#i_mutasi11_rek").val(),
+                        //         $("#i_mutasi11_client_dt").val(),
+                        //         true
+                        //     );
+                        // }
 
                     }
                 }
