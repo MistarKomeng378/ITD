@@ -13,11 +13,15 @@ class M_mutasi extends CI_Model {
         $this->db_nfs = $this->load->database('dbnfs',true);
         $this->db_batavia = $this->load->database('dbbatavia',true);
         $this->db_bni = $this->load->database('dbbni',true);
-        $this->db_ereport = $this->load->database('dbereport',true);
+        //$this->db_ereport = $this->load->database('dbereport',true);
         $this->db_niaga = $this->load->database('dbniaga',true);
         $this->db_syailendra = $this->load->database('dbsyailendra',true);
         $this->db_trimegah = $this->load->database('dbtrimegah',true);
-        $this->db_tugu = $this->load->database('dbtugu',true);
+        //$this->db_tugu = $this->load->database('dbtugu',true);
+        $this->db_custody = $this->load->database('dbcustody',true);
+        $this->db_discre = $this->load->database('dbdiscre',true);
+        $this->db_discre = $this->load->database('dbmega',true);
+        $this->db_niaga2 = $this->load->database('dbniaga2',true);
 
     }
     function get_login_info($user,$pass)
@@ -593,7 +597,716 @@ class M_mutasi extends CI_Model {
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
-    }
+    }  
+
+
+    function RedemptionToMutasiBatavia($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_batavia->query("
+            SELECT
+                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."' and
+            subsrd_id = 'BATAVIA_".date('Ymd', strtotime($date))."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['id']."'
+                    );
+                ");
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    } 
+
+
+
+    
+    function RedemptionToMutasiBni($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_bni->query("
+            SELECT
+                'BNI_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'BNI_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."' and
+            subsrd_id = 'BNI_".date('Ymd', strtotime($date))."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['id']."'
+                    );
+                ");
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    } 
+    
+
+     // // Acc_BNK_opr pada tabel fund_id = REK0005
+    function RedemptionToMutasiNiaga($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_niaga->query("
+            SELECT
+                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."' and
+            subsrd_id = 'NIAGA_".date('Ymd', strtotime($date))."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['id']."'
+                    );
+                ");
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    } 
+
+
+    // Rek Bank Acc_no = Rek0005
+    function RedemptionToMutasiSyailendra($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_syailendra->query("
+            SELECT
+                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."' and
+            subsrd_id = 'SYAILENDRA_".date('Ymd', strtotime($date))."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['id']."'
+                    );
+                ");
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    } 
+
+
+    // bank_acc di fund_id  = Rek0005
+    function RedemptionToMutasiTrimegah($data)
+    {
+        $client_code = $data['client_code'];
+        $date = date('Y-m-d', strtotime($data['date']) );
+        $coa_id = $data['coa_id'];
+        $acc_no = $data['acc_no'];
+        $mutasi_trx = array();
+
+        $coa = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                coa
+            WHERE coa_no = '".$coa_id."'
+        ");
+        $coa = $coa->result();
+        
+        $subsrd = $this->db_trimegah->query("
+            SELECT
+                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+
+        $check_mutasi = $this->db_jasgir->query("
+            SELECT 
+                * 
+            FROM 
+                mutasi_trx
+            WHERE client_code = '".$client_code."' and 
+            trx_date = '".$date."' and
+            coa_no = '".$coa[0]->coa_no."' and 
+            acc_no = '".$acc_no."' and
+            subsrd_id = 'TRIMEGAH_".date('Ymd', strtotime($date))."'
+        ");
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['client_code'])."',
+                        '".trim($value['acc_no'])."',
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['deskripsi']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['subsrd_nominal']."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['id']."'
+                    );
+                ");
+                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }
+        }else{
+            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+        }
+        return $mutasi_trx;
+    } 
+
+
+
+
+
+
+
+
+
 
     function JualSahamToMutasi($data)
     {
@@ -2474,6 +3187,444 @@ class M_mutasi extends CI_Model {
         return $return;
     }
 
+
+    function ListRedemptionBatavia($client_code,$acc_no)
+    {
+        $return = array();
+        $query=$this->db_batavia->query("
+        SELECT * FROM (
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+
+        ) AS TABELS 
+        ORDER BY subsrd_date DESC
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+    function ListRedemptionBni($client_code,$acc_no)
+    {
+        $return = array();
+        $query=$this->db_bni->query("
+        SELECT * FROM (
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+
+        ) AS TABELS 
+        ORDER BY subsrd_date DESC
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+    function ListRedemptionNiaga($client_code,$acc_no)
+    {
+        $return = array();
+        $query=$this->db_niaga->query("
+        SELECT * FROM (
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+
+        ) AS TABELS 
+        ORDER BY subsrd_date DESC
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+    function ListRedemptionSyailendra($client_code,$acc_no)
+    {
+        $return = array();
+        $query=$this->db_syailendra->query("
+        SELECT * FROM (
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+
+        ) AS TABELS 
+        ORDER BY subsrd_date DESC
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+    function ListRedemptionTrimegah($client_code,$acc_no)
+    {
+        $return = array();
+        $query=$this->db_trimegah->query("
+        SELECT * FROM (
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+
+        ) AS TABELS 
+        ORDER BY subsrd_date DESC
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+
+
+
+
+
+
+
     function ListJualSaham($client_code,$acc_no)
     {
         $return = array();
@@ -2870,6 +4021,424 @@ class M_mutasi extends CI_Model {
             $res_redemption = $this->CoaDescription('D001');
         }
 
+
+        $redemptionBatavia = $this->db_batavia->query("
+            SELECT * FROM (
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption NIAGA' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE 
+                    dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                    dbo.TXN.BANK_LETTER_CITY = ''
+                GROUP BY
+                    dbo.FUND_ID.ACC_BANK_OPR,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.BANK_LETTER_CITY
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+
+                UNION
+                
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption Non Niaga' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE
+                    dbo.TXN_POSTING.TXN_TYPE = 'R'
+                GROUP BY
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.PAYMENT_DATE,
+                    dbo.FUND_ID_BANK.BANK_NAME,
+                    dbo.FUND_ID_BANK.DESCRIPTION,
+                    dbo.FUND_ID_BANK.ACC_NO,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID_BANK.ACC_NO = '".$param['acc_no']."'
+
+            ) AS TABELS
+        ");
+        $res_redemptionBatavia = array();
+        if (count( $redemptionBatavia->result_array() ) == 1) {
+            $res_redemptionBatavia = $this->CoaDescription('D001');
+        }
+
+
+        $redemptionBni = $this->db_bni->query("
+            SELECT * FROM (
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption NIAGA' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE 
+                    dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                    dbo.TXN.BANK_LETTER_CITY = ''
+                GROUP BY
+                    dbo.FUND_ID.ACC_BANK_OPR,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.BANK_LETTER_CITY
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+
+                UNION
+                
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption Non Niaga' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE
+                    dbo.TXN_POSTING.TXN_TYPE = 'R'
+                GROUP BY
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.PAYMENT_DATE,
+                    dbo.FUND_ID_BANK.BANK_NAME,
+                    dbo.FUND_ID_BANK.DESCRIPTION,
+                    dbo.FUND_ID_BANK.ACC_NO,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID_BANK.ACC_NO = '".$param['acc_no']."'
+
+            ) AS TABELS
+        ");
+        $res_redemptionBni = array();
+        if (count( $redemptionBni->result_array() ) == 1) {
+            $res_redemptionBni = $this->CoaDescription('D001');
+        }
+
+
+        $redemptionNiaga = $this->db_niaga->query("
+            SELECT * FROM (
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption NIAGA' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE 
+                    dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                    dbo.TXN.BANK_LETTER_CITY = ''
+                GROUP BY
+                    dbo.FUND_ID.ACC_BANK_OPR,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.BANK_LETTER_CITY
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+
+                UNION
+                
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption Non Niaga' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE
+                    dbo.TXN_POSTING.TXN_TYPE = 'R'
+                GROUP BY
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.PAYMENT_DATE,
+                    dbo.FUND_ID_BANK.BANK_NAME,
+                    dbo.FUND_ID_BANK.DESCRIPTION,
+                    dbo.FUND_ID_BANK.ACC_NO,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID_BANK.ACC_NO = '".$param['acc_no']."'
+
+            ) AS TABELS
+        ");
+        $res_redemptionNiaga = array();
+        if (count( $redemptionNiaga->result_array() ) == 1) {
+            $res_redemptionNiaga = $this->CoaDescription('D001');
+        }
+
+        
+        $redemptionSyailendra = $this->db_syailendra->query("
+            SELECT * FROM (
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption NIAGA' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE 
+                    dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                    dbo.TXN.BANK_LETTER_CITY = ''
+                GROUP BY
+                    dbo.FUND_ID.ACC_BANK_OPR,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.BANK_LETTER_CITY
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+
+                UNION
+                
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption Non Niaga' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE
+                    dbo.TXN_POSTING.TXN_TYPE = 'R'
+                GROUP BY
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.PAYMENT_DATE,
+                    dbo.FUND_ID_BANK.BANK_NAME,
+                    dbo.FUND_ID_BANK.DESCRIPTION,
+                    dbo.FUND_ID_BANK.ACC_NO,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID_BANK.ACC_NO = '".$param['acc_no']."'
+
+            ) AS TABELS
+        ");
+        $res_redemptionSyailendra = array();
+        if (count( $redemptionSyailendra->result_array() ) == 1) {
+            $res_redemptionSyailendra = $this->CoaDescription('D001');
+        }
+
+
+        $redemptionTrimegah = $this->db_trimegah->query("
+            SELECT * FROM (
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption NIAGA' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE 
+                    dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                    dbo.TXN.BANK_LETTER_CITY = ''
+                GROUP BY
+                    dbo.FUND_ID.ACC_BANK_OPR,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.BANK_LETTER_CITY
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+
+                UNION
+                
+                SELECT TOP (1)
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                    dbo.FUND_ID.CODE_BPM AS client_code,
+                    dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    'D001' AS subsrd_kategori,
+                    'Redemption Non Niaga' AS deskripsi 
+                FROM
+                    dbo.TXN
+                    INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                    AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                    INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                    INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+                WHERE
+                    dbo.TXN_POSTING.TXN_TYPE = 'R'
+                GROUP BY
+                    dbo.TXN_POSTING.TXN_TYPE,
+                    dbo.TXN.PAYMENT_DATE,
+                    dbo.FUND_ID_BANK.BANK_NAME,
+                    dbo.FUND_ID_BANK.DESCRIPTION,
+                    dbo.FUND_ID_BANK.ACC_NO,
+                    dbo.TXN.BANK_LETTER_CITY,
+                    dbo.FUND_ID.CODE_BPM,
+                    CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                HAVING 
+                    dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+                    dbo.FUND_ID_BANK.ACC_NO = '".$param['acc_no']."'
+
+            ) AS TABELS
+        ");
+        $res_redemptionTrimegah = array();
+        if (count( $redemptionTrimegah->result_array() ) == 1) {
+            $res_redemptionTrimegah = $this->CoaDescription('D001');
+        }
+
+
+        
+        // $redemptionTugu = $this->db_tugu->query("
+        //     SELECT * FROM (
+        //         SELECT TOP (1)
+        //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+        //             dbo.FUND_ID.CODE_BPM AS client_code,
+        //             dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+        //             dbo.TXN_POSTING.TXN_TYPE,
+        //             SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+        //             dbo.TXN.BANK_LETTER_CITY,
+        //             'D001' AS subsrd_kategori,
+        //             'Redemption NIAGA' AS deskripsi 
+        //         FROM
+        //             dbo.TXN
+        //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+        //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+        //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+        //         WHERE 
+        //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+        //             dbo.TXN.BANK_LETTER_CITY = ''
+        //         GROUP BY
+        //             dbo.FUND_ID.ACC_BANK_OPR,
+        //             dbo.FUND_ID.CODE_BPM,
+        //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+        //             dbo.TXN_POSTING.TXN_TYPE,
+        //             dbo.TXN.BANK_LETTER_CITY
+        //         HAVING 
+        //             dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+        //             dbo.FUND_ID.ACC_BANK_OPR = '".$param['acc_no']."'
+
+        //         UNION
+                
+        //         SELECT TOP (1)
+        //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+        //             dbo.FUND_ID.CODE_BPM AS client_code,
+        //             dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+        //             dbo.TXN_POSTING.TXN_TYPE,
+        //             SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+        //             dbo.TXN.BANK_LETTER_CITY,
+        //             'D001' AS subsrd_kategori,
+        //             'Redemption Non Niaga' AS deskripsi 
+        //         FROM
+        //             dbo.TXN
+        //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+        //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+        //             INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+        //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+        //         WHERE
+        //             dbo.TXN_POSTING.TXN_TYPE = 'R'
+        //         GROUP BY
+        //             dbo.TXN_POSTING.TXN_TYPE,
+        //             dbo.TXN.PAYMENT_DATE,
+        //             dbo.FUND_ID_BANK.BANK_NAME,
+        //             dbo.FUND_ID_BANK.DESCRIPTION,
+        //             dbo.FUND_ID_BANK.ACC_NO,
+        //             dbo.TXN.BANK_LETTER_CITY,
+        //             dbo.FUND_ID.CODE_BPM,
+        //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+        //         HAVING 
+        //             dbo.FUND_ID.CODE_BPM = '".$param['client_code']."' AND
+        //             dbo.FUND_ID_BANK.ACC_NO = '".$param['acc_no']."'
+
+        //     ) AS TABELS
+        // ");
+        // $res_redemptionTugu = array();
+        // if (count( $redemptionTugu->result_array() ) == 1) {
+        //     $res_redemptionTugu = $this->CoaDescription('D001');
+        // }
+
+
+
+
         $jual_saham = $this->db_nfs->query("
             SELECT TOP ( 1 ) A.HIPORT_CODE AS client_code, B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
@@ -2988,9 +4557,16 @@ class M_mutasi extends CI_Model {
             $res_beli_obligasi,
             $res_tax_broker,
             $res_tax_obligasi,
+            $res_redemptionBatavia,
+            $res_redemptionBni,
+            $res_redemptionNiaga,
+            $res_redemptionSyailendra,
+            $res_redemptionTrimegah
+            //$res_redemptionTugu,
         );
     }
     
+
     function ListSubscribeDetail($client_code,$acc_no,$date)
     {
         $query=$this->db_jasgir->query("
@@ -3191,6 +4767,447 @@ class M_mutasi extends CI_Model {
         
         return $return;
     }
+
+
+    function ListRedemptionBataviaDetail($client_code,$acc_no,$date)
+    {
+        $return = array();
+        $query=$this->db_batavia->query("
+            SELECT
+                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+    // // pada detail tdk tampil
+    function ListRedemptionBniDetail($client_code,$acc_no,$date)
+    {
+        $return = array();
+        $query=$this->db_bni->query("
+            SELECT
+                'BNI_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'BNI_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+
+
+
+    function ListRedemptionNiagaDetail($client_code,$acc_no,$date)
+    {
+        $return = array();
+        $query=$this->db_niaga->query("
+            SELECT
+                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+	
+
+    function ListRedemptionSyailendraDetail($client_code,$acc_no,$date)
+    {
+        $return = array();
+        $query=$this->db_syailendra->query("
+            SELECT
+                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+	
+
+    function ListRedemptionTrimegahDetail($client_code,$acc_no,$date)
+    {
+        $return = array();
+        $query=$this->db_trimegah->query("
+            SELECT
+                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption NIAGA' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE 
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                dbo.TXN.BANK_LETTER_CITY = ''
+            GROUP BY
+                dbo.FUND_ID.ACC_BANK_OPR,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.BANK_LETTER_CITY
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+            UNION
+            
+            SELECT
+                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+                dbo.FUND_ID.CODE_BPM AS client_code,
+                dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+                dbo.TXN_POSTING.TXN_TYPE,
+                SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+                dbo.TXN.BANK_LETTER_CITY,
+                'D001' AS subsrd_kategori,
+                'Redemption Non Niaga' AS deskripsi 
+            FROM
+                dbo.TXN
+                INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+                AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+            WHERE
+                dbo.TXN_POSTING.TXN_TYPE = 'R'
+            GROUP BY
+                dbo.TXN_POSTING.TXN_TYPE,
+                dbo.TXN.PAYMENT_DATE,
+                dbo.FUND_ID_BANK.BANK_NAME,
+                dbo.FUND_ID_BANK.DESCRIPTION,
+                dbo.FUND_ID_BANK.ACC_NO,
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.FUND_ID.CODE_BPM,
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+            HAVING 
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+                dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+        ");
+        
+        $data = $query->result_array();
+        $merge = array();
+        foreach ($data as $key => $value) {
+            $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+            array_push($merge, 
+                array_merge(
+                    $value, 
+                    $coa_desc,
+                    $this->MutasiClient($client_code, $value['acc_no'])
+                ) 
+            );
+        }
+        $return = $merge;
+        
+        return $return;
+    }
+	
+
+
+
+
+
+
+
+
 
     function ListJualSahamDetail($client_code,$acc_no,$date)
     {
@@ -3516,12 +5533,20 @@ class M_mutasi extends CI_Model {
         ");
         return $query;
     }
-    // function RedemptionToMutasiBatavia($data)
+    
+    
+    
+    
+     
+
+
+    // function RedemptionToMutasiTugu($data)
     // {
     //     $client_code = $data['client_code'];
     //     $date = date('Y-m-d', strtotime($data['date']) );
     //     $coa_id = $data['coa_id'];
     //     $acc_no = $data['acc_no'];
+    //     $mutasi_trx = array();
 
     //     $coa = $this->db_jasgir->query("
     //         SELECT 
@@ -3532,33 +5557,71 @@ class M_mutasi extends CI_Model {
     //     ");
     //     $coa = $coa->result();
         
-    //     $subsrd = $this->db_batavia->query("
+    //     $subsrd = $this->db_tugu->query("
     //         SELECT
-    //             BATAVIA.dbo.FUND_ID.CREATION_DATE AS CREATION_DATE,
-    //             BATAVIA.dbo.FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
-    //             BATAVIA.dbo.FUND_ID.MODIFIER AS MODIFIER,
-    //             BATAVIA.dbo.FUND_ID.CODE_BPM AS client_code,
-    //             BATAVIA.dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
-    //             BATAVIA.dbo.TXN_POSTING.GOOD_FUND_DATE AS subsrd_date,
-    //             BATAVIA.dbo.TXN_POSTING.NET_PROCEED AS subsrd_nominal,
+    //             'TUGU_".date('Ymd', strtotime($date))."' as id,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+    //             dbo.FUND_ID.CODE_BPM AS client_code,
+    //             dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+    //             dbo.TXN.BANK_LETTER_CITY,
     //             'D001' AS subsrd_kategori,
-    //             'Redemption' AS deskripsi 
+    //             'Redemption NIAGA' AS deskripsi 
     //         FROM
-    //             BATAVIA.dbo.TXN_POSTING
-    //             INNER JOIN BATAVIA.dbo.FUND_ID ON BATAVIA.dbo.TXN_POSTING.FUND_LEVEL_CODE = BATAVIA.dbo.FUND_ID.FUND_LEVEL_CODE 
-    //             AND BATAVIA.dbo.TXN_POSTING.FUND_UMBRELLA_CODE = BATAVIA.dbo.FUND_ID.FUND_UMBRELLA_CODE 
-    //             AND BATAVIA.dbo.TXN_POSTING.FUND_GROUP = BATAVIA.dbo.FUND_ID.FUND_GROUP 
-    //             AND BATAVIA.dbo.TXN_POSTING.FUND_ID = BATAVIA.dbo.FUND_ID.FUND_ID 
+    //             dbo.TXN
+    //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+    //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+    //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+    //         WHERE 
+    //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+    //             dbo.TXN.BANK_LETTER_CITY = ''
+    //         GROUP BY
+    //             dbo.FUND_ID.ACC_BANK_OPR,
+    //             dbo.FUND_ID.CODE_BPM,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             dbo.TXN.BANK_LETTER_CITY
+    //         HAVING 
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+    //             dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+    //             dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+    //         UNION
+            
+    //         SELECT
+    //             'TUGU_".date('Ymd', strtotime($date))."' as id,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+    //             dbo.FUND_ID.CODE_BPM AS client_code,
+    //             dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             'D001' AS subsrd_kategori,
+    //             'Redemption Non Niaga' AS deskripsi 
+    //         FROM
+    //             dbo.TXN
+    //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+    //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+    //             INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+    //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
     //         WHERE
-    //             BATAVIA.dbo.TXN_POSTING.TXN_TYPE = 'R' and
-    //             BATAVIA.dbo.TXN_POSTING.GOOD_FUND_DATE  = '".$date."' and 
-    //             BATAVIA.dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
-    //             BATAVIA.dbo.FUND_ID.CODE_BPM = '".$client_code."'
-    //         ORDER BY
-    //             subsrd_date DESC
+    //             dbo.TXN_POSTING.TXN_TYPE = 'R'
+    //         GROUP BY
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             dbo.TXN.PAYMENT_DATE,
+    //             dbo.FUND_ID_BANK.BANK_NAME,
+    //             dbo.FUND_ID_BANK.DESCRIPTION,
+    //             dbo.FUND_ID_BANK.ACC_NO,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             dbo.FUND_ID.CODE_BPM,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+    //         HAVING 
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+    //             dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+    //             dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
     //     ");
 
-    //  
     //     $check_mutasi = $this->db_jasgir->query("
     //         SELECT 
     //             * 
@@ -3567,8 +5630,10 @@ class M_mutasi extends CI_Model {
     //         WHERE client_code = '".$client_code."' and 
     //         trx_date = '".$date."' and
     //         coa_no = '".$coa[0]->coa_no."' and 
-    //         acc_no = '".$acc_no."'
+    //         acc_no = '".$acc_no."' and
+    //         subsrd_id = 'TUGU_".date('Ymd', strtotime($date))."'
     //     ");
+        
     //     if( count( $check_mutasi->result_array() ) == 0 ){
     //         foreach ($subsrd->result_array() as $key => $value) {
                 
@@ -3586,28 +5651,216 @@ class M_mutasi extends CI_Model {
     //                     [created_dt],
     //                     [modified_by],
     //                     [modified_dt],
-    //                     [trx_status]
+    //                     [trx_status],
+    //                     [subsrd_id]
     //                 )VALUES(
     //                     '".trim($value['client_code'])."',
-    //                     '".$value['acc_no']."',
+    //                     '".trim($value['acc_no'])."',
     //                     '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
     //                     '".$coa[0]->coa_no."',
     //                     '".$coa[0]->coa_desc."',
     //                     '".$value['deskripsi']."',
     //                     '".$coa[0]->coa_dc."',
     //                     '".$value['subsrd_nominal']."',
-    //                     '".$value['MODIFIER']."',
-    //                     '".$value['CREATION_DATE']->format('Y-m-d H:i:s')."',
-    //                     '".$value['MODIFIER']."',
-    //                     '".$value['MODIFICATION_DATE']->format('Y-m-d H:i:s')."',
-    //                     1
+    //                     '".$this->session->userdata('itd_uid')."',
+    //                     '".date('Y-m-d H:i:s')."',
+    //                     '".$this->session->userdata('itd_uid')."',
+    //                     '".date('Y-m-d H:i:s')."',
+    //                     1,
+    //                     '".$value['id']."'
     //                 );
     //             ");
-
+    //             $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
     //         }
+    //     }else{
+    //         $mutasi_trx = array('msg' => 'Data Sudah Ada');
     //     }
     //     return $mutasi_trx;
+    // } 
+
+    
+    // function ListRedemptionTugu($client_code,$acc_no)
+    // {
+    //     $return = array();
+    //     $query=$this->db_tugu->query("
+    //     SELECT * FROM (
+    //         SELECT
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+    //             dbo.FUND_ID.CODE_BPM AS client_code,
+    //             dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             'D001' AS subsrd_kategori,
+    //             'Redemption NIAGA' AS deskripsi 
+    //         FROM
+    //             dbo.TXN
+    //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+    //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+    //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+    //         WHERE 
+    //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+    //             dbo.TXN.BANK_LETTER_CITY = ''
+    //         GROUP BY
+    //             dbo.FUND_ID.ACC_BANK_OPR,
+    //             dbo.FUND_ID.CODE_BPM,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             dbo.TXN.BANK_LETTER_CITY
+    //         HAVING 
+    //             dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+    //             dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+    //         UNION
+            
+    //         SELECT
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+    //             dbo.FUND_ID.CODE_BPM AS client_code,
+    //             dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             'D001' AS subsrd_kategori,
+    //             'Redemption Non Niaga' AS deskripsi 
+    //         FROM
+    //             dbo.TXN
+    //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+    //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+    //             INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+    //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+    //         WHERE
+    //             dbo.TXN_POSTING.TXN_TYPE = 'R'
+    //         GROUP BY
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             dbo.TXN.PAYMENT_DATE,
+    //             dbo.FUND_ID_BANK.BANK_NAME,
+    //             dbo.FUND_ID_BANK.DESCRIPTION,
+    //             dbo.FUND_ID_BANK.ACC_NO,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             dbo.FUND_ID.CODE_BPM,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+    //         HAVING 
+    //             dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+    //             dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+
+    //     ) AS TABELS 
+    //     ORDER BY subsrd_date DESC
+    //     ");
+        
+    //     $data = $query->result_array();
+    //     $merge = array();
+    //     foreach ($data as $key => $value) {
+    //         $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+    //         array_push($merge, 
+    //             array_merge(
+    //                 $value, 
+    //                 $coa_desc,
+    //                 $this->MutasiClient($client_code, $value['acc_no'])
+    //             ) 
+    //         );
+    //     }
+    //     $return = $merge;
+        
+    //     return $return;
     // }
+
+
+    // function ListRedemptionTuguDetail($client_code,$acc_no,$date)
+    // {
+    //     $return = array();
+    //     $query=$this->db_tugu->query("
+    //         SELECT
+    //             'TUGU_".date('Ymd', strtotime($date))."' as id,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+    //             dbo.FUND_ID.CODE_BPM AS client_code,
+    //             dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             'D001' AS subsrd_kategori,
+    //             'Redemption NIAGA' AS deskripsi 
+    //         FROM
+    //             dbo.TXN
+    //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+    //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+    //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+    //         WHERE 
+    //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+    //             dbo.TXN.BANK_LETTER_CITY = ''
+    //         GROUP BY
+    //             dbo.FUND_ID.ACC_BANK_OPR,
+    //             dbo.FUND_ID.CODE_BPM,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             dbo.TXN.BANK_LETTER_CITY
+    //         HAVING 
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+    //             dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+    //             dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
+
+    //         UNION
+            
+    //         SELECT
+    //             'TUGU_".date('Ymd', strtotime($date))."' as id,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
+    //             dbo.FUND_ID.CODE_BPM AS client_code,
+    //             dbo.FUND_ID_BANK.ACC_NO AS acc_no,
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             'D001' AS subsrd_kategori,
+    //             'Redemption Non Niaga' AS deskripsi 
+    //         FROM
+    //             dbo.TXN
+    //             INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
+    //             AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+    //             INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+    //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
+    //         WHERE
+    //             dbo.TXN_POSTING.TXN_TYPE = 'R'
+    //         GROUP BY
+    //             dbo.TXN_POSTING.TXN_TYPE,
+    //             dbo.TXN.PAYMENT_DATE,
+    //             dbo.FUND_ID_BANK.BANK_NAME,
+    //             dbo.FUND_ID_BANK.DESCRIPTION,
+    //             dbo.FUND_ID_BANK.ACC_NO,
+    //             dbo.TXN.BANK_LETTER_CITY,
+    //             dbo.FUND_ID.CODE_BPM,
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+    //         HAVING 
+    //             CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
+    //             dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
+    //             dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
+    //     ");
+        
+    //     $data = $query->result_array();
+    //     $merge = array();
+    //     foreach ($data as $key => $value) {
+    //         $coa_desc = $this->CoaDescription($value['subsrd_kategori']);
+    //         array_push($merge, 
+    //             array_merge(
+    //                 $value, 
+    //                 $coa_desc,
+    //                 $this->MutasiClient($client_code, $value['acc_no'])
+    //             ) 
+    //         );
+    //     }
+    //     $return = $merge;
+        
+    //     return $return;
+    // }
+	   
+
+
+
+
+
+
+
+
+//==================================================================================//
+
+
 
     // function RedemptionToMutasiBni($data)
     // {
