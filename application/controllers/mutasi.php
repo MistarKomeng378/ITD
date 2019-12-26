@@ -666,6 +666,19 @@ class Mutasi extends CI_Controller {
                 $data9 = $this->M_mutasi->RedemptionToMutasiSyailendra($param);
                 $data10 = $this->M_mutasi->RedemptionToMutasiTrimegah($param);
 
+                $data = array_merge(
+                    $data1,
+                    $data2,
+                    $data3,
+                    $data4,
+                    $data5,
+                    $data6,
+                    $data7,
+                    $data8,
+                    $data9,
+                    $data10
+                );
+
                 
                 break;
             

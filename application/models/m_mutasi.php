@@ -1732,7 +1732,7 @@ class M_mutasi extends CI_Model {
         ");
         $coa = $coa->result();
         
-        $subsrd = $this->db_trimrgah->query("
+        $subsrd = $this->db_trimegah->query("
             SELECT
                 'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
