@@ -1898,7 +1898,7 @@ class M_mutasi extends CI_Model {
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
             'C006' AS subsrd_kategori,
-            'Hasil Jual Saham' AS deskripsi
+            'Hasil Jual Saham - '+RTRIM(SECURITY_CODE) AS deskripsi
         FROM
             NFS_INQ_EQUITY_TEMP A
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
@@ -1998,7 +1998,7 @@ class M_mutasi extends CI_Model {
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
             'D004' AS subsrd_kategori,
-            'Beli Saham' AS deskripsi
+            'Beli Saham - '+RTRIM(SECURITY_CODE) AS deskripsi
         FROM
             NFS_INQ_EQUITY_TEMP A
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
@@ -2096,7 +2096,7 @@ class M_mutasi extends CI_Model {
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
             'C007' AS subsrd_kategori,
-            'Hasil Jual Obligasi' AS deskripsi 
+            'Hasil Jual Obligasi - '+RTRIM(SECURITY_CODE) AS deskripsi 
         FROM
             NFS_FI_INS_INQ_TEMP A
             INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
@@ -2194,7 +2194,7 @@ class M_mutasi extends CI_Model {
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
             'D005' AS subsrd_kategori,
-            'Beli Obligasi' AS deskripsi 
+            'Beli Obligasi - '+RTRIM(SECURITY_CODE) AS deskripsi 
         FROM
             NFS_FI_INS_INQ_TEMP A
             INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
@@ -2291,7 +2291,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'D016' AS subsrd_kategori,
-                'Wht Commision' AS deskripsi,
+                'Wht Commision - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
                 NFS_INQ_EQUITY_TEMP A
@@ -2393,7 +2393,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'D017' AS subsrd_kategori,
-                'Capital Gain Tax' AS deskripsi,
+                'Capital Gain Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,  
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
                 NFS_FI_INS_INQ_TEMP A
@@ -2422,7 +2422,7 @@ class M_mutasi extends CI_Model {
                     A.CREATION_DATE,
                     A.MODIFICATION_DATE,
                     'D017' AS subsrd_kategori,
-                    'Interst Income Tax' AS deskripsi,
+                    'Interst Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                     B.FUND_OPR_ACCT_NO AS acc_no 
                 FROM
                     NFS_FI_INS_INQ_TEMP A
@@ -3346,7 +3346,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'D017' AS subsrd_kategori,
-                'Capital Gain Tax' AS deskripsi,
+                'Capital Gain Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
                 NFS_FI_INS_INQ_TEMP A
@@ -3374,7 +3374,7 @@ class M_mutasi extends CI_Model {
                     A.CREATION_DATE,
                     A.MODIFICATION_DATE,
                     'D017' AS subsrd_kategori,
-                    'Interst Income Tax' AS deskripsi,
+                    'Interst Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                     B.FUND_OPR_ACCT_NO AS acc_no 
                 FROM
                     NFS_FI_INS_INQ_TEMP A
@@ -6558,7 +6558,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFF AS id,
                 'nfs_jual' AS src_dt,
                 'C006' AS subsrd_kategori,
-                'Hasil Jual Saham' AS deskripsi,
+                'Hasil Jual Saham - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
@@ -6601,7 +6601,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFERENCE AS id,
                 'nfs_jual' AS src_dt,
                 'C007' AS subsrd_kategori,
-                'Hasil Jual Obligasi' AS deskripsi,
+                'Hasil Jual Obligasi - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), A.NET_PROCEEDS ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
@@ -6647,7 +6647,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFF AS id,
                 'nfs_jual' AS src_dt,
                 'D004' AS subsrd_kategori,
-                'Beli Saham' AS deskripsi,
+                'Beli Saham - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
@@ -6693,7 +6693,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFERENCE AS id,
                 'nfs_jual' AS src_dt,
                 'D005' AS subsrd_kategori,
-                'Beli Obligasi' AS deskripsi,
+                'Beli Obligasi - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), A.NET_PROCEEDS ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
@@ -6739,7 +6739,7 @@ class M_mutasi extends CI_Model {
                 A.SI_REFF AS id,
                 'nfs_Wht_Commision' AS src_dt,
                 'D016' AS subsrd_kategori,
-                'Wht Commision' AS deskripsi,
+                'Wht Commision - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), WHT_COMMISION ) AS subsrd_nominal,
                 A.HIPORT_CODE AS client_code,
@@ -6788,7 +6788,7 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.CAPITAL_GAIN_TAX, 0) ) AS subsrd_nominal,
                 'D017' AS subsrd_kategori,
-                'Capital Gain Tax' AS deskripsi,
+                'Capital Gain Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
                 NFS_FI_INS_INQ_TEMP A
@@ -6814,7 +6814,7 @@ class M_mutasi extends CI_Model {
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.INTEREST_INCOME_TAX, 0) ) AS subsrd_nominal,
                     'D017' AS subsrd_kategori,
-                    'Interst Income Tax' AS deskripsi,
+                    'Interst Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                     B.FUND_OPR_ACCT_NO AS acc_no 
                 FROM
                     NFS_FI_INS_INQ_TEMP A
