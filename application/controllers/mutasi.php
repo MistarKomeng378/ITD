@@ -655,14 +655,18 @@ class Mutasi extends CI_Controller {
                 break;
 
             case 'D001':
-                $data = $this->M_mutasi->RedemptionToMutasi($param);
-                $data = $this->M_mutasi->RedemptionToMutasiBatavia($param);
-                $data = $this->M_mutasi->RedemptionToMutasiBni($param);
-                $data = $this->M_mutasi->RedemptionToMutasiNiaga($param);
-                $data = $this->M_mutasi->RedemptionToMutasiSyailendra($param);
-                $data = $this->M_mutasi->RedemptionToMutasiTrimegah($param);
-                //$data = $this->M_mutasi->RedemptionToMutasiTugu($param);
-                // //$data = $this->M_mutasi->RedemptionToMutasiEreport($param);
+                $data1 = $this->M_mutasi->RedemptionToMutasi($param);
+                $data2 = $this->M_mutasi->RedemptionToMutasiBatavia($param);
+                $data3 = $this->M_mutasi->RedemptionToMutasiBni($param);
+                $data4 = $this->M_mutasi->RedemptionToMutasiCustody($param);
+                $data5 = $this->M_mutasi->RedemptionToMutasiDiscre($param);
+                $data6 = $this->M_mutasi->RedemptionToMutasiMega($param);
+                $data7 = $this->M_mutasi->RedemptionToMutasiNiaga($param);
+                $data8 = $this->M_mutasi->RedemptionToMutasiNiaga2($param);
+                $data9 = $this->M_mutasi->RedemptionToMutasiSyailendra($param);
+                $data10 = $this->M_mutasi->RedemptionToMutasiTrimegah($param);
+
+                
                 break;
             
             case 'C006':
@@ -746,13 +750,29 @@ class Mutasi extends CI_Controller {
                 break;
 
             case 'D001':
-                $data = $this->M_mutasi->ListRedemption($param['client_code'],$param['acc_no']);
-                $data = $this->M_mutasi->ListRedemptionBatavia($param['client_code'],$param['acc_no']);
-                $data = $this->M_mutasi->ListRedemptionBni($param['client_code'],$param['acc_no']);
-                $data = $this->M_mutasi->ListRedemptionNiaga($param['client_code'],$param['acc_no']);
-                $data = $this->M_mutasi->ListRedemptionSyailendra($param['client_code'],$param['acc_no']);
-                $data = $this->M_mutasi->ListRedemptionTrimegah($param['client_code'],$param['acc_no']);
-                //$data = $this->M_mutasi->ListRedemptionTugu($param['client_code'],$param['acc_no']);
+                $data1 = $this->M_mutasi->ListRedemption($param['client_code'],$param['acc_no']);
+                $data2 = $this->M_mutasi->ListRedemptionBatavia($param['client_code'],$param['acc_no']);
+                $data3 = $this->M_mutasi->ListRedemptionBni($param['client_code'],$param['acc_no']);
+                $data4 = $this->M_mutasi->ListRedemptionCustody($param['client_code'],$param['acc_no']);
+                $data5 = $this->M_mutasi->ListRedemptionDiscre($param['client_code'],$param['acc_no']);
+                $data6 = $this->M_mutasi->ListRedemptionMega($param['client_code'],$param['acc_no']);
+                $data7 = $this->M_mutasi->ListRedemptionNiaga($param['client_code'],$param['acc_no']);
+                $data8 = $this->M_mutasi->ListRedemptionNiaga2($param['client_code'],$param['acc_no']);
+                $data9 = $this->M_mutasi->ListRedemptionSyailendra($param['client_code'],$param['acc_no']);
+                $data10 = $this->M_mutasi->ListRedemptionTrimegah($param['client_code'],$param['acc_no']);
+                
+                $data = array_merge(
+                    $data1,
+                    $data2,
+                    $data3,
+                    $data4,
+                    $data5,
+                    $data6,
+                    $data7,
+                    $data8,
+                    $data9,
+                    $data10
+                );
                 break;
 
             case 'C006':
@@ -806,8 +826,30 @@ class Mutasi extends CI_Controller {
                 break;
 
             case 'D001':
-                $data = $this->M_mutasi->ListRedemptionDetail($param['client_code'],$param['acc_no'], $param['date']);
-                $data = $this->M_mutasi->ListRedemptionBataviaDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data1 = $this->M_mutasi->ListRedemptionDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data2 = $this->M_mutasi->ListRedemptionBataviaDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data3 = $this->M_mutasi->ListRedemptionBniDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data4 = $this->M_mutasi->ListRedemptionCustodyDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data5 = $this->M_mutasi->ListRedemptionDiscreDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data6 = $this->M_mutasi->ListRedemptionMegaDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data7 = $this->M_mutasi->ListRedemptionNiagaDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data8 = $this->M_mutasi->ListRedemptionNiaga2Detail($param['client_code'],$param['acc_no'], $param['date']);
+                $data9 = $this->M_mutasi->ListRedemptionSyailendraDetail($param['client_code'],$param['acc_no'], $param['date']);
+                $data10 = $this->M_mutasi->ListRedemptionTrimegahDetail($param['client_code'],$param['acc_no'], $param['date']);
+
+
+                $data = array_merge(
+                    $data1,
+                    $data2,
+                    $data3,
+                    $data4,
+                    $data5,
+                    $data6,
+                    $data7,
+                    $data8,
+                    $data9,
+                    $data10
+                );
                 break;
             case 'C006':
                 $data = $this->M_mutasi->ListJualSahamDetail($param['client_code'],$param['acc_no'], $param['date']);
