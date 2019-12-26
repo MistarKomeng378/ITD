@@ -496,7 +496,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -636,7 +636,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -775,7 +775,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1732,7 +1732,7 @@ class M_mutasi extends CI_Model {
         ");
         $coa = $coa->result();
         
-        $subsrd = $this->db_trimegah->query("
+        $subsrd = $this->db_trimgah->query("
             SELECT
                 'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
@@ -1750,7 +1750,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -3684,7 +3684,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -3771,7 +3771,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -3857,7 +3857,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -3943,7 +3943,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4029,7 +4029,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4115,7 +4115,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4201,7 +4201,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4287,7 +4287,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4373,7 +4373,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4459,7 +4459,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4887,7 +4887,7 @@ class M_mutasi extends CI_Model {
         //                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //             WHERE 
         //                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //                 dbo.TXN.BANK_LETTER_CITY = ''
+        //                 (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //             GROUP BY
         //                 dbo.FUND_ID.ACC_BANK_OPR,
         //                 dbo.FUND_ID.CODE_BPM,
@@ -4956,7 +4956,7 @@ class M_mutasi extends CI_Model {
         //                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //             WHERE 
         //                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //                 dbo.TXN.BANK_LETTER_CITY = ''
+        //                 (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //             GROUP BY
         //                 dbo.FUND_ID.ACC_BANK_OPR,
         //                 dbo.FUND_ID.CODE_BPM,
@@ -5025,7 +5025,7 @@ class M_mutasi extends CI_Model {
         //                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //             WHERE 
         //                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //                 dbo.TXN.BANK_LETTER_CITY = ''
+        //                 (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //             GROUP BY
         //                 dbo.FUND_ID.ACC_BANK_OPR,
         //                 dbo.FUND_ID.CODE_BPM,
@@ -5094,7 +5094,7 @@ class M_mutasi extends CI_Model {
         //                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //             WHERE 
         //                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //                 dbo.TXN.BANK_LETTER_CITY = ''
+        //                 (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //             GROUP BY
         //                 dbo.FUND_ID.ACC_BANK_OPR,
         //                 dbo.FUND_ID.CODE_BPM,
@@ -5163,7 +5163,7 @@ class M_mutasi extends CI_Model {
         //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //         WHERE 
         //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //             dbo.TXN.BANK_LETTER_CITY = ''
+        //             (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //         GROUP BY
         //             dbo.FUND_ID.ACC_BANK_OPR,
         //             dbo.FUND_ID.CODE_BPM,
@@ -5232,7 +5232,7 @@ class M_mutasi extends CI_Model {
         //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //         WHERE 
         //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //             dbo.TXN.BANK_LETTER_CITY = ''
+        //             (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //         GROUP BY
         //             dbo.FUND_ID.ACC_BANK_OPR,
         //             dbo.FUND_ID.CODE_BPM,
@@ -5301,7 +5301,7 @@ class M_mutasi extends CI_Model {
         //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //         WHERE 
         //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //             dbo.TXN.BANK_LETTER_CITY = ''
+        //             (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //         GROUP BY
         //             dbo.FUND_ID.ACC_BANK_OPR,
         //             dbo.FUND_ID.CODE_BPM,
@@ -5371,7 +5371,7 @@ class M_mutasi extends CI_Model {
         //             INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
         //         WHERE 
         //             dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-        //             dbo.TXN.BANK_LETTER_CITY = ''
+        //             (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
         //         GROUP BY
         //             dbo.FUND_ID.ACC_BANK_OPR,
         //             dbo.FUND_ID.CODE_BPM,
@@ -5696,7 +5696,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5783,7 +5783,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5870,7 +5870,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5956,7 +5956,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6042,7 +6042,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6128,7 +6128,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6215,7 +6215,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6301,7 +6301,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6387,7 +6387,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6473,7 +6473,7 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
