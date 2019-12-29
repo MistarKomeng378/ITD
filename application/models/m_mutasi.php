@@ -99,7 +99,18 @@ class M_mutasi extends CI_Model {
         return $data;
     }
     function del_trx($trx_id=0,$user_id='')
-    { //echo "exec [del_trx] {$trx_id},'{$user_id}'";
+    { 
+        // start
+        // jika data yang di hapus adalah jasa giro maka hapus data di tabel mutasi_giro
+        $query = $this->db_jasgir->query("SELECT * FROM mutasi_trx where trx_id = '".$trx_id."' ");
+        $data = $query->result_array();
+        if($data[0]['coa_no'] == 'C001'){
+            $giro_id = $data[0]['subsrd_id'];
+            $query = $this->db_jasgir->query("DELETE FROM mutasi_giro where giro_id = '".$giro_id."' ");
+        }
+        //end 
+        
+        //hapus data pada mutasi_trx
         $query=$this->db_jasgir->query("exec [del_trx] {$trx_id},'{$user_id}'");
         $data=$query->result_array();
         return $data;
@@ -5688,7 +5699,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -5702,7 +5714,8 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -5719,7 +5732,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -5736,7 +5750,8 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND

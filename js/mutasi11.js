@@ -695,7 +695,7 @@ function create_mutasi11_event()
     
     grid_mutasi11.onDblClick.subscribe(function(e) {     
         var selected_row_mutasi11  = grid_mutasi11.getActiveCell();
-        if((mutasi11_curr_status==1 || mutasi11_curr_status==5 || (mutasi11_curr_status==3 && mutasi11_ct==3)|| (mutasi11_curr_status==0 && mutasi11_ct==2)) && data_mutasi11[selected_row_mutasi11.row].coa_no!='C001')
+        if((mutasi11_curr_status==1 || mutasi11_curr_status==5 || (mutasi11_curr_status==3 && mutasi11_ct==3)|| (mutasi11_curr_status==0 && mutasi11_ct==2)) /**&& data_mutasi11[selected_row_mutasi11.row].coa_no!='C001'**/ )
         {
             $("#i_mutasi11_trx_id").val(data_mutasi11[selected_row_mutasi11.row].trx_id);
             $("#i_mutasi11_client_dt").val(data_mutasi11[selected_row_mutasi11.row].trx_date);   
