@@ -499,7 +499,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -513,7 +514,8 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -530,7 +532,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -547,12 +550,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -639,7 +644,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -653,7 +659,8 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -670,7 +677,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -687,12 +695,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -778,7 +788,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -792,7 +803,8 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -809,7 +821,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -826,12 +839,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -917,7 +932,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -925,13 +941,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -948,7 +965,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -965,12 +983,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -1056,7 +1076,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1064,13 +1085,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -1087,7 +1109,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1104,12 +1127,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -1196,7 +1221,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1204,13 +1230,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -1227,7 +1254,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1244,12 +1272,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -1335,7 +1365,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1343,13 +1374,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -1366,7 +1398,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1383,12 +1416,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -1466,7 +1501,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_niaga2->query("
             SELECT
-                'NIAGA_2".date('Ymd', strtotime($date))."' as id,
+                'NIAGA2_".date('Ymd', strtotime($date))."' as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1474,7 +1509,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1482,13 +1518,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -1497,7 +1534,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'NIAGA_2".date('Ymd', strtotime($date))."' as id,
+                'NIAGA2_".date('Ymd', strtotime($date))."' as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1505,7 +1542,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1522,12 +1560,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -1613,7 +1653,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1621,13 +1662,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                dbo.TXN.BANK_LETTER_CITY = ''
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -1644,7 +1686,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1661,12 +1704,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
@@ -1743,8 +1788,8 @@ class M_mutasi extends CI_Model {
         ");
         $coa = $coa->result();
         
-        $subsrd = $this->db_trimgah->query("
-            SELECT
+        $subsrd = $this->db_trimegah->query("
+             SELECT
                 'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
@@ -1753,7 +1798,8 @@ class M_mutasi extends CI_Model {
                 SUM(dbo.TXN_POSTING.NET_PROCEED) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption NIAGA' AS deskripsi 
+                'Redemption NIAGA - ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1767,7 +1813,8 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ), 
                 dbo.TXN_POSTING.TXN_TYPE,
-                dbo.TXN.BANK_LETTER_CITY
+                dbo.TXN.BANK_LETTER_CITY,
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
@@ -1784,7 +1831,8 @@ class M_mutasi extends CI_Model {
                 SUM ( dbo.TXN_POSTING.NET_PROCEED ) AS subsrd_nominal,
                 dbo.TXN.BANK_LETTER_CITY,
                 'D001' AS subsrd_kategori,
-                'Redemption Non Niaga' AS deskripsi 
+                'Redemption Non Niaga- ' +
+                (SELECT NAME FROM SELLING_AGENT WHERE SELLING_AGENT.SELLING_AGENT_CODE = dbo.TXN.SELLING_AGENT_CODE) AS deskripsi 
             FROM
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
@@ -1801,12 +1849,14 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO,
                 dbo.TXN.BANK_LETTER_CITY,
                 dbo.FUND_ID.CODE_BPM,
-                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 )
+                CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ),
+                dbo.TXN.SELLING_AGENT_CODE
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
+
 
         $check_mutasi = $this->db_jasgir->query("
             SELECT 
