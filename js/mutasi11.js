@@ -163,7 +163,9 @@ function setMutasiTRx(id,coa_id,client_code,date,acc_no) {
     var bulan = d.substr(5,2);
     var hari = d.substr(8,2);
     var c_dt = hari+'-'+bulan+'-'+tahun;
+    
     $("#alert_send_to_mutasi").html("");
+    $("#alert_send_to_mutasi").append('<center> <img src="'+uri+'img/ajax-spinner.gif" width="50px"/> </center>');
 
     $.post(uri+"index.php/mutasi/set_mutasi_trx",{
         id:id,
@@ -173,6 +175,7 @@ function setMutasiTRx(id,coa_id,client_code,date,acc_no) {
         acc_no:acc_no
     }, function(data, status) {
         var obj = JSON.parse(data);
+        $("#alert_send_to_mutasi").html("");
         $("#alert_send_to_mutasi").append(obj.msg+' <br> '+id+' - '+client_code+' - '+acc_no+' - '+date+' <br> ');
 
         list_trx_mutasi11(client_code,acc_no,c_dt);

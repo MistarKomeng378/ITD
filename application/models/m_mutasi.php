@@ -491,7 +491,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_urssim->query("
             SELECT
-                'URSSIM_".date('Ymd', strtotime($date))."' as id,
+                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -524,7 +524,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'URSSIM_".date('Ymd', strtotime($date))."' as id,
+                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -558,22 +558,21 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
 
+        foreach ($subsrd->result_array() as $key => $value) {
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'URSSIM_".date('Ymd', strtotime($date))."'
-        ");
-        
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -608,10 +607,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }  
 
@@ -636,7 +636,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_batavia->query("
             SELECT
-                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -669,7 +669,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -702,23 +702,22 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
-
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'BATAVIA_".date('Ymd', strtotime($date))."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -753,10 +752,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }  
 
@@ -780,7 +780,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_bni->query("
             SELECT
-                'BNI_".date('Ymd', strtotime($date))."' as id,
+                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -813,7 +813,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'BNI_".date('Ymd', strtotime($date))."' as id,
+                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -846,23 +846,22 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
-
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'BNI_".date('Ymd', strtotime($date))."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -897,10 +896,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }  
 
@@ -924,7 +924,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_custody->query("
             SELECT
-                'CUSTODY_".date('Ymd', strtotime($date))."' as id,
+                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -957,7 +957,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'CUSTODY_".date('Ymd', strtotime($date))."' as id,
+                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -990,23 +990,22 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
-
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'CUSTODY_".date('Ymd', strtotime($date))."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1041,10 +1040,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }  
 
@@ -1068,7 +1068,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_discre->query("
             SELECT
-                'DISCRE_".date('Ymd', strtotime($date))."' as id,
+                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1101,7 +1101,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'DISCRE_".date('Ymd', strtotime($date))."' as id,
+                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1134,23 +1134,22 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
-
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'DISCRE_".date('Ymd', strtotime($date))."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1185,10 +1184,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }  
 
@@ -1213,7 +1213,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_mega->query("
             SELECT
-                'MEGA_".date('Ymd', strtotime($date))."' as id,
+                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1246,7 +1246,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'MEGA_".date('Ymd', strtotime($date))."' as id,
+                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1279,23 +1279,22 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
-
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'MEGA_".date('Ymd', strtotime($date))."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1330,10 +1329,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }
 
@@ -1357,7 +1357,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_niaga->query("
             SELECT
-                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1390,7 +1390,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1423,23 +1423,22 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
-
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'NIAGA_".date('Ymd', strtotime($date))."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1474,10 +1473,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }
 
@@ -1501,7 +1501,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_niaga2->query("
             SELECT
-                'NIAGA2_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1534,7 +1534,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'NIAGA2_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1569,21 +1569,21 @@ class M_mutasi extends CI_Model {
         ");
 
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'NIAGA_2".date('Ymd', strtotime($date))."'
-        ");
-        
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+        foreach ($subsrd->result_array() as $key => $value) {
+
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1618,10 +1618,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }
 
@@ -1645,7 +1646,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_syailendra->query("
             SELECT
-                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1678,7 +1679,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1712,22 +1713,21 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
 
+        foreach ($subsrd->result_array() as $key => $value) {
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'SYAILENDRA_".date('Ymd', strtotime($date))."'
-        ");
-        
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1762,10 +1762,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }
 
@@ -1790,7 +1791,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_trimegah->query("
              SELECT
-                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1823,7 +1824,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1857,22 +1858,21 @@ class M_mutasi extends CI_Model {
                 dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
 
+        foreach ($subsrd->result_array() as $key => $value) {
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."' and
-            subsrd_id = 'TRIMEGAH_".date('Ymd', strtotime($date))."'
-        ");
-        
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
+            $check_mutasi = $this->db_jasgir->query("
+                SELECT 
+                    * 
+                FROM 
+                    mutasi_trx
+                WHERE client_code = '".$client_code."' and 
+                trx_date = '".$date."' and
+                coa_no = '".$coa[0]->coa_no."' and 
+                acc_no = '".$acc_no."' and
+                subsrd_id = '".$value['id']."'
+            ");
+
+            if( count( $check_mutasi->result_array() ) == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -1907,10 +1907,11 @@ class M_mutasi extends CI_Model {
                     );
                 ");
                 $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
+            }else{
+                $mutasi_trx = array('msg' => 'Data Sudah Ada');
             }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
+
         return $mutasi_trx;
     }
 
@@ -5781,7 +5782,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_urssim->query("
             SELECT
-                'URSSIM_".date('Ymd', strtotime($date))."' as id,
+                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -5814,7 +5815,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'URSSIM_".date('Ymd', strtotime($date))."' as id,
+                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -5872,7 +5873,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_batavia->query("
              SELECT
-                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -5905,7 +5906,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'BATAVIA_".date('Ymd', strtotime($date))."' as id,
+                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -5963,7 +5964,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_bni->query("
             SELECT
-                'BNI_".date('Ymd', strtotime($date))."' as id,
+                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -5996,7 +5997,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'BNI_".date('Ymd', strtotime($date))."' as id,
+                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6053,7 +6054,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_custody->query("
             SELECT
-                'CUSTODY_".date('Ymd', strtotime($date))."' as id,
+                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6086,7 +6087,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'CUSTODY_".date('Ymd', strtotime($date))."' as id,
+                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6143,7 +6144,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_discre->query("
             SELECT
-                'DISCRE_".date('Ymd', strtotime($date))."' as id,
+                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6176,7 +6177,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'DISCRE_".date('Ymd', strtotime($date))."' as id,
+                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6233,7 +6234,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_mega->query("
              SELECT
-                'MEGA_".date('Ymd', strtotime($date))."' as id,
+                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6266,7 +6267,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'MEGA_".date('Ymd', strtotime($date))."' as id,
+                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6324,7 +6325,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_niaga->query("
             SELECT
-                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6357,7 +6358,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'NIAGA_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6414,7 +6415,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_niaga2->query("
             SELECT
-                'NIAGA2_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6447,7 +6448,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'NIAGA2_".date('Ymd', strtotime($date))."' as id,
+                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6504,7 +6505,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_syailendra->query("
             SELECT
-                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6537,7 +6538,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'SYAILENDRA_".date('Ymd', strtotime($date))."' as id,
+                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -6593,7 +6594,7 @@ class M_mutasi extends CI_Model {
         $return = array();
         $query=$this->db_trimegah->query("
             SELECT
-                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -6626,7 +6627,7 @@ class M_mutasi extends CI_Model {
             UNION
             
             SELECT
-                'TRIMEGAH_".date('Ymd', strtotime($date))."' as id,
+                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
