@@ -2039,7 +2039,9 @@ class M_mutasi extends CI_Model {
             AND A.HIPORT_CODE = '".$client_code."'
             AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
             AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
-            AND A.SI_REFF = '".$id."'
+            AND A.SI_REFF = '".$id."' 
+            AND A.TRANSACTION_STATUS ='NEWM'
+            
         ORDER BY
             subsrd_date DESC
         ");
@@ -2140,6 +2142,7 @@ class M_mutasi extends CI_Model {
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."' AND
             A.SI_REFF = '".$id."'
+            AND A.TRANSACTION_STATUS ='NEWM'
         ORDER BY
             subsrd_date DESC
         ");
@@ -2238,6 +2241,7 @@ class M_mutasi extends CI_Model {
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."' and
             A.SI_REFERENCE = '".$id."'
+            AND A.TRANSACTION_STATUS ='NEWM'
         ORDER BY
             subsrd_date DESC
         ");
@@ -2336,6 +2340,7 @@ class M_mutasi extends CI_Model {
             CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
             B.FUND_OPR_ACCT_NO = '".$acc_no."' and 
             A.SI_REFERENCE = '".$id."'
+            AND A.TRANSACTION_STATUS ='NEWM'
         ORDER BY
             subsrd_date DESC
         ");
@@ -2434,6 +2439,7 @@ class M_mutasi extends CI_Model {
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND A.SI_REFF = '".$id."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -2537,6 +2543,7 @@ class M_mutasi extends CI_Model {
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
                 AND A.SI_REFERENCE = '".$id."'
                 AND BUY_SELL = '1'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ) AS CAPITAL_GAIN_TAX
 
             UNION ALL
@@ -2566,6 +2573,7 @@ class M_mutasi extends CI_Model {
                     AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                     AND A.SI_REFERENCE = '".$id."'
                     AND BUY_SELL = '1' 
+                    AND A.TRANSACTION_STATUS ='NEWM'
             ) AS INTEREST_INCOME_TAX
             
         ");
@@ -2647,6 +2655,7 @@ class M_mutasi extends CI_Model {
         WHERE
             A.BUY_SELL = '2'
             AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+            AND A.TRANSACTION_STATUS ='NEWM'
         ORDER BY
             subsrd_date DESC
         ");
@@ -2717,6 +2726,7 @@ class M_mutasi extends CI_Model {
             WHERE
                 A.BUY_SELL = '1' and
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -2787,6 +2797,7 @@ class M_mutasi extends CI_Model {
             WHERE
                 A.BUY_SELL = '2'  and
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -2857,6 +2868,7 @@ class M_mutasi extends CI_Model {
             WHERE
                 A.BUY_SELL = '1'  and
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -2927,6 +2939,7 @@ class M_mutasi extends CI_Model {
             WHERE
                 CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) > 0 AND
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -3002,6 +3015,7 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) > 0
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
                 AND BUY_SELL = '1'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ) AS CAPITAL_GAIN_TAX
 
             UNION ALL
@@ -3028,6 +3042,7 @@ class M_mutasi extends CI_Model {
                     CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) > 0 
                     AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
                     AND BUY_SELL = '1' 
+                    AND A.TRANSACTION_STATUS ='NEWM'
             ) AS INTEREST_INCOME_TAX
             
         ");
@@ -5743,6 +5758,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -5791,6 +5807,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '1' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -5836,6 +5853,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -5884,6 +5902,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '1' 
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -5932,6 +5951,7 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DECIMAL(16,2), WHT_COMMISION ) > 0
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -5984,6 +6004,7 @@ class M_mutasi extends CI_Model {
                 )
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+                AND A.TRANSACTION_STATUS ='NEWM'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -6624,6 +6645,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
+                AND A.TRANSACTION_STATUS ='NEWM'
         ");
         $res_jual_saham = array();
         if (count( $jual_saham->result_array() ) == 1) {
@@ -6640,6 +6662,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '1'
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
+                AND A.TRANSACTION_STATUS ='NEWM'
         ");
         $res_beli_saham = array();
         if (count( $beli_saham->result_array() ) == 1) {
@@ -6656,6 +6679,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '2' 
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
+                AND A.TRANSACTION_STATUS ='NEWM'
         ");
         $res_jual_obligasi = array();
         if (count( $jual_obligasi->result_array() ) == 1) {
@@ -6672,6 +6696,7 @@ class M_mutasi extends CI_Model {
                 A.BUY_SELL = '1'
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
+                AND A.TRANSACTION_STATUS ='NEWM'
         ");
         $res_beli_obligasi = array();
         if (count( $beli_obligasi->result_array() ) == 1) {
@@ -6691,6 +6716,7 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DECIMAL ( 16, 2 ), WHT_COMMISION ) > 0
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
+                AND A.TRANSACTION_STATUS ='NEWM'
         ");
         $res_tax_broker = array();
         if (count( $tax_broker->result_array() ) == 1) {
@@ -6714,6 +6740,7 @@ class M_mutasi extends CI_Model {
                 )
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
+                AND A.TRANSACTION_STATUS ='NEWM'
         ");
         $res_tax_obligasi = array();
         if (count( $tax_obligasi->result_array() ) == 1) {
@@ -7837,6 +7864,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -7880,6 +7908,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE )  = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -7926,6 +7955,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -7972,6 +8002,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE )  = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -8018,6 +8049,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE )  = '".$date."'
+                AND A.TRANSACTION_STATUS ='NEWM'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -8065,6 +8097,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."' 
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+                AND A.TRANSACTION_STATUS ='NEWM'
             ) AS CAPITAL_GAIN_TAX
 
             UNION ALL
@@ -8091,6 +8124,7 @@ class M_mutasi extends CI_Model {
                     AND A.HIPORT_CODE = '".$client_code."' 
                     AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                     AND B.FUND_OPR_ACCT_NO = '".$acc_no."' 
+                    AND A.TRANSACTION_STATUS ='NEWM'
             ) AS INTEREST_INCOME_TAX
         ");
         
