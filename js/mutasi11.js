@@ -1301,3 +1301,21 @@ function create_list_mutasi_detail() {
         
     });
 }
+ function get_data_mutasi() {
+    $("#alert_send_to_mutasi").dialog("open");
+    $("#alert_send_to_mutasi").html("");
+    $("#alert_send_to_mutasi").append('<center> <img src="'+uri+'img/ajax-spinner.gif" width="50px"/> </center>');
+    
+    var gdata = $.get(uri+"index.php/mutasi/backgroundToMutasi",function(data, status) {
+        console.log(data);
+       
+       
+            $("#alert_send_to_mutasi").html("");
+            $("#alert_send_to_mutasi").append(data);   
+        
+        
+    }); 
+
+    
+     
+ }

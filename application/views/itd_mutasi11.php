@@ -11,7 +11,7 @@
                 <td width="1%">Rekening</td>
                 <td width="1%">Atas Nama</td>
                 <td width="1%">Last Date</td>  
-                <td>Last Date Status</td>
+                <td colspan="2">Last Date Status</td>
             </tr>
             <tr>
                 <td><input type="text" id="i_mutasi11_client_code" style="width:60px;text-align: center;"  /></td>
@@ -20,8 +20,12 @@
                 <td><input type="text" id="i_mutasi11_client_last_date" style="width:90px;text-align: center;" readonly  /></td>
                 <td>
                     <input type="text" id="i_mutasi11_client_status" style="width:90px;text-align: center;" readonly  />
-                    <input type="button" value="Tambah Transaski" id="b_dlg_mutasi11" />
+                    <input type="button" value="Add Transaski" id="b_dlg_mutasi11" />
+                    
                 </td>
+                <td> <input type="button" value="Get Data" id="get_data_mutasi" onclick="get_data_mutasi()" /></td>
+                
+
             </tr>
         </table>
         <input type="hidden" id="i_mutasi11_dstatus" value="0">
