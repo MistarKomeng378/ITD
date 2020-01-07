@@ -6749,7 +6749,6 @@ class M_mutasi extends CI_Model {
         
         return array(
             $res_subscription,
-            // $res_jasa_giro,
             $res_penempatan,
             $res_pencairan,
             $res_redemption,
@@ -6759,14 +6758,7 @@ class M_mutasi extends CI_Model {
             $res_beli_obligasi,
             $res_tax_broker,
             $res_tax_obligasi,
-        //     $res_redemptionBatavia,
-        //     $res_redemptionBni,
-        //    $res_redemptionCustody,
-        //    $res_redemptionDiscre,
-        //    $res_redemptionMega,
-        //    $res_redemptionNiaga,
-        //    $res_redemptionNiaga2,
-        //    $res_redemptionSyailendra,
+       
             
         );
     }
