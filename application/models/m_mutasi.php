@@ -2625,371 +2625,13 @@ class M_mutasi extends CI_Model {
         return $mutasi_trx;
     }
     
-    // background job start
+//=================================== background job start
 
-    function SubscribeToMutasiBackground($data)
+    function JualSahamToMutasiBackground($date)
     {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-
-        $subsrd = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                subsrd
-            WHERE client_code = '".$client_code."' and 
-            subsrd_date = '".$date."' and 
-            acc_no_dst = '".$acc_no."'
-        ");
-        
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa_id."' and 
-            acc_no = '".$acc_no."'
-        ");
-
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no_dst'])."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$value['subsrd_kategori']."',
-                        '".$value['subsrd_desc']."',
-                        '".$value['bank_src']."',
-                        '".$coa[0]->coa_dc."',
-                        '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1
-                    );
-                ");
-            }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
-        }
-        return $mutasi_trx;
-    }
-
-    function PenempatanToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
-        $subsrd = $this->db_itd->query("
-            SELECT 
-                trx_client_code,
-                trx_acc_no,
-                CONVERT ( DATE, trx_date ) as trx_date,
-                trx_from,
-                trx_nominal
-            FROM 
-                itd_trx_approved
-            WHERE trx_client_code = '".$client_code."' and 
-            CONVERT ( DATE, trx_date ) = '".$date."' and
-            trx_type = 1 and 
-            trx_acc_no = '".$acc_no."'
-        ");
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status]
-                    )VALUES(
-                        '".trim($value['trx_client_code'])."',
-                        '".trim($value['trx_acc_no'])."',
-                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
-                        '".$value['trx_from']."',
-                        '".$coa[0]->coa_dc."',
-                        '".$value['trx_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1
-                    );
-                ");
-            }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
-        }
-        return $mutasi_trx;
-    }
-
-    function PencairanToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
-        $subsrd = $this->db_itd->query("
-            SELECT 
-                trx_client_code,
-                trx_acc_no,
-                CONVERT ( DATE, trx_date ) as trx_date,
-                trx_from,
-                trx_nominal
-            FROM 
-                itd_trx_approved
-            WHERE trx_client_code = '".$client_code."' and 
-            CONVERT ( DATE, trx_date ) = '".$date."' and
-            trx_type = 3 and 
-            trx_acc_no = '".$acc_no."'
-        ");
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status]
-                    )VALUES(
-                        '".trim($value['trx_client_code'])."',
-                        '".trim($value['trx_acc_no'])."',
-                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
-                        '".$value['trx_from']."',
-                        '".$coa[0]->coa_dc."',
-                        '".$value['trx_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1
-                    );
-                ");
-            }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
-        }
-        return $mutasi_trx;
-    }
-
-    function RedemptionToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
-        $subsrd = $this->db_urssim->query("
-            SELECT
-                FUND_ID.CREATION_DATE AS CREATION_DATE,
-                FUND_ID.MODIFICATION_DATE AS MODIFICATION_DATE,
-                FUND_ID.MODIFIER AS MODIFIER,
-                FUND_ID.CODE_BPM AS client_code,
-                FUND_ID.ACC_BANK_OPR AS acc_no,
-                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE ) AS subsrd_date,
-                TXN_POSTING.NET_PROCEED AS subsrd_nominal,
-                'D001' AS subsrd_kategori,
-                'Redemption' AS deskripsi 
-            FROM
-                TXN_POSTING
-                INNER JOIN FUND_ID ON TXN_POSTING.FUND_LEVEL_CODE = FUND_ID.FUND_LEVEL_CODE 
-                AND TXN_POSTING.FUND_UMBRELLA_CODE = FUND_ID.FUND_UMBRELLA_CODE 
-                AND TXN_POSTING.FUND_GROUP = FUND_ID.FUND_GROUP 
-                AND TXN_POSTING.FUND_ID = FUND_ID.FUND_ID
-            WHERE
-                TXN_POSTING.TXN_TYPE = 'R' and
-                CONVERT ( DATE, TXN_POSTING.GOOD_FUND_DATE )  = '".$date."' and 
-                FUND_ID.ACC_BANK_OPR = '".$acc_no."' and 
-                FUND_ID.CODE_BPM = '".$client_code."'
-            ORDER BY
-                subsrd_date DESC
-        ");
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
-            foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
-                        '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
-                        '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1
-                    );
-                ");
-                $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-            }
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
-        }
-        return $mutasi_trx;
-    }
-
-    function JualSahamToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-
         $subsrd = $this->db_nfs->query("
         SELECT
-            A.SI_REFF,
+            A.SI_REFF as subsrd_id,
             A.HIPORT_CODE AS client_code,
             B.FUND_OPR_ACCT_NO AS acc_no,
             CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
@@ -3004,374 +2646,272 @@ class M_mutasi extends CI_Model {
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
         WHERE
             A.BUY_SELL = '2'
-            AND A.HIPORT_CODE = '".$client_code."'
             AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
-            AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
         ORDER BY
             subsrd_date DESC
         ");
-
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
         
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status],
-                        [subsrd_id]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
+                $msg = $msg.' <br> '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='C006' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
+                        '".$value['subsrd_kategori']."', 
                         '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
+                        '".$value['deskripsi']."',
+                        'C', 
                         '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1,
-                        '".$value['SI_REFF']."'
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
                     );
-                ");
+                END;";
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            return array('sql'=> $sql, 'msg' => $msg);
         }
-        
-        return $mutasi_trx;
+        return false;
     }
 
-    function BeliSahamToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
+    function BeliSahamToMutasiBackground($date)
+    {   
         $subsrd = $this->db_nfs->query("
-        SELECT
-            A.SI_REFF,
-            A.HIPORT_CODE AS client_code,
-            B.FUND_OPR_ACCT_NO AS acc_no,
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
-            A.MODIFIER,
-            A.CREATION_DATE,
-            A.MODIFICATION_DATE,
-            'D004' AS subsrd_kategori,
-            'Beli Saham' AS deskripsi
-        FROM
-            NFS_INQ_EQUITY_TEMP A
-            INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
-        WHERE
-            A.BUY_SELL = '1' and
-            A.HIPORT_CODE = '".$client_code."' and 
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
-        ORDER BY
-            subsrd_date DESC
+            SELECT
+                A.SI_REFF as subsrd_id,
+                A.HIPORT_CODE AS client_code,
+                B.FUND_OPR_ACCT_NO AS acc_no,
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+                CONVERT ( DECIMAL(16,2), A.NET_SETTLEMENT_AMOUNT ) AS subsrd_nominal,
+                A.MODIFIER,
+                A.CREATION_DATE,
+                A.MODIFICATION_DATE,
+                'D004' AS subsrd_kategori,
+                'Beli Saham' AS deskripsi
+            FROM
+                NFS_INQ_EQUITY_TEMP A
+                INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
+            WHERE
+                A.BUY_SELL = '1' and
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+            ORDER BY
+                subsrd_date DESC
         ");
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status],
-                        [subsrd_id]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
+                $msg = $msg.' <br> '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D004' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
+                        '".$value['subsrd_kategori']."', 
                         '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
+                        '".$value['deskripsi']."',
+                        'D', 
                         '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1,
-                        '".$value['SI_REFF']."'
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
                     );
-                ");
+                END;";
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            return array('sql'=> $sql, 'msg' => $msg);
         }
-        return $mutasi_trx;
+        return false;
     }
     
-    function JualObligasiToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-        
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
+    function JualObligasiToMutasiBackground($date)
+    {   
         $subsrd = $this->db_nfs->query("
-        SELECT
-            A.SI_REFERENCE AS SI_REFF,
-            A.HIPORT_CODE AS client_code,
-            B.FUND_OPR_ACCT_NO AS acc_no,
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
-            A.MODIFIER,
-            A.CREATION_DATE,
-            A.MODIFICATION_DATE,
-            'C007' AS subsrd_kategori,
-            'Hasil Jual Obligasi' AS deskripsi 
-        FROM
-            NFS_FI_INS_INQ_TEMP A
-            INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
-        WHERE
-            A.BUY_SELL = '2'  and
-            A.HIPORT_CODE = '".$client_code."' and 
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
-        ORDER BY
-            subsrd_date DESC
+            SELECT
+                A.SI_REFERENCE AS subsrd_id,
+                A.HIPORT_CODE AS client_code,
+                B.FUND_OPR_ACCT_NO AS acc_no,
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+                CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
+                A.MODIFIER,
+                A.CREATION_DATE,
+                A.MODIFICATION_DATE,
+                'C007' AS subsrd_kategori,
+                'Hasil Jual Obligasi' AS deskripsi 
+            FROM
+                NFS_FI_INS_INQ_TEMP A
+                INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+            WHERE
+                A.BUY_SELL = '2'  and
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+            ORDER BY
+                subsrd_date DESC
         ");
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status],
-                        [subsrd_id]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
+                $msg = $msg.' <br> '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='C007' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
+                        '".$value['subsrd_kategori']."', 
                         '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
+                        '".$value['deskripsi']."',
+                        'C', 
                         '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1,
-                        '".$value['SI_REFF']."'
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
                     );
-                ");    
+                END;";
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            return array('sql'=> $sql, 'msg' => $msg);
         }
-        return $mutasi_trx;
+        return false;
     }
 
-    function BeliObligasiToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-        
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
+    function BeliObligasiToMutasiBackground($date)
+    {        
         $subsrd = $this->db_nfs->query("
-        SELECT
-            A.SI_REFERENCE AS SI_REFF,
-            A.HIPORT_CODE AS client_code,
-            B.FUND_OPR_ACCT_NO AS acc_no,
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
-            CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
-            A.MODIFIER,
-            A.CREATION_DATE,
-            A.MODIFICATION_DATE,
-            'D005' AS subsrd_kategori,
-            'Beli Obligasi' AS deskripsi 
-        FROM
-            NFS_FI_INS_INQ_TEMP A
-            INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
-        WHERE
-            A.BUY_SELL = '1'  and
-            A.HIPORT_CODE = '".$client_code."' and 
-            CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' and
-            B.FUND_OPR_ACCT_NO = '".$acc_no."'
-        ORDER BY
-            subsrd_date DESC
+            SELECT
+                A.SI_REFERENCE AS subsrd_id,
+                A.HIPORT_CODE AS client_code,
+                B.FUND_OPR_ACCT_NO AS acc_no,
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
+                CONVERT ( DECIMAL(16,2), A.NET_PROCEEDS ) AS subsrd_nominal,
+                A.MODIFIER,
+                A.CREATION_DATE,
+                A.MODIFICATION_DATE,
+                'D005' AS subsrd_kategori,
+                'Beli Obligasi' AS deskripsi 
+            FROM
+                NFS_FI_INS_INQ_TEMP A
+                INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
+            WHERE
+                A.BUY_SELL = '1'  and
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
+            ORDER BY
+                subsrd_date DESC
         ");
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status],
-                        [subsrd_id]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
+                $msg = $msg.' <br> '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D005' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
+                        '".$value['subsrd_kategori']."', 
                         '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
+                        '".$value['deskripsi']."',
+                        'D',  
                         '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1,
-                        '".$value['SI_REFF']."'
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
                     );
-                ");
+                END;";
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            return array('sql'=> $sql, 'msg' => $msg);
         }
-        return $mutasi_trx;
+        return false;
     }
 
-    function TaxBrokerToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
+    function TaxBrokerToMutasiBackground($date)
+    {   
         $subsrd = $this->db_nfs->query("
             SELECT 
-                A.SI_REFF,
+                A.SI_REFF as subsrd_id,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) AS subsrd_nominal,
@@ -3385,92 +2925,67 @@ class M_mutasi extends CI_Model {
                 NFS_INQ_EQUITY_TEMP A
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
             WHERE
-                CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) > 0 
-                AND A.HIPORT_CODE = '".$client_code."' 
-                AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
-                AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) > 0 AND
+                CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
             ORDER BY
                 subsrd_date DESC
         ");
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status],
-                        [subsrd_id]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
+                $sql = $sql. "
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D016' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
+                        '".$value['subsrd_kategori']."', 
+                        'Tax Broker',
                         '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
+                        'D',  
                         '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1,
-                        '".$value['SI_REFF']."'
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
                     );
-                ");
+                END;";
+                $msg = $msg.' <br> '.$value['subsrd_id'];
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            return array('sql'=> $sql, 'msg' => $msg);
         }
-        return $mutasi_trx;
+        return false;
     }
 
-    function TaxObligasiToMutasiBackground($data)
-    {
-        $client_code = $data['client_code'];
-        $date = date('Y-m-d', strtotime($data['date']) );
-        $coa_id = $data['coa_id'];
-        $acc_no = $data['acc_no'];
-        $mutasi_trx = array();
-
-        $coa = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                coa
-            WHERE coa_no = '".$coa_id."'
-        ");
-        $coa = $coa->result();
-        
+    function TaxObligasiToMutasiBackground($date)
+    {        
         $subsrd = $this->db_nfs->query("
             SELECT
                 * 
             FROM
             (
             SELECT
-                A.SI_REFERENCE AS SI_REFF,
+                A.SI_REFERENCE AS subsrd_id,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
@@ -3484,10 +2999,8 @@ class M_mutasi extends CI_Model {
                 NFS_FI_INS_INQ_TEMP A
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
             WHERE
-                CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) > 0  
-                AND A.HIPORT_CODE = '".$client_code."' 
-                AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
-                AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) > 0
+                AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
                 AND BUY_SELL = '1'
             ) AS CAPITAL_GAIN_TAX
 
@@ -3498,7 +3011,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
-                    A.SI_REFERENCE AS SI_REFF,
+                    A.SI_REFERENCE AS subsrd_id,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
@@ -3513,69 +3026,1579 @@ class M_mutasi extends CI_Model {
                     INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
                 WHERE
                     CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) > 0 
-                    AND A.HIPORT_CODE = '".$client_code."' 
-                    AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
-                    AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
+                    AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
                     AND BUY_SELL = '1' 
             ) AS INTEREST_INCOME_TAX
             
         ");
 
-        $check_mutasi = $this->db_jasgir->query("
-            SELECT 
-                * 
-            FROM 
-                mutasi_trx
-            WHERE client_code = '".$client_code."' and 
-            trx_date = '".$date."' and
-            coa_no = '".$coa[0]->coa_no."' and 
-            acc_no = '".$acc_no."'
-        ");
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                
-                $mutasi_trx = $this->db_jasgir->query("
-                    INSERT INTO [dbo].[mutasi_trx] (
-                        [client_code],
-                        [acc_no],
-                        [trx_date],
-                        [coa_no],
-                        [coa_desc],
-                        [trx_desc],
-                        [trx_dc],
-                        [trx_nominal],
-                        [created_by],
-                        [created_dt],
-                        [modified_by],
-                        [modified_dt],
-                        [trx_status],
-                        [subsrd_id]
-                    )VALUES(
-                        '".trim($value['client_code'])."',
-                        '".trim($value['acc_no'])."',
+                $msg = $msg.' <br> '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D017' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
                         '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$coa[0]->coa_no."',
-                        '".$coa[0]->coa_desc."',
+                        '".$value['subsrd_kategori']."', 
+                        'Tax Obligasi',
                         '".$value['deskripsi']."',
-                        '".$coa[0]->coa_dc."',
+                        'D', 
                         '".$value['subsrd_nominal']."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        '".$this->session->userdata('itd_uid')."',
-                        '".date('Y-m-d H:i:s')."',
-                        1,
-                        '".$value['SI_REFF']."'
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
                     );
-                ");
+                END;";
             }
-            $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
-        }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            return array('sql'=> $sql, 'msg' => $msg);
         }
-        return $mutasi_trx;
+        return false;
     }
 
-    // background job end
+    function RedemptionToMutasiBackground($date)
+    {
+        $subsrd = $this->db_urssim->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' <br> '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundBatavia($date)
+    {
+        $subsrd = $this->db_batavia->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundBni($date)
+    {
+        $subsrd = $this->db_bni->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundNiaga($date)
+    {
+        $subsrd = $this->db_niaga->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundNiaga2($date)
+    {
+        $subsrd = $this->db_niaga2->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundSyalendra($date)
+    {
+        $subsrd = $this->db_syailendra->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundTrimegah($date)
+    {
+        $subsrd = $this->db_trimegah->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundCustody($date)
+    {
+        $subsrd = $this->db_custody->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundDiscre($date)
+    {
+        $subsrd = $this->db_discre->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+    function RedemptionToMutasiBackgroundMega($date)
+    {
+        $subsrd = $this->db_mega->query("
+            select 
+                *
+            from (
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption NIAGA - ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        fd.HIPORT_CODE ,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR AS 'debitacc',
+                        fund_id.DESCRIPTION AS 'bank_name',
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                        AND ( isnull( dbo.TXN.BANK_LETTER_CITY , '' ) = '' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE 
+                
+                UNION ALL
+            
+                SELECT
+                    CONVERT ( DATE, '".$date."', 102 ) as 'subsrd_date',
+                    db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+ a.HIPORT_CODE+'_'+ a.debitacc+'_'+a.SELLING_AGENT_CODE AS 'subsrd_id',
+                    a.HIPORT_CODE as 'client_code',
+                    SUM ( a.net_proceed ) AS 'subsrd_nominal',
+                    a.debitacc as 'acc_no',
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE,
+                    'Redemption Non Niaga- ' + a.saname AS deskripsi
+                FROM
+                    (
+                    SELECT
+                        CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) as dt,
+                        fd.HIPORT_CODE,
+                        dbo.TXN_POSTING.INVESTOR_NO,
+                        dbo.TXN_POSTING.TXN_TYPE,
+                        dbo.TXN_POSTING.NET_PROCEED,
+                        dbo.TXN.PAYMENT_DATE,
+                        dbo.FUND_ID.ACC_BANK_OPR ,
+                        dbo.TXN.BANK_ID_ADDRESS,
+                        dbo.TXN.BANK_ACCT_NO,
+                        dbo.FUND_ID_BANK.DESCRIPTION AS 'Bank_name',
+                        dbo.FUND_ID_BANK.ACC_NO AS 'debitacc',
+                        dbo.TXN_POSTING.GOOD_FUND_DATE,
+                        dbo.TXN.FUND_ID,
+                        dbo.TXN.BANK_LETTER_CITY,
+                        sa.NAME AS 'saname',
+                        sa.SELLING_AGENT_CODE
+                    FROM
+                        dbo.TXN
+                        INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
+                        INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
+                        INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
+                        LEFT JOIN SELLING_AGENT sa ON sa.SELLING_AGENT_CODE = txn.SELLING_AGENT_CODE
+                        INNER JOIN NFS_DB.dbo.FUND_DETAILS fd ON fd.URS_CODE = FUND_ID.FUND_ID 
+                        INNER JOIN dbo.FUND_SUMMARY ON dbo.FUND_SUMMARY.FUND_ID = dbo.TXN.FUND_ID AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                    WHERE ( CONVERT ( DATE, dbo.TXN.PAYMENT_DATE ) = '".$date."' ) 
+                        AND ( dbo.TXN_POSTING.TXN_TYPE = 'R' ) 
+                    ) a 
+                GROUP BY
+                    a.HIPORT_CODE ,
+                    a.debitacc  ,
+                    a.FUND_ID ,
+                    a.BANK_NAME ,
+                    a.saname ,
+                    a.SELLING_AGENT_CODE
+            ) as r
+        ");
+        
+        $sql = '';
+        $msg = '';
+        if( count($subsrd->result_array()) > 0 ){
+            foreach ($subsrd->result_array() as $key => $value) {
+                $msg = $msg.' '.$value['subsrd_id'];
+                $sql = $sql. "
+                IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
+                BEGIN
+                    INSERT INTO [dbo].[mutasi_trx] ( 
+                        [client_code], 
+                        [acc_no], 
+                        [trx_date], 
+                        [coa_no], 
+                        [coa_desc], 
+                        [trx_desc], 
+                        [trx_dc], 
+                        [trx_nominal], 
+                        [created_by], 
+                        [created_dt], 
+                        [modified_by], 
+                        [modified_dt], 
+                        [trx_status], 
+                        [subsrd_id] 
+                    ) VALUES ( 
+                        '".$value['client_code']."',
+                        '".$value['acc_no']."', 
+                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                        'D001', 
+                        'Bayar Redemption', 
+                        '".$value['deskripsi']."',
+                        'D', 
+                        '".$value['subsrd_nominal']."',
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        'system', 
+                        '".date('Y-m-d H:i:s')."', 
+                        1, 
+                        '".$value['subsrd_id']."'
+                    );
+                END;";
+            }
+            return array('sql'=> $sql, 'msg' => $msg);
+        }
+        return false;
+    }
+
+//=================================== background job end
     
     function MutasiClient($client_code, $accc_no)
     {

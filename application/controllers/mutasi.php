@@ -589,50 +589,130 @@ class Mutasi extends CI_Controller {
         }
 
         $this->load->model("M_mutasi");
-        $date = $this->input->get('date') ? $this->input->get('date') : date('Y-m-d') ;
-        $mutasi_client = $this->M_mutasi->coaXmutasiClient($date);
+        $date = $this->input->get('date');
+        $date = $date ? $date : date('Y-m-d', strtotime('-1 day'));
+        $this->db_jasgir = $this->load->database('dbjasgir',true);
 
-        foreach ($mutasi_client as $key => $value) {
-            $start_date = date('Y-m-d H:i:s');
-            switch ($value['coa_id']) {                
-                case 'C006':
-                    $data = $this->M_mutasi->JualSahamToMutasiBackground($value);
+
+        for ($i=1; $i <= 16; $i++) { 
+            
+            switch ($i) {
+                case 1:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
                     break;
-    
-                case 'C007':
-                    $data = $this->M_mutasi->JualObligasiToMutasiBackground($value);
+                case 2:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundBatavia($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
                     break;
-    
-                case 'D004':
-                    $data = $this->M_mutasi->BeliSahamToMutasiBackground($value);
+                case 3:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundBni($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
                     break;
-    
-                case 'D005':
-                    $data = $this->M_mutasi->BeliObligasiToMutasiBackground($value);
+                case 4:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundNiaga($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
                     break;
-    
-                case 'D016':
-                    $data = $this->M_mutasi->TaxBrokerToMutasiBackground($value);
+                case 5:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundNiaga2($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
                     break;
-    
-                case 'D017':
-                    $data = $this->M_mutasi->TaxObligasiToMutasiBackground($value);
+                case 6:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundSyalendra($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 7:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundTrimegah($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 8:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundCustody($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 9:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundDiscre($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 10:
+                    $data1 = $this->M_mutasi->RedemptionToMutasiBackgroundMega($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] ); 
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 11:
+                    $data1 = $this->M_mutasi->JualSahamToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] );
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 12:
+                    $data1 = $this->M_mutasi->BeliSahamToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] );
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 13:
+                    $data1 = $this->M_mutasi->JualObligasiToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] );
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 14:
+                    $data1 = $this->M_mutasi->BeliObligasiToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] );
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 15:
+                    $data1 = $this->M_mutasi->TaxBrokerToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] );
+                        echo $data1['msg'];
+                    }
+                    break;
+                case 16:
+                    $data1 = $this->M_mutasi->TaxObligasiToMutasiBackground($date);
+                    if ($data1['sql']) { 
+                        $this->db_jasgir->query( 'SET NOCOUNT ON; '.$data1['sql'] );
+                        echo $data1['msg'];
+                    }
                     break;
                 
                 default:
-                    $data = array('msg' => 'coa id tidak dikenali');
                     break;
             }
-            $end_date = date('Y-m-d H:i:s');
-            $this->M_mutasi->backgroudLog(
-                $value['coa_id'],
-                $value['client_code'],
-                $value['acc_no'],
-                $date,
-                json_encode($data),
-                $start_date,
-                $end_date
-            );
         }
     }
 
