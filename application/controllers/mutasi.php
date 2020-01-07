@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+ini_set('MAX_EXECUTION_TIME',500);
 
 class Mutasi extends CI_Controller { 
     var $isLogin;
