@@ -1301,21 +1301,23 @@ function create_list_mutasi_detail() {
         
     });
 }
- function get_data_mutasi() {
+
+function get_data_mutasi(mutasi) {
     $("#alert_send_to_mutasi").dialog("open");
     $("#alert_send_to_mutasi").html("");
-    $("#alert_send_to_mutasi").append('<center> <img src="'+uri+'img/ajax-spinner.gif" width="50px"/> </center>');
-    
-    var gdata = $.get(uri+"index.php/mutasi/backgroundToMutasi",function(data, status) {
-        console.log(data);
-       
-       
-            $("#alert_send_to_mutasi").html("");
-            $("#alert_send_to_mutasi").append(data);   
-        
-        
-    }); 
+    $("#alert_send_to_mutasi").append(
+        '<center>'+
+        '<img src="'+uri+'img/ajax-spinner.gif" width="50px"/>'+
+        '<br /> Antrian Ke = '+mutasi+
+        '</center>'
+    );
 
-    
-     
- }
+    var a = $.get(uri+"index.php/mutasi/backgroundToMutasi?date=2018-10-10"+"&mutasi="+mutasi);
+    a.done(function(data) {
+        if ( (mutasi+1) <= 16 ) {
+            get_data_mutasi( mutasi+1 );
+        }else{
+            $("#alert_send_to_mutasi").html("SELESAI");
+        }
+    }); 
+}

@@ -23,7 +23,7 @@
                     <input type="button" value="Add Transaction" id="b_dlg_mutasi11" />
                     
                 </td>
-                <td> <input type="button" value="Get Data" id="get_data_mutasi" onclick="get_data_mutasi()" /></td>
+                <td> <input type="button" value="Get Data" id="get_data_mutasi" onclick="get_data_mutasi(1)" /></td>
                 
 
             </tr>
