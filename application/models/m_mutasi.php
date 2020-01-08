@@ -6077,6 +6077,9 @@ class M_mutasi extends CI_Model {
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
                 AND A.TRANSACTION_STATUS ='NEWM'
         ");
+
+        $res_redemption = $this->CoaDescription('D001');
+        
         $res_jual_saham = array();
         if (count( $jual_saham->result_array() ) == 1) {
             $res_jual_saham = $this->CoaDescription('C006');
