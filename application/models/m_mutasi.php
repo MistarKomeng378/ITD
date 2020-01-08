@@ -2649,7 +2649,7 @@ class M_mutasi extends CI_Model {
             A.CREATION_DATE,
             A.MODIFICATION_DATE,
             'C006' AS subsrd_kategori,
-            'Hasil Jual Saham' AS deskripsi
+            'Hasil Jual Saham - '+RTRIM(SECURITY_CODE) AS deskripsi
         FROM
             NFS_INQ_EQUITY_TEMP A
             INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
@@ -2720,7 +2720,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'D004' AS subsrd_kategori,
-                'Beli Saham' AS deskripsi
+                'Beli Saham - '+RTRIM(SECURITY_CODE) AS deskripsi
             FROM
                 NFS_INQ_EQUITY_TEMP A
                 INNER JOIN  FUND_DETAILS B on B.HIPORT_CODE = A.HIPORT_CODE
@@ -2791,7 +2791,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'C007' AS subsrd_kategori,
-                'Hasil Jual Obligasi' AS deskripsi 
+                'Hasil Jual Obligasi - '+RTRIM(SECURITY_CODE) AS deskripsi 
             FROM
                 NFS_FI_INS_INQ_TEMP A
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
@@ -2862,7 +2862,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'D005' AS subsrd_kategori,
-                'Beli Obligasi' AS deskripsi 
+                'Beli Obligasi - '+RTRIM(SECURITY_CODE) AS deskripsi 
             FROM
                 NFS_FI_INS_INQ_TEMP A
                 INNER JOIN FUND_DETAILS B ON B.HIPORT_CODE = A.HIPORT_CODE 
@@ -2932,7 +2932,7 @@ class M_mutasi extends CI_Model {
                 A.CREATION_DATE,
                 A.MODIFICATION_DATE,
                 'D016' AS subsrd_kategori,
-                'Wht Commision' AS deskripsi,
+                'Wht Commision - '+RTRIM(SECURITY_CODE) AS deskripsi,
                 B.FUND_OPR_ACCT_NO AS acc_no 
             FROM
                 NFS_INQ_EQUITY_TEMP A
@@ -7254,19 +7254,6 @@ class M_mutasi extends CI_Model {
         
         return $return;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     function ListJualSahamDetail($client_code,$acc_no,$date)
     {
