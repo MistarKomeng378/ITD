@@ -1,1 +1,1 @@
-wget --no-check-certificate --spider https://itd.dev/index.php/mutasi/backgroundToMutasi?date=2018-11-14
+start Chrome https://itd.dev/index.php/mutasi/background

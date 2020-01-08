@@ -583,6 +583,10 @@ class Mutasi extends CI_Controller {
         }
     }
 
+    public function background()
+    {
+        return $this->load->view('background');
+    }
     public function backgroundToMutasi()
     {
         if (!$this->session->userdata('itd_uid')) {
@@ -594,10 +598,10 @@ class Mutasi extends CI_Controller {
         $date = $date ? $date : date('Y-m-d', strtotime('-1 day'));
         $this->db_jasgir = $this->load->database('dbjasgir',true);
 
-
-        for ($i=1; $i <= 16; $i++) { 
+        $mutasi = $this->input->get('mutasi');
+        // for ($i=1; $i <= 16; $i++) { 
             
-            switch ($i) {
+            switch ($mutasi) {
                 case 1:
                     $data1 = $this->M_mutasi->RedemptionToMutasiBackground($date);
                     if ($data1['sql']) { 
@@ -714,7 +718,7 @@ class Mutasi extends CI_Controller {
                 default:
                     break;
             }
-        }
+        // }
     }
 
     public function set_mutasi_trx()
