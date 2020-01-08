@@ -2439,7 +2439,8 @@ class M_mutasi extends CI_Model {
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."' 
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND A.SI_REFF = '".$id."'
-                AND A.TRANSACTION_STATUS ='NEWM'
+                AND A.TRANSACTION_STATUS ='NEWM'  
+                AND A.IM_CODE != 'KI002' AND A.IM_CODE != 'DX002'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -2940,6 +2941,7 @@ class M_mutasi extends CI_Model {
                 CONVERT ( DECIMAL(16,2), A.WHT_COMMISION ) > 0 AND
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) = '".$date."'
                 AND A.TRANSACTION_STATUS ='NEWM'
+                AND A.IM_CODE != 'KI002' AND A.IM_CODE != 'DX002'
             ORDER BY
                 subsrd_date DESC
         ");
@@ -5952,6 +5954,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$client_code."'
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND A.TRANSACTION_STATUS ='NEWM'
+                AND A.IM_CODE != 'KI002' AND A.IM_CODE != 'DX002'
             GROUP BY
                 B.FUND_OPR_ACCT_NO,
                 A.HIPORT_CODE,
@@ -6717,6 +6720,7 @@ class M_mutasi extends CI_Model {
                 AND A.HIPORT_CODE = '".$param['client_code']."'
                 AND B.FUND_OPR_ACCT_NO = '".$param['acc_no']."'
                 AND A.TRANSACTION_STATUS ='NEWM'
+                AND A.IM_CODE !='KI002' AND A.IM_CODE != 'DX002'
         ");
         $res_tax_broker = array();
         if (count( $tax_broker->result_array() ) == 1) {
@@ -8042,6 +8046,7 @@ class M_mutasi extends CI_Model {
                 AND B.FUND_OPR_ACCT_NO = '".$acc_no."'
                 AND CONVERT ( DATE, A.SETTLEMENT_DATE )  = '".$date."'
                 AND A.TRANSACTION_STATUS ='NEWM'
+                AND A.IM_CODE != 'KI002' AND A.IM_CODE != 'DX002'
             ORDER BY
                 subsrd_date DESC
         ");
