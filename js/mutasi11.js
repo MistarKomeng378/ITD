@@ -1312,7 +1312,7 @@ function get_data_mutasi(mutasi) {
         '</center>'
     );
 
-    var a = $.get(uri+"index.php/mutasi/backgroundToMutasi?date=2018-10-10"+"&mutasi="+mutasi);
+    var a = $.get(uri+"index.php/mutasi/backgroundToMutasi?mutasi="+mutasi);
     a.done(function(data) {
         if ( (mutasi+1) <= 16 ) {
             get_data_mutasi( mutasi+1 );
