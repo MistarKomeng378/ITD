@@ -492,7 +492,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_urssim->query("
             SELECT
-                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -507,11 +507,14 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -522,13 +525,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -544,10 +546,13 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -561,8 +566,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'URSSIM_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE='".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
 
         foreach ($subsrd->result_array() as $key => $value) {
@@ -575,8 +579,8 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
+                
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -644,7 +648,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_batavia->query("
             SELECT
-                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -659,11 +663,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -674,13 +680,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -699,7 +704,11 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
 				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -713,8 +722,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'BATAVIA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE='".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
         
         foreach ($subsrd->result_array() as $key => $value) {
@@ -727,8 +735,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."' 
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -795,7 +802,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_bni->query("
             SELECT
-                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -810,11 +817,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -825,13 +834,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -847,10 +855,13 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -864,8 +875,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'BNI_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE='".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' 
 
         ");
         
@@ -879,8 +889,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -947,7 +956,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_custody->query("
             SELECT
-                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -962,11 +971,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -977,13 +988,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE = '".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -999,10 +1009,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1016,8 +1028,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'CUSTODY_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE = '".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
         
         foreach ($subsrd->result_array() as $key => $value) {
@@ -1030,8 +1041,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."' 
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -1098,7 +1108,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_discre->query("
             SELECT
-                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1113,11 +1123,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1128,13 +1140,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE = '".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' 
 
             UNION
             
             SELECT
-                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1150,10 +1161,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1167,8 +1180,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'DISCRE_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE = '".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
         
         foreach ($subsrd->result_array() as $key => $value) {
@@ -1181,8 +1193,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -1250,7 +1261,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_mega->query("
             SELECT
-                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1265,11 +1276,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1280,13 +1293,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1301,11 +1313,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1319,8 +1333,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'MEGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' 
         ");
         
         foreach ($subsrd->result_array() as $key => $value) {
@@ -1333,8 +1346,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -1401,7 +1413,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_niaga->query("
             SELECT
-                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1416,11 +1428,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1431,13 +1445,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE = '".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1453,10 +1466,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1470,8 +1485,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'NIAGA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE = '".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
         
         foreach ($subsrd->result_array() as $key => $value) {
@@ -1484,8 +1498,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -1552,7 +1565,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_niaga2->query("
             SELECT
-                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1567,11 +1580,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1582,13 +1597,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1604,10 +1618,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1621,8 +1637,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'NIAGA2_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
 
 
@@ -1636,8 +1651,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -1704,7 +1718,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_syailendra->query("
             SELECT
-                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1719,11 +1733,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1734,13 +1750,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."'
 
             UNION
             
             SELECT
-                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1756,10 +1771,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1773,8 +1790,7 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."' AND
-                'SYAILENDRA_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID_BANK.ACC_NO = '".$acc_no."'
         ");
 
         foreach ($subsrd->result_array() as $key => $value) {
@@ -1787,8 +1803,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."'
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
@@ -1856,7 +1871,7 @@ class M_mutasi extends CI_Model {
         
         $subsrd = $this->db_trimegah->query("
              SELECT
-                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID.ACC_BANK_OPR+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID.ACC_BANK_OPR AS acc_no,
@@ -1871,11 +1886,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -1886,13 +1903,12 @@ class M_mutasi extends CI_Model {
             HAVING 
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) = '".$date."' AND
                 dbo.FUND_ID.CODE_BPM = '".$client_code."' AND
-                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' AND
-                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE ='".$id."'
+                dbo.FUND_ID.ACC_BANK_OPR = '".$acc_no."' 
 
             UNION
             
             SELECT
-                'TRIMEGAH_".date('Ymd', strtotime($date))."_' + dbo.TXN.SELLING_AGENT_CODE as id,
+                db_name() + '_' + '".date('Ymd',strtotime($date))."' +'_'+  dbo.FUND_ID.CODE_BPM+'_'+ dbo.FUND_ID_BANK.ACC_NO+'_'+dbo.TXN.SELLING_AGENT_CODE AS 'subsrd_id',
                 CONVERT ( DATE, dbo.TXN.PAYMENT_DATE, 102 ) AS subsrd_date,
                 dbo.FUND_ID.CODE_BPM AS client_code,
                 dbo.FUND_ID_BANK.ACC_NO AS acc_no,
@@ -1908,10 +1924,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -1938,8 +1956,7 @@ class M_mutasi extends CI_Model {
                 WHERE client_code = '".$client_code."' and 
                 trx_date = '".$date."' and
                 coa_no = '".$coa[0]->coa_no."' and 
-                acc_no = '".$acc_no."' and
-                subsrd_id = '".$value['id']."'
+                acc_no = '".$acc_no."' 
             ");
 
             if( count( $check_mutasi->result_array() ) == 0 ){
