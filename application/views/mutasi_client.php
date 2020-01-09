@@ -6,6 +6,7 @@
 			<select id="i_mutasi_kategori" style="width:50%">
 			</select>
 			<button id="get_data_mutasi_by_group">Tampilkan Data</button>
+			<span id="loadingMutasi"></span>
 		</td>
 	</tr>
 </table>

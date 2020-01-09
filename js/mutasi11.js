@@ -140,11 +140,13 @@ function create_dlg_dpicker_mutasi11()
                 }
                 
                 $('#get_data_mutasi_by_group').click(function () {
+                    $('#get_data_mutasi_by_group').attr('disabled',true);
                     list_trx_mutasi_by_group(
                         $('#i_mutasi11_client_code').val(),
                         $('#i_mutasi11_rek').val(),
                         $('#i_mutasi_kategori').val()
-                    );                            
+                    ); 
+                    
                 })
                 create_list_mutasi_by_group();
                 
@@ -241,10 +243,9 @@ function get_last_date_mutasi11(pc_code,pc_accno,pc_dt)
 
 function list_trx_mutasi11(pc_code,pc_accno,pc_dt)
 {
-    state_progress(1);
     data_mutasi11.length=0;  
     var obj_post = $.post(uri+"/index.php/mutasi/list_trx", {c_code:pc_code,c_accno:pc_accno,c_dt:pc_dt},function(data) {
-        //alert(data);
+
     },'json'); 
     obj_post.done(function(msg) { 
         var c1=0;
@@ -275,15 +276,14 @@ function list_trx_mutasi11(pc_code,pc_accno,pc_dt)
         grid_mutasi11.invalidateAllRows();
         grid_mutasi11.updateRowCount();
         grid_mutasi11.render();
-        state_progress(0);
     });
     
     obj_post.fail(function(jqXHR, textStatus) {
         grid_mutasi11.invalidateAllRows();
         grid_mutasi11.updateRowCount();
         grid_mutasi11.render();
-        state_progress(0);}
-    );
+        state_progress(0);
+    });
 }
 function get_balance_mutasi11(pc_code,pc_accno,pc_dt)
 {
@@ -1085,7 +1085,7 @@ function create_dlg_mutasi_client_search()
 
 function list_trx_mutasi_by_group(client_code,acc_no,coa_no)
 {
-    state_progress(1);
+    $('#loadingMutasi').html('<img src="'+uri+'img/ajax-loader-small.gif" width="10px"/>');
     mutasi_by_group.length=0;
     var obj_post = $.post(uri+"/index.php/mutasi/list_mutasi_by_group", {
         client_code: client_code,
@@ -1113,15 +1113,17 @@ function list_trx_mutasi_by_group(client_code,acc_no,coa_no)
         grid_mutasi_by_group.invalidateAllRows();
         grid_mutasi_by_group.updateRowCount();
         grid_mutasi_by_group.render();
-        state_progress(0);
+        $('#get_data_mutasi_by_group').attr('disabled',false);
+        $('#loadingMutasi').html('');
     });
     
     obj_post.fail(function(jqXHR, textStatus) {
         grid_mutasi_by_group.invalidateAllRows();
         grid_mutasi_by_group.updateRowCount();
         grid_mutasi_by_group.render();
-        state_progress(0);}
-    );    
+        $('#get_data_mutasi_by_group').attr('disabled',false);
+        $('#loadingMutasi').html('');
+    });    
     
 }
 
@@ -1180,7 +1182,7 @@ function create_list_mutasi_by_group()
 
 function list_trx_mutasi_detail(client_code,acc_no,coa_no,date)
 {
-    state_progress(1);
+    $('#loadingMutasi').html('<img src="'+uri+'img/ajax-loader-small.gif" width="10px"/>');
     mutasi_detail.length=0;
     var obj_post = $.post(uri+"/index.php/mutasi/list_mutasi_detail", {
         client_code: client_code,
@@ -1209,15 +1211,15 @@ function list_trx_mutasi_detail(client_code,acc_no,coa_no,date)
         grid_mutasi_detail.invalidateAllRows();
         grid_mutasi_detail.updateRowCount();
         grid_mutasi_detail.render();
-        state_progress(0);
+        $('#loadingMutasi').html('');
     });
     
     obj_post.fail(function(jqXHR, textStatus) {
         grid_mutasi_detail.invalidateAllRows();
         grid_mutasi_detail.updateRowCount();
         grid_mutasi_detail.render();
-        state_progress(0);}
-    );    
+        $('#loadingMutasi').html('');
+    });    
     
 }
 

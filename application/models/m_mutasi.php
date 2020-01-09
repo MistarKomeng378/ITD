@@ -4854,11 +4854,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND 
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4886,10 +4888,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -4945,11 +4949,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -4978,10 +4984,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5036,11 +5044,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5071,7 +5081,11 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
 				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5126,11 +5140,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5158,10 +5174,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5216,11 +5234,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5248,10 +5268,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5306,11 +5328,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5338,10 +5362,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5396,11 +5422,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5428,10 +5456,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5486,11 +5516,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5518,10 +5550,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5576,11 +5610,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5608,10 +5644,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -5667,11 +5705,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -5699,10 +5739,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6333,12 +6375,14 @@ class M_mutasi extends CI_Model {
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6369,11 +6413,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6429,11 +6475,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6465,10 +6513,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6523,12 +6573,14 @@ class M_mutasi extends CI_Model {
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6560,10 +6612,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6618,11 +6672,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6654,10 +6710,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6712,11 +6770,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6747,11 +6807,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6805,12 +6867,14 @@ class M_mutasi extends CI_Model {
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6842,10 +6906,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6901,11 +6967,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -6937,10 +7005,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -6995,11 +7065,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -7031,10 +7103,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -7088,12 +7162,14 @@ class M_mutasi extends CI_Model {
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -7124,11 +7200,13 @@ class M_mutasi extends CI_Model {
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
@@ -7181,12 +7259,14 @@ class M_mutasi extends CI_Model {
                 dbo.TXN
                 INNER JOIN dbo.TXN_POSTING ON dbo.TXN.TXN_REF = dbo.TXN_POSTING.TXN_REF 
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
-                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE 
+                INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
             WHERE 
                 dbo.TXN_POSTING.TXN_TYPE = 'R' AND
-                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null )
+                (dbo.TXN.BANK_LETTER_CITY = '' OR dbo.TXN.BANK_LETTER_CITY is null ) AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.FUND_ID.ACC_BANK_OPR,
                 dbo.FUND_ID.CODE_BPM,
@@ -7218,10 +7298,12 @@ class M_mutasi extends CI_Model {
                 AND dbo.TXN.TXN_NO = dbo.TXN_POSTING.TXN_NO
                 INNER JOIN dbo.FUND_ID_BANK ON dbo.TXN.BANK_LETTER_CITY = dbo.FUND_ID_BANK.BANK_CODE
                 INNER JOIN dbo.FUND_ID ON dbo.TXN.FUND_ID = dbo.FUND_ID.FUND_ID 
-                INNER JOIN dbo.FUND_SUMMARY ON dbo.TXN.FUND_ID = dbo.FUND_SUMMARY.FUND_ID 
-				AND dbo.FUND_SUMMARY.TRADE_DATE = dbo.TXN.PAYMENT_DATE
             WHERE
-                dbo.TXN_POSTING.TXN_TYPE = 'R'
+                dbo.TXN_POSTING.TXN_TYPE = 'R' AND
+                ( 
+                    dbo.TXN.FUND_ID IN (SELECT dbo.FUND_SUMMARY.FUND_ID  FROM dbo.FUND_SUMMARY) AND 
+                    dbo.TXN.PAYMENT_DATE IN (SELECT dbo.FUND_SUMMARY.TRADE_DATE  FROM dbo.FUND_SUMMARY)
+                )
             GROUP BY
                 dbo.TXN_POSTING.TXN_TYPE,
                 dbo.TXN.PAYMENT_DATE,
