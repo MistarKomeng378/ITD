@@ -577,19 +577,23 @@
                 <button id="hbtn_user_reset_pass">Reset Password</button>  -
                 <button id="hbtn_user_refresh">Refresh</button>             
             </div>
-            <div id="hbtn_trx_duedate" style="display: none;">
-               
+            <?php } ?> 
+            <?php if($lvl<=10) { ?> 
+            <div id="hbtn_trx_duedate" style="display: none;">               
                 <!-- Due Date:  -->
                 <input type="hidden" class="dtpick" id="hbtn_trx_duedate_dt" style="width: 80px; text-align: center;"  />
                 <!-- <button id="hbtn_trx_duedate_reload">Reload</button>    -->
                 <!-- <span style="margin-left: 30px"></span> -->
-               
+              
                 Start: <input type="text" class="dtpick" id="hbtn_trx_duedate_dt_start" style="width: 80px; text-align: center;"  />
-                End: <input type="text" class="dtpick" id="hbtn_trx_duedate_dt_end" style="width: 80px; text-align: center;"  />
+                End: <input type="text" class="dtpick" id="hbtn_trx_duedate_dt_end" style="width: 80px; text-align: center;"  />                
                 <button id="hbtn_trx_duedate_filter_reload">Reload</button>
                 <button id="hbtn_trx_duedate_save_to_excel">Save to Excel</button>
-            </div>  
+               
+            </div> 
+            
             <?php } ?>
+            
         </div> 
     </div> 
 </div> 
