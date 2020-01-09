@@ -1314,7 +1314,7 @@ function get_data_mutasi(mutasi) {
         '</center>'
     );
 
-    var a = $.get(uri+"index.php/mutasi/backgroundToMutasi?mutasi="+mutasi);
+    var a = $.get(uri+"index.php/mutasi/backgroundToMutasi/"+mutasi+'/2018-10-10');
     a.done(function(data) {
         if ( (mutasi+1) <= 16 ) {
             get_data_mutasi( mutasi+1 );
