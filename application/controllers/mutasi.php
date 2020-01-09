@@ -583,20 +583,21 @@ class Mutasi extends CI_Controller {
         }
     }
 
-    public function background()
+    public function background($mutasi=1,$date=null)
     {
-        return $this->load->view('background');
+        return $this->load->view('background',array('date'=>$date,'mutasi'=>$mutasi));
     }
     public function backgroundToMutasi()
     {
+        $this->db_jasgir = $this->load->database('dbjasgir',true);
+        $this->load->model("M_mutasi");
+
         if (!$this->session->userdata('itd_uid')) {
             $this->session->set_userdata(array('itd_uid' => 'system'));
         }
 
-        $this->load->model("M_mutasi");
         $date = $this->input->get('date');
         $date = $date ? $date : date('Y-m-d', strtotime('-1 day'));
-        $this->db_jasgir = $this->load->database('dbjasgir',true);
 
         $mutasi = $this->input->get('mutasi');
         // for ($i=1; $i <= 16; $i++) { 

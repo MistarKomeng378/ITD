@@ -1,1 +1,1 @@
-start Chrome https://itd.dev/index.php/mutasi/background
+start Chrome http://localhost:8088/itd/index.php/mutasi/background

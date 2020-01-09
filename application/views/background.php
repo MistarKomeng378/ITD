@@ -14,23 +14,24 @@
     <script type="text/javascript">
         $(document).ready(function() {
             
-            getData(1);
+            getData(<?php echo $mutasi; ?>);
 
         });
 
-        function getData(muatsi) {
+        function getData(mutasi) {
 
             $('#loading').html(
                 '<img src="<?php echo base_url(); ?>img/ajax-loader.gif"></img>'+
                 '<span>'+
-                '<?php echo base_url().'index.php/mutasi/backgroundToMutasi?date=2018-10-10'; ?>'+'&mutasi='+muatsi+
+                '<?php echo base_url().'index.php/mutasi/backgroundToMutasi?mutasi='; ?>'+mutasi+'&date='+'<?php echo $date; ?>'+
                 '</span>'
             );
+            $('#log').html('Antrian Ke = '+mutasi);
 
-            var a = $.get('<?php echo base_url().'index.php/mutasi/backgroundToMutasi?date=2018-10-10'; ?>'+'&mutasi='+muatsi);
+            var a = $.get('<?php echo base_url().'index.php/mutasi/backgroundToMutasi?mutasi='; ?>'+mutasi+'&date='+'<?php echo $date; ?>');
             a.done(function(data) {
-                if ( (muatsi+1) <= 16 ) {
-                    getData( muatsi+1 );
+                if ( (mutasi+1) <= 16 ) {
+                    getData( mutasi+1 );
                 }else{
                     window.close();
                 }
