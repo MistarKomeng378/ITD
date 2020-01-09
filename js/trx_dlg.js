@@ -380,6 +380,11 @@ function load_data_trx(pdata,no_tt)
         $("#i_trx_deposit_tenor").attr("disabled",true);
         $("#i_trx_client_code").attr("disabled",true);
         $("#i_trx_curr").attr("disabled",true);
+        $("#i_trx_to").attr("disabled",true);
+        $("#i_trx_remark1").attr("disabled",true);
+        $("#i_trx_up").attr("disabled",true);
+        $("#i_trx_telp").attr("disabled",true);
+        $("#i_trx_fax").attr("disabled",true);
     }
     
     
