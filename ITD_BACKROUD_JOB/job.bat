@@ -1,1 +1,1 @@
-start Chrome http://localhost:8088/itd/index.php/mutasi/background
+wget --no-check-certificate --spider https://itd.dev/index.php/mutasi/background/1/2018-10-09

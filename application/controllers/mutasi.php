@@ -1,5 +1,4 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-ini_set('MAX_EXECUTION_TIME',500);
 
 class Mutasi extends CI_Controller { 
     var $isLogin;
@@ -585,6 +584,11 @@ class Mutasi extends CI_Controller {
 
     public function background($i=1,$date=null)
     {
+        if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
+        {
+            @set_time_limit(600);
+        }
+        
         for ($i; $i <= 16; $i++) {
             $this->backgroundToMutasi($i,$date);
         }
