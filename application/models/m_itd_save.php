@@ -118,7 +118,7 @@ class M_itd_save extends CI_Model {
                 )VALUES(
                     '".trim($value['trx_client_code'])."',
                     '".trim($value['trx_acc_no'])."',
-                    '".$value['trx_date']->format('Y-m-d')."',
+                    '".$value['trx_valuta_date']->format('Y-m-d')."',
                     '".$coa[0]->coa_no."',
                     '".$coa[0]->coa_desc."',
                     '".$value['trx_to']."',
