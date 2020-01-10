@@ -281,25 +281,25 @@
             <?php if(($itd_user_unit==1 || $itd_user_unit==0) && $lvl!=0){ ?>
                 <!-- Buttons ITD -->
                 <div id="hbtn_trx" style="display: none; vertical-align: middle;">
-                <button id="hbtn_trx_search">Cari Inst</button> 
-                -
-                <select id="hselect_trx_type">
-                    <option value="1">Penempatan</option>
-                    <option value="2">Perpanjangan</option>
-                    <option value="3">Pencairan</option>
-                    <option value="4">Break</option>
-                </select>
-                <button id="hbtn_trx_new">Buat Inst</button> 
-                <?php if($lvl<=5) { ?>
-                <button id="hbtn_trx_edit">Ubah Inst</button> 
-                <button id="hbtn_trx_cancel">Batalkan Inst</button> 
-                <?php }?>
-                -
-                <button id="hbtn_trx_ticket">Buat Tiket</button> -
-                <button id="hbtn_trx_print">Cetak</button> 
-                -
-                <button id="hbtn_trx_refresh">Reload</button> 
-                <input id="i_trx_list_dt" type="text" class="dtpick" style="width:80px;text-align: center;" /> &gt;=7 hari tgl valuta.
+                    <button id="hbtn_trx_search">Cari Inst</button> 
+                    -
+                    <select id="hselect_trx_type">
+                        <option value="1">Penempatan</option>
+                        <option value="2">Perpanjangan</option>
+                        <option value="3">Pencairan</option>
+                        <option value="4">Break</option>
+                    </select>
+                    <button id="hbtn_trx_new">Buat Inst</button> 
+                    <?php if($lvl<=5) { ?>
+                    <button id="hbtn_trx_edit">Ubah Inst</button> 
+                    <button id="hbtn_trx_cancel">Batalkan Inst</button> 
+                    <?php }?>
+                    -
+                    <button id="hbtn_trx_ticket">Buat Tiket</button> -
+                    <button id="hbtn_trx_print">Cetak</button> 
+                    -
+                    <button id="hbtn_trx_refresh">Reload</button> 
+                    <input id="i_trx_list_dt" type="text" class="dtpick" style="width:80px;text-align: center;" /> &gt;=7 hari tgl valuta.
                     <span id="trx_auto_refresh" style="display:none;">
                         -
                         <select id="field_trx_auto_refresh_time" name="field_trx_auto_refresh_time">
@@ -310,6 +310,8 @@
                         </select>
                         <input type="checkbox" name="field_trx_auto_refresh" id="field_trx_auto_refresh" /> Auto Refresh
                     </span>
+                    -
+                    <button id="instruksi_deposito_excel">Save To Excel</button>
                 </div>
                 <!-- END OF Buttons ITD -->
                 <div id="hbtn_trx_nfs" style="display: none; vertical-align: middle;">

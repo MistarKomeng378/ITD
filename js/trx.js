@@ -97,9 +97,39 @@ function refresh_trx_grid()
     });
 }
 
+function save_to_excel_instruksi_deposito()
+{
+    var trx_to = $("#dlgTrxSearch_to").val();
+    var trx_ccode = $("#dlgTrxSearch_client_code").val();
+    var trx_cname = $("#dlgTrxSearch_client_name").val();
+    var trx_stype = $("#dlgTrxSearch_type").val();
+    var trx_nominal = $("#dlgTrxSearch_nominal").val();
+    var trx_ntype = $("#dlgTrxSearch_nominal_type").val();
+    var trx_sdate = $("#dlgTrxSearch_sdate").val();
+    var trx_edate = $("#dlgTrxSearch_edate").val();
+    var trx_id = $("#dlgTrxSearch_id").val();
+
+    var trx_to = trx_to ? trx_to : 0 ;
+    var trx_ccode = trx_ccode ? trx_ccode : 0 ;
+    var trx_cname = trx_cname ? trx_cname : 0 ;
+    var trx_stype = trx_stype ? trx_stype : 0 ;
+    var trx_nominal = trx_nominal ? trx_nominal : 0 ;
+    var trx_ntype = trx_ntype ? trx_ntype : 0 ;
+    var trx_sdate = trx_sdate ? trx_sdate : 0 ;
+    var trx_edate = trx_edate ? trx_edate : 0 ;
+    var trx_id = trx_id ? trx_id : 0 ;
+
+    var param = '/'+ trx_to +'/'+ trx_ccode +'/'+ trx_cname +'/'+ trx_stype +'/'+ trx_nominal +'/'+ trx_ntype +'/'+ trx_sdate +'/'+ trx_edate +'/'+ trx_id;
+    
+    window.open(uri+"index.php/itd/save_to_excel_approved"+param,"_blank");
+}
 
 function create_trx_event()
 {
+    $('#instruksi_deposito_excel').click(function(){
+        save_to_excel_instruksi_deposito();
+    });
+
     $("#hbtn_trx_refresh").click(function(){
         refresh_trx_grid();
     });

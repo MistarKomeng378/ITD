@@ -157,7 +157,7 @@ class M_itd extends CI_Model {
     function search_trx_approved($trx_to='',$trx_ccode='',$trx_cname='',$trx_stype=0,$trx_ntype=0,$trx_nominal=0,$trx_sdate='01/01/1900',$trx_edate='01/01/1900',$user_id='',$trx_id=0)
     {                        
         //echo "exec search_trx_approved '{$trx_to}','{$trx_ccode}','{$trx_cname}',{$trx_stype},{$trx_ntype},{$trx_nominal},'{$trx_sdate}','{$trx_edate}','{$user_id}'";
-        $query=$this->db->query("exec search_trx_approved '{$trx_to}','{$trx_ccode}','{$trx_cname}',{$trx_stype},{$trx_ntype},{$trx_nominal},'{$trx_sdate}','{$trx_edate}','{$user_id}','{$trx_id}'");
+        $query=$this->db->query("exec search_trx_approved '{$trx_to}','{$trx_ccode}','{$trx_cname}','{$trx_stype}','{$trx_ntype}','{$trx_nominal}','{$trx_sdate}','{$trx_edate}','{$user_id}','{$trx_id}'");
         $data=$query->result_array(); 
         return $data;
     }

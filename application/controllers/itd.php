@@ -257,6 +257,38 @@ class Itd extends CI_Controller {
         $this->data["r_sdata"]= $data;
         echo json_encode($this->data);
     } 
+    function save_to_excel_approved($trx_to, $trx_ccode, $trx_cname, $trx_stype, $trx_ntype, $trx_nominal, $trx_sdate, $trx_edate, $trx_id)
+    {
+        $this->load->model("M_itd");  
+        if($trx_sdate=="")
+            $trx_sdate='01/01/1900';
+        if($trx_edate=="")
+            $trx_edate='01/01/1900';
+        $trx_sdate = change_dt_format($trx_sdate);
+        $trx_edate = change_dt_format($trx_edate);
+
+        $data = $this->M_itd->search_trx_approved(
+            $trx_to > 0 ? $trx_to : '' , 
+            $trx_ccode > 0 ? $trx_ccode : '', 
+            $trx_cname > 0 ? $trx_cname : '', 
+            $trx_stype > 0 ? $trx_stype : '', 
+            $trx_ntype > 0 ? $trx_ntype : '', 
+            $trx_nominal > 0 ? $trx_nominal : 0+$trx_nominal,
+            $trx_sdate > 0 ? $trx_sdate : '',
+            $trx_edate > 0 ? $trx_edate : '',
+            $this->session->userdata('itd_uid'),
+            $trx_id > 0 ? $trx_id : ''
+        );
+
+        // echo json_encode($data);
+        $filename="instruksi_deposito_ ".$trx_sdate." s.d ".$trx_edate.".xls";
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        
+        $this->load->view('intruksi_deposito_excel',array('data' => $data) );
+    } 
     function search_trx_approved()
     {
         $param=$this->input->post();
