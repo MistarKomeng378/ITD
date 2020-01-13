@@ -370,6 +370,11 @@ class M_itd_save extends CI_Model {
         if($deleting){
             $query  = $this->db_jasgir->query("DELETE FROM mutasi_trx WHERE subsrd_id = '".$trx_id."' ");
             $query  = $this->db->query("exec submit_cancel_trx '{$user_id}','{$trx_id}','{$trx_note}'");
+
+            // oleh kurob -- hard reset
+            // hapus dari tabel itd_trx_approved
+            // untuk kebutuhan data deposito jatuh tempo
+            $this->db->query("DELETE FROM itd_trx_approved WHERE trx_id = '".$trx_id."' ");
             $data   = $query->result_array();
             $data = $query ? array('msg' => 'Data berhasil di hapus') : array('msg' => 'Data gagal di hapus');
         }
