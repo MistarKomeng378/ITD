@@ -589,6 +589,7 @@ class Mutasi extends CI_Controller {
             @set_time_limit(600);
         }
         
+        $date = $date ? $date : date('Y-m-d', strtotime('-1 day'));
         for ($i; $i <= 16; $i++) {
             $this->backgroundToMutasi($i,$date);
         }
@@ -603,7 +604,7 @@ class Mutasi extends CI_Controller {
         }
 
         // $date = $this->input->get('date');
-        $date = $date ? $date : date('Y-m-d', strtotime('-1 day'));
+        $date = $date ? $date : date('Y-m-d');
 
         // $mutasi = $this->input->get('mutasi');
         // for ($i=1; $i <= 16; $i++) { 

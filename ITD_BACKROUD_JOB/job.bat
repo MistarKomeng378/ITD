@@ -1,1 +1,1 @@
-wget --no-check-certificate --spider https://itd.dev/index.php/mutasi/background/1/2018-10-09
+wget --no-check-certificate --spider https://itd.dev/index.php/mutasi/background/1
