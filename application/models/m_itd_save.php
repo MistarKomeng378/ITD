@@ -352,15 +352,19 @@ class M_itd_save extends CI_Model {
             // echo json_encode($checkStatusMutasi);
             // die();
             // jika data status mutasi 0 / data mutasi belum pernah di open / close mmaka data bisa di hapus
-            if($checkStatusMutasi[0]['curr_status'] == 0){
-                $deleting = true;
-            }else if($checkStatusMutasi[0]['curr_status'] == 1){
-                // jika data status mutasi = 1 / open maka data bisa dihapus
-                // selain status = 1 / open data tidak bisa di hapus
+            if(count($checkStatusMutasi) == 0){
                 $deleting = true;
             }else{
-                $deleting = false;
-                $data = array('msg' => 'Data mutasi status bukan open');
+                if($checkStatusMutasi[0]['curr_status'] == 0){
+                    $deleting = true;
+                }else if($checkStatusMutasi[0]['curr_status'] == 1){
+                    // jika data status mutasi = 1 / open maka data bisa dihapus
+                    // selain status = 1 / open data tidak bisa di hapus
+                    $deleting = true;
+                }else{
+                    $deleting = false;
+                    $data = array('msg' => 'Data mutasi status bukan open');
+                }
             }
 
         }else{
