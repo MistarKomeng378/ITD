@@ -21,6 +21,7 @@
 <body>
     <table>
         <tr>
+            <th>No</th>
             <th>ID</th>
             <th>Parent ID</th>
             <th>NFS</th>
@@ -47,12 +48,10 @@
                 <td><?php echo $value['trx_id_upper']; ?></td>
                 <td><?php echo $value['nfs_td']== '1' ? 'PTP' : ''; ?></td>
                 <td><?php echo $value['status_desc']; ?></td>
-                <td><?php echo $value['status_desc']; ?></td>
                 <td><?php echo $value['trx_valuta_date']->format('Y-m-d'); ?></td>
                 <td><?php echo $value['trx_due_date']->format('Y-m-d'); ?></td>
                 <td><?php echo $value['trx_to']; ?></td>
                 <td><?php echo $value['trx_client_name']; ?></td>
-                <td><?php echo $value['type_desc']; ?></td>
                 <td><?php echo $value['type_desc']; ?></td>
                 <td><?php echo $value['trx_nominal']; ?></td>
                 <td><?php echo $value['trx_rate']; ?>%</td>
