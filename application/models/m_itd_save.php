@@ -200,6 +200,7 @@ class M_itd_save extends CI_Model {
         $deleting = false;
         $cekMutasi = $this->CheckDataMutasi($param["trx_id"]);
         $trx_date = date('Y-m-d', strtotime($param["trx_dt"]));
+        $trx_date_valuta = date('Y-m-d', strtotime($param["trx_val_dt"]));
         $data = array('msg' => '');
 
         // Jika data pencairan / penempatan ada pada mutasi maka check status mutasi Open/tidak
@@ -220,7 +221,19 @@ class M_itd_save extends CI_Model {
                 // jika data status mutasi = 1 / open maka data bisa dihapus
                 // selain status = 1 / open data tidak bisa di hapus
                 if($checkStatusMutasi[0]['curr_status'] == 1 || $trx_date  > date('Y-m-d') ){
-                    $deleting = true;
+                    
+                    if($param["trx_type"] == 1 && $trx_date_valuta  < date('Y-m-d')){
+                        // penempatan
+                        $deleting = false;
+                        $data = array('msg' => 'Tanggal valutan kurang dari tanggal hari ini');
+                    }else if($param["trx_type"] == 3 && $trx_date  < date('Y-m-d')){
+                        // pencairan
+                        $deleting = false;
+                        $data = array('msg' => 'Tanggal transasksi kurang dari tanggal hari ini');
+                    }else{
+                        $deleting = true;
+                    }
+                    
                 }else{
                     $deleting = false;
                     $data = array('msg' => 'Data mutasi status bukan open atau tanggal transaksi lebih kecil dari tanggal sekarang');
