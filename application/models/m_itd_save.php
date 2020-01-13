@@ -253,6 +253,7 @@ class M_itd_save extends CI_Model {
                         [acc_no]        = '".$param["trx_acc_no"]."',
                         [trx_date]      = '".date('Y-m-d',strtotime($param["trx_val_dt"]))."',
                         [trx_nominal]   = ".$param["trx_nominal"].",
+                        [trx_desc]      = '".$param["trx_to"]."',
                         [modified_by]   = '".$this->session->userdata('itd_uid')."',
                         [modified_dt]   = '".date('Y-m-d H:i:s')."',
                         [trx_status]    = 1
