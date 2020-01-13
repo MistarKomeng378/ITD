@@ -104,8 +104,10 @@ class M_itd_save extends CI_Model {
                 trim($value['trx_acc_no']),
                 $value['trx_valuta_date']->format('Y-m-d')
             );
-            
-            if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
+
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['last_date']->format('Y-m-d') <= $value['trx_valuta_date']->format('Y-m-d') || 
+                $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
+            ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -146,7 +148,7 @@ class M_itd_save extends CI_Model {
             }
         }
 
-        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Penempatan berhasil masuk ke mutasi') : '';
+        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Penempatan berhasil masuk ke mutasi') : array('msg' => '');
         return $mutasi_trx;
     }
 
@@ -174,7 +176,9 @@ class M_itd_save extends CI_Model {
                 $value['trx_date']->format('Y-m-d')
             );
 
-            if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['last_date']->format('Y-m-d') <= $value['trx_date']->format('Y-m-d') || 
+                $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
+            ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -214,7 +218,7 @@ class M_itd_save extends CI_Model {
                 return $mutasi_trx;
             }
         }
-        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : '';
+        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : array('msg' => '');
         return $mutasi_trx;
     }
 
@@ -344,6 +348,8 @@ class M_itd_save extends CI_Model {
                 $cekMutasi[0]['trx_date']->format('Y-m-d')
             );
 
+            // echo json_encode($checkStatusMutasi);
+            // die();
             // jika data status mutasi 0 / data mutasi belum pernah di open / close mmaka data bisa di hapus
             if($checkStatusMutasi[0]['curr_status'] == 0){
                 $deleting = true;

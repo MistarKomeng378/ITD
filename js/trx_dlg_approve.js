@@ -58,9 +58,9 @@ function do_submit_approve_dlg_trx_approve()
                 else
                 {
                     alert("Approve instruction success!");
-                    if(msg.penempatan_to_mutasi){
+                    if(msg.penempatan_to_mutasi.msg){
                         alert(msg.penempatan_to_mutasi.msg);
-                    }else if(msg.pencairan_to_mutasi){
+                    }else if(msg.pencairan_to_mutasi.msg){
                         alert(msg.pencairan_to_mutasi.msg);
                     }
 
