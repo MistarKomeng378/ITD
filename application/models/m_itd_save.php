@@ -98,43 +98,55 @@ class M_itd_save extends CI_Model {
 
         $mutasi_trx = '';
         foreach ($subsrd->result_array() as $key => $value) {
-                
-            $mutasi_trx = $this->db_jasgir->query("
-                INSERT INTO [dbo].[mutasi_trx] (
-                    [client_code],
-                    [acc_no],
-                    [trx_date],
-                    [coa_no],
-                    [coa_desc],
-                    [trx_desc],
-                    [trx_dc],
-                    [trx_nominal],
-                    [created_by],
-                    [created_dt],
-                    [modified_by],
-                    [modified_dt],
-                    [trx_status],
-                    [subsrd_id]
-                )VALUES(
-                    '".trim($value['trx_client_code'])."',
-                    '".trim($value['trx_acc_no'])."',
-                    '".$value['trx_valuta_date']->format('Y-m-d')."',
-                    '".$coa[0]->coa_no."',
-                    '".$coa[0]->coa_desc."',
-                    '".$value['trx_to']."',
-                    '".$coa[0]->coa_dc."',
-                    '".$value['trx_nominal']."',
-                    '".$value['trx_create_by']."',
-                    '".$value['trx_date']->format('Y-m-d H:i:s')."',
-                    '".$this->session->userdata('itd_uid')."',
-                    '".date('Y-m-d H:i:s')."',
-                    1,
-                    '".$value['trx_id']."'
-                );
-            ");
 
+            $checkStatusMutasi = $this->get_last_balance_date(
+                trim($value['trx_client_code']),
+                trim($value['trx_acc_no']),
+                $value['trx_valuta_date']->format('Y-m-d')
+            );
+            
+            if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['trx_client_code'])."',
+                        '".trim($value['trx_acc_no'])."',
+                        '".$value['trx_valuta_date']->format('Y-m-d')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['trx_to']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['trx_nominal']."',
+                        '".$value['trx_create_by']."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['trx_id']."'
+                    );
+                ");
+            }else{
+                $p = trim($value['trx_client_code']).' - '.trim($value['trx_acc_no']).' - '.$value['trx_valuta_date']->format('Y-m-d');
+                $mutasi_trx = array('msg' => 'Data Penempatan Gagal Masuk Kemutasi, Status Mutasi ini ( '.$p.' ) Bukan Open');
+                return $mutasi_trx;
+            }
         }
-        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Penempatan berhasil masuk ke mutasi') : array('msg' => 'Data Penempatan Gagal Masuk ke Mutasi');
+
+        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Penempatan berhasil masuk ke mutasi') : '';
         return $mutasi_trx;
     }
 
@@ -155,43 +167,54 @@ class M_itd_save extends CI_Model {
 
         $mutasi_trx = '';
         foreach ($subsrd->result_array() as $key => $value) {
-                
-            $mutasi_trx = $this->db_jasgir->query("
-                INSERT INTO [dbo].[mutasi_trx] (
-                    [client_code],
-                    [acc_no],
-                    [trx_date],
-                    [coa_no],
-                    [coa_desc],
-                    [trx_desc],
-                    [trx_dc],
-                    [trx_nominal],
-                    [created_by],
-                    [created_dt],
-                    [modified_by],
-                    [modified_dt],
-                    [trx_status],
-                    [subsrd_id]
-                )VALUES(
-                    '".trim($value['trx_client_code'])."',
-                    '".trim($value['trx_acc_no'])."',
-                    '".$value['trx_date']->format('Y-m-d')."',
-                    '".$coa[0]->coa_no."',
-                    '".$coa[0]->coa_desc."',
-                    '".$value['trx_to']."',
-                    '".$coa[0]->coa_dc."',
-                    '".$value['trx_nominal']."',
-                    '".$value['trx_create_by']."',
-                    '".$value['trx_date']->format('Y-m-d H:i:s')."',
-                    '".$this->session->userdata('itd_uid')."',
-                    '".date('Y-m-d H:i:s')."',
-                    1,
-                    '".$value['trx_id']."'
-                );
-            ");
+            
+            $checkStatusMutasi = $this->get_last_balance_date(
+                trim($value['trx_client_code']),
+                trim($value['trx_acc_no']),
+                $value['trx_date']->format('Y-m-d')
+            );
 
+            if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
+                $mutasi_trx = $this->db_jasgir->query("
+                    INSERT INTO [dbo].[mutasi_trx] (
+                        [client_code],
+                        [acc_no],
+                        [trx_date],
+                        [coa_no],
+                        [coa_desc],
+                        [trx_desc],
+                        [trx_dc],
+                        [trx_nominal],
+                        [created_by],
+                        [created_dt],
+                        [modified_by],
+                        [modified_dt],
+                        [trx_status],
+                        [subsrd_id]
+                    )VALUES(
+                        '".trim($value['trx_client_code'])."',
+                        '".trim($value['trx_acc_no'])."',
+                        '".$value['trx_date']->format('Y-m-d')."',
+                        '".$coa[0]->coa_no."',
+                        '".$coa[0]->coa_desc."',
+                        '".$value['trx_to']."',
+                        '".$coa[0]->coa_dc."',
+                        '".$value['trx_nominal']."',
+                        '".$value['trx_create_by']."',
+                        '".$value['trx_date']->format('Y-m-d H:i:s')."',
+                        '".$this->session->userdata('itd_uid')."',
+                        '".date('Y-m-d H:i:s')."',
+                        1,
+                        '".$value['trx_id']."'
+                    );
+                ");
+            }else{
+                $p = trim($value['trx_client_code']).' - '.trim($value['trx_acc_no']).' - '.$value['trx_date']->format('Y-m-d');
+                $mutasi_trx = array('msg' => 'Data Pencairan Gagal Masuk Kemutasi, Status Mutasi ini ( '.$p.' ) Bukan Open');
+                return $mutasi_trx;
+            }
         }
-        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : array('msg' => 'Data Pencairan Gagal Masuk ke Mutasi');
+        $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Pencairan berhasil masuk ke mutasi') : '';
         return $mutasi_trx;
     }
 
@@ -310,7 +333,6 @@ class M_itd_save extends CI_Model {
         $deleting = false;
         $cekMutasi = $this->CheckDataMutasi($trx_id);
         $data = array('msg' => '');
-
         // Jika data pencairan / penempatan ada pada mutasi maka check status mutasi Open/tidak
         // Jika data mutasi open maka data bisa di hapus dan jika tidak open maka data tidak bisa di hapus
         // Jika data pencairan / penempatan tidak ada pada mutasi data bisa di hapus
@@ -323,23 +345,20 @@ class M_itd_save extends CI_Model {
             );
 
             // jika data status mutasi 0 / data mutasi belum pernah di open / close mmaka data bisa di hapus
-            if(count($checkStatusMutasi) == 0){
+            if($checkStatusMutasi[0]['curr_status'] == 0){
                 $deleting = true;
-            }else{
+            }else if($checkStatusMutasi[0]['curr_status'] == 1){
                 // jika data status mutasi = 1 / open maka data bisa dihapus
                 // selain status = 1 / open data tidak bisa di hapus
-                if($checkStatusMutasi[0]['curr_status'] == 1){
-                    $deleting = true;
-                }else{
-                    $deleting = false;
-                    $data = array('msg' => 'Data mutasi status bukan open');
-                }
+                $deleting = true;
+            }else{
+                $deleting = false;
+                $data = array('msg' => 'Data mutasi status bukan open');
             }
 
         }else{
             $deleting = true;
         }
-
 
         if($deleting){
             $query  = $this->db_jasgir->query("DELETE FROM mutasi_trx WHERE subsrd_id = '".$trx_id."' ");

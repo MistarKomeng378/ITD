@@ -603,7 +603,13 @@ function do_submit_approve_trx()
                     alert("User doesn't have right to approve the instruction");
                 else
                 {
-                    alert("Approve instruction success!"); 
+                    alert("Approve instruction success!");
+                    if(msg.penempatan_to_mutasi){
+                        alert(msg.penempatan_to_mutasi.msg);
+                    }else if(msg.pencairan_to_mutasi){
+                        alert(msg.pencairan_to_mutasi.msg);
+                    }
+                    
                     if(trx_cetak==1)
                     {
                         do_print_trx(msg.r_sdata[0].trx_id);
