@@ -105,9 +105,7 @@ class M_itd_save extends CI_Model {
                 $value['trx_valuta_date']->format('Y-m-d')
             );
 
-            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['last_date']->format('Y-m-d') <= $value['trx_valuta_date']->format('Y-m-d') || 
-                $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
-            ){
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -176,9 +174,7 @@ class M_itd_save extends CI_Model {
                 $value['trx_date']->format('Y-m-d')
             );
 
-            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['last_date']->format('Y-m-d') <= $value['trx_date']->format('Y-m-d') || 
-                $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
-            ){
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
