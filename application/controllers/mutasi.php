@@ -600,7 +600,7 @@ class Mutasi extends CI_Controller {
         $this->load->model("M_mutasi");
 
         if (!$this->session->userdata('itd_uid')) {
-            $this->session->set_userdata(array('itd_uid' => 'system'));
+            echo $this->session->set_userdata(array('itd_uid' => 'system'));
         }
 
         // $date = $this->input->get('date');
@@ -991,34 +991,9 @@ class Mutasi extends CI_Controller {
 
     public function debug()
     {
-        // $this->load->model("M_mutasi");
-        // $data = $this->M_mutasi->ListIGIncomeTax('000');
-        // // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
-        // // $data = $this->M_mutasi->list_client_by_code('000D2K');
-        
-        // if ($this->session->userdata('itd_uid')) {
-        //     echo var_dump($this->session->all_userdata());
-        // }else{
-        //     // $this->session->set_userdata(array('itd_uid' => 'system'));
-        //     echo var_dump($this->session->all_userdata());
-        // }
-        
-        
-        // // echo json_encode($this->session->userdata('itd_uid'));
-        // $date = '24-12-2019';
-        // $dayOfWeek = date('w', strtotime($date));
-        // switch ($dayOfWeek) {
-        //     case 5:
-        //         $date = date('Y-m-d', strtotime($date.'+3 day'));
-        //         break;
-        //     case 6:
-        //         $date = date('Y-m-d', strtotime($date.'+2 day'));
-        //         break;
-        //     default:
-        //         $date = date('Y-m-d', strtotime($date.'+1 day'));
-        //         break;
-        // }
-        // echo $date;
+        $this->load->model("M_mutasi");
+        $data = $this->M_mutasi->status_mutasi('000D8B', '800032611300', '2020-01-13');
+        echo json_encode($data);
     }
 
     public function AutoJasaGiro($GSBalance = 0, $valdate = '1900-01-01', $asofdate = '1900-01-01', $client_code = '', $acc_no = '', $client_name = '', $sumNetJasgir = 0)

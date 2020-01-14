@@ -2650,7 +2650,7 @@ class M_mutasi extends CI_Model {
         }
         return $mutasi_trx;
     }
-    
+
 //=================================== background job start
 
     function JualSahamToMutasiBackground($date)
@@ -2682,42 +2682,48 @@ class M_mutasi extends CI_Model {
         $msg = '';
         if( count($subsrd->result_array()) > 0 ){
             foreach ($subsrd->result_array() as $key => $value) {
-                $msg = $msg.' <br> '.$value['subsrd_id'];
-                $sql = $sql. "
-                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='C006' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
-                BEGIN
-                    INSERT INTO [dbo].[mutasi_trx] ( 
-                        [client_code], 
-                        [acc_no], 
-                        [trx_date], 
-                        [coa_no], 
-                        [coa_desc], 
-                        [trx_desc], 
-                        [trx_dc], 
-                        [trx_nominal], 
-                        [created_by], 
-                        [created_dt], 
-                        [modified_by], 
-                        [modified_dt], 
-                        [trx_status], 
-                        [subsrd_id] 
-                    ) VALUES ( 
-                        '".$value['client_code']."',
-                        '".$value['acc_no']."', 
-                        '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
-                        '".$value['subsrd_kategori']."', 
-                        'Hasil Jual Saham',
-                        '".$value['deskripsi']."',
-                        'C', 
-                        '".$value['subsrd_nominal']."',
-                        'system', 
-                        '".date('Y-m-d H:i:s')."', 
-                        'system', 
-                        '".date('Y-m-d H:i:s')."', 
-                        1, 
-                        '".$value['subsrd_id']."'
-                    );
-                END;";
+                $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
+
+                if($status_mutasi == 0){
+                    $msg = $msg.' <br> '.$value['subsrd_id'];
+                    $sql = $sql. "
+                    IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='C006' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
+                    BEGIN
+                        INSERT INTO [dbo].[mutasi_trx] ( 
+                            [client_code], 
+                            [acc_no], 
+                            [trx_date], 
+                            [coa_no], 
+                            [coa_desc], 
+                            [trx_desc], 
+                            [trx_dc], 
+                            [trx_nominal], 
+                            [created_by], 
+                            [created_dt], 
+                            [modified_by], 
+                            [modified_dt], 
+                            [trx_status], 
+                            [subsrd_id] 
+                        ) VALUES ( 
+                            '".$value['client_code']."',
+                            '".$value['acc_no']."', 
+                            '".$value['subsrd_date']->format('Y-m-d H:i:s')."',
+                            '".$value['subsrd_kategori']."', 
+                            'Hasil Jual Saham',
+                            '".$value['deskripsi']."',
+                            'C', 
+                            '".$value['subsrd_nominal']."',
+                            'system', 
+                            '".date('Y-m-d H:i:s')."', 
+                            'system', 
+                            '".date('Y-m-d H:i:s')."', 
+                            1, 
+                            '".$value['subsrd_id']."'
+                        );
+                    END;";
+                }else{
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                }
             }
             return array('sql'=> $sql, 'msg' => $msg);
         }
@@ -7677,6 +7683,7 @@ class M_mutasi extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
+
     public function check_jasgir($client_code, $acc_no)
     {
         $query=$this->db_jasgir->query("
@@ -7691,6 +7698,7 @@ class M_mutasi extends CI_Model {
         $data = $query->result_array();
         return $data;
     }
+    
     function backgroudLog($coa_id,$client_code,$acc_no, $date, $desc, $start_date, $end_date)
     {
         $query=$this->db_jasgir->query("
@@ -7699,9 +7707,6 @@ class M_mutasi extends CI_Model {
         ");
         return $query;
     }
-
-
-    
 
     public function SetMutasiGiro($data)
     {
@@ -7781,5 +7786,17 @@ class M_mutasi extends CI_Model {
             );
         ");
     }
+
+    public function status_mutasi($client_code='',$acc_no='',$cdt='',$status=0)
+    {
+        $query=$this->db_jasgir->query("exec [get_last_balance_date] '{$client_code}','{$acc_no}','{$cdt}',{$status}");
+        $data=$query->result_array();
+
+        if( count($data) > 0 ){
+            return $data[0]['curr_status'];
+        }
+        return count($data);
+    }
+
 } // of end class
 ?>
