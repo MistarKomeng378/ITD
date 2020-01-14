@@ -105,7 +105,9 @@ class M_itd_save extends CI_Model {
                 $value['trx_valuta_date']->format('Y-m-d')
             );
 
-            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['last_date']->format('Y-m-d') <= $value['trx_valuta_date']->format('Y-m-d') || 
+                $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
+            ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -174,7 +176,9 @@ class M_itd_save extends CI_Model {
                 $value['trx_date']->format('Y-m-d')
             );
 
-            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['last_date']->format('Y-m-d') <= $value['trx_date']->format('Y-m-d') || 
+                $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
+            ){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -267,14 +271,18 @@ class M_itd_save extends CI_Model {
             $deleting = true;
         }
 
-
         if($deleting){
+            if($param["trx_type"] == 1){                
+                $trx_date_edit = date('Y-m-d', strtotime($param["trx_val_dt"])); 
+            }else{
+                $trx_date_edit = date('Y-m-d', strtotime($param["trx_dt"]));
+            }
             $query  = $this->db_jasgir->query("
                 UPDATE [mutasi_trx] 
                     SET 
                         [client_code]   = '".$param["trx_c_code"]."',
                         [acc_no]        = '".$param["trx_acc_no"]."',
-                        [trx_date]      = '".date('Y-m-d',strtotime($param["trx_val_dt"]))."',
+                        [trx_date]      =  '".$trx_date_edit."',
                         [trx_nominal]   = ".$param["trx_nominal"].",
                         [trx_desc]      = '".$param["trx_to"]."',
                         [modified_by]   = '".$this->session->userdata('itd_uid')."',
