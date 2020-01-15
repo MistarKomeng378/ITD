@@ -193,7 +193,7 @@ class M_subsrd extends CI_Model {
         $client_code    = $data['client_code'];
         $coa_id         = $data['coa_id'];
         $acc_no         = $data['acc_no'];
-        //$mutasi_trx     = array();
+        $mutasi_trx     = array();
 
         $coa = $this->db_jasgir->query(" SELECT * FROM coa WHERE coa_no = '".$coa_id."' ");
         $coa = $coa->result();
