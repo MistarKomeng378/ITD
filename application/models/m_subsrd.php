@@ -193,7 +193,7 @@ class M_subsrd extends CI_Model {
         $client_code    = $data['client_code'];
         $coa_id         = $data['coa_id'];
         $acc_no         = $data['acc_no'];
-        $mutasi_trx     = array();
+        //$mutasi_trx     = array();
 
         $coa = $this->db_jasgir->query(" SELECT * FROM coa WHERE coa_no = '".$coa_id."' ");
         $coa = $coa->result();
@@ -237,10 +237,16 @@ class M_subsrd extends CI_Model {
                 $date = date('Y-m-d', strtotime($date.'+1 day'));
                 break;
         }
-
-        if( count( $check_mutasi->result_array() ) == 0 ){
+        
+        if( count( $check_mutasi->result_array() ) == 0 ){            
             foreach ($subsrd->result_array() as $key => $value) {
-
+                $checkStatusMutasi = $this->get_last_balance_date(
+                    trim($value['client_code']),
+                    trim($value['acc_no_dst']),
+                    $value['subsrd_date']->format('Y-m-d')
+                );
+                
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -274,12 +280,25 @@ class M_subsrd extends CI_Model {
                         '".$value['subsrd_id']."'
                     );
                 ");
+                }else{
+                    //$p = trim($value['client_code']).' - '.trim($value['acc_no_dst']).' - '.$value['subsrd_date']->format('Y-m-d');
+                    //$mutasi_trx = array('msg' => 'Data Pencairan Gagal Masuk Kemutasi, Status Mutasi ini ( '.$p.' ) Bukan Open');
+                    $mutasi_trx = array('msg' => 'Data Status Bukan Open');
+                    return $mutasi_trx;
+                }
             }
             $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
             $mutasi_trx = array('msg' => 'Data Sudah Ada');
         }
         return $mutasi_trx;
+    } 
+
+    public function get_last_balance_date($client_code='',$acc_no='',$cdt='',$status=0)
+    {
+        $query=$this->db_jasgir->query("exec [get_last_balance_date] '{$client_code}','{$acc_no}','{$cdt}',{$status}");
+        $data=$query->result_array();
+        return $data;
     }
 }
 ?>

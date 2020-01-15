@@ -105,8 +105,7 @@ class M_itd_save extends CI_Model {
                 $value['trx_valuta_date']->format('Y-m-d')
             );
 
-            // if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0
-            // ){
+            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -140,11 +139,11 @@ class M_itd_save extends CI_Model {
                         '".$value['trx_id']."'
                     );
                 ");
-            // }else{
-            //     $p = trim($value['trx_client_code']).' - '.trim($value['trx_acc_no']).' - '.$value['trx_valuta_date']->format('Y-m-d');
-            //     $mutasi_trx = array('msg' => 'Data Penempatan Gagal Masuk Kemutasi, Status Mutasi ini ( '.$p.' ) Bukan Open');
-            //     return $mutasi_trx;
-            // }
+            }else{
+                $p = trim($value['trx_client_code']).' - '.trim($value['trx_acc_no']).' - '.$value['trx_valuta_date']->format('Y-m-d');
+                $mutasi_trx = array('msg' => 'Data Penempatan Gagal Masuk Kemutasi, Status Mutasi ini ( '.$p.' ) Bukan Open');
+                return $mutasi_trx;
+            }
         }
 
         $mutasi_trx = $mutasi_trx ? array('msg' => 'Data Penempatan berhasil masuk ke mutasi') : array('msg' => '');
@@ -244,8 +243,9 @@ class M_itd_save extends CI_Model {
             }else{
                 // jika data status mutasi = 1 / open maka data bisa dihapus
                 // selain status = 1 / open data tidak bisa di hapus
-                if($checkStatusMutasi[0]['curr_status'] == 1){
+                if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
                     $deleting = true;
+               
                 }else{
                     $deleting = false;
                     $data = array('msg' => 'Data mutasi status bukan open');
@@ -345,17 +345,17 @@ class M_itd_save extends CI_Model {
             if(count($checkStatusMutasi) == 0){
                 $deleting = true;
             }else{
-                if($checkStatusMutasi[0]['curr_status'] == 0){
+                // jika data status mutasi = 1 / open maka data bisa dihapus
+                // selain status = 1 / open data tidak bisa di hapus
+                if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
                     $deleting = true;
-                }else if($checkStatusMutasi[0]['curr_status'] == 1){
-                    // jika data status mutasi = 1 / open maka data bisa dihapus
-                    // selain status = 1 / open data tidak bisa di hapus
-                    $deleting = true;
+               
                 }else{
                     $deleting = false;
                     $data = array('msg' => 'Data mutasi status bukan open');
                 }
             }
+
 
         }else{
             $deleting = true;
