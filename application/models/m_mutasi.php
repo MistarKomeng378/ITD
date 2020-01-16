@@ -2722,7 +2722,7 @@ class M_mutasi extends CI_Model {
                         );
                     END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -2800,7 +2800,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -2877,7 +2877,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -2954,7 +2954,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3031,7 +3031,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3140,7 +3140,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3298,7 +3298,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3456,7 +3456,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3614,7 +3614,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3772,7 +3772,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -3930,7 +3930,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -4088,7 +4088,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -4246,7 +4246,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -4404,7 +4404,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -4562,7 +4562,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);
@@ -4720,7 +4720,7 @@ class M_mutasi extends CI_Model {
                     );
                 END;";
                 }else{
-                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN BLANK';
+                    $msg = $msg.' <br> '.$value['client_code'].' - '.$value['acc_no'].' - '.$value['subsrd_date']->format('Y-m-d').' - STATUS BUKAN OPEN';
                 }
             }
             return array('sql'=> $sql, 'msg' => $msg);

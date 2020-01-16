@@ -593,7 +593,7 @@ function do_submit_approve_trx()
         state_progress(1);
         var obj_post = $.post(uri+"/index.php/itd_save/submit_approve_trx", 
             { trx_id:trxid},function(data) {},"json");
-        obj_post.done(function(msg) { 
+            obj_post.done(function(msg) { 
             //alert("Approve instruction success!");    alert(msg.r_numrows);
             state_progress(0);
             close_dlg_trx();          

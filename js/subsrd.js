@@ -182,7 +182,7 @@ function list_subsrd(pc_code,pc_dt)
             d["acc_src_id"] = msg.r_sdata[i].acc_no_src;
             d["acc_dst_id"] = msg.r_sdata[i].acc_no_dst;
             d["bank_src"] = msg.r_sdata[i].bank_src; 
-            d["bank_dst"] = msg.r_sdata[i].bank_dst; 
+            d["bank_dst"] = msg.r_sdata[i].bank_dst;             
             d["modified_by"] = msg.r_sdata[i].modified_by;
             d["modified_dt"] = msg.r_sdata[i].modified_dt_s;
         }
@@ -391,8 +391,8 @@ function create_subsrd_event()
                 },function(data) {
                     
                 },'json'); 
-                obj_post.done(function(msg) { 
-                    if(msg.r_num_rows>0)
+                obj_post.done(function(msg) {                     
+                    if(msg.r_num_rows>0) 
                         if(msg.r_sdata[0].err==0)
                         {
                             subsrdToMutasi();
