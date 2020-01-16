@@ -607,7 +607,7 @@ function subsrdToMutasi() {
         date:date,
         acc_no:acc_no
     }, function(data, status) {
-        
+        alert(data.msg);
     });
     
 }
