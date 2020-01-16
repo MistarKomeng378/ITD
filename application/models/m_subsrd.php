@@ -246,7 +246,7 @@ class M_subsrd extends CI_Model {
                     $value['subsrd_date']->format('Y-m-d')
                 );
                 
-            if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
+            if($checkStatusMutasi == 1 || $checkStatusMutasi == 0){
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
@@ -298,7 +298,10 @@ class M_subsrd extends CI_Model {
     {
         $query=$this->db_jasgir->query("exec [get_last_balance_date] '{$client_code}','{$acc_no}','{$cdt}',{$status}");
         $data=$query->result_array();
-        return $data;
+        if( count($data) > 0 ){
+            return $data[0]['curr_status'];
+        }
+        return count($data);
     }
 }
 ?>
