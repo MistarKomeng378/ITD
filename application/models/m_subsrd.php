@@ -189,6 +189,7 @@ class M_subsrd extends CI_Model {
 
     function SubscribeToMutasi($data)
     {
+      //  print_r('sdadasdas');
         $date           = date('Y-m-d', strtotime($data['date']) );
         $client_code    = $data['client_code'];
         $coa_id         = $data['coa_id'];
@@ -243,10 +244,11 @@ class M_subsrd extends CI_Model {
                 $checkStatusMutasi = $this->get_last_balance_date(
                     trim($value['client_code']),
                     trim($value['acc_no_dst']),
-                    $value['subsrd_date']->format('Y-m-d')
+                    $date
                 );
                 
             if($checkStatusMutasi == 1 || $checkStatusMutasi == 0){
+             
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
