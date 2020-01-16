@@ -289,7 +289,7 @@ class M_subsrd extends CI_Model {
             }
             $mutasi_trx = $mutasi_trx ? array('msg' => 'Data berhasil masuk ke mutasi') : array('msg' => 'Data Gagal Masuk ke Mutasi');
         }else{
-            $mutasi_trx = array('msg' => 'Data Sudah Ada');
+            $mutasi_trx = array('msg' => 'Data Mutasi Sudah Ada');
         }
         return $mutasi_trx;
     } 

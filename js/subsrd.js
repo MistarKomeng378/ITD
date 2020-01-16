@@ -395,9 +395,9 @@ function create_subsrd_event()
                     if(msg.r_num_rows>0)
                         if(msg.r_sdata[0].err==0)
                         {
-                            alert('Close day success!');
-                            subsrd_get_status($("#i_subsrd_client_code_h").val());
                             subsrdToMutasi();
+                            // alert('Close day success!');
+                            subsrd_get_status($("#i_subsrd_client_code_h").val());
                         }
                         else
                             alert('Close day error!');
@@ -607,7 +607,9 @@ function subsrdToMutasi() {
         date:date,
         acc_no:acc_no
     }, function(data, status) {
-        alert(data.msg);
+        var obj = JSON.parse(data);
+        alert(obj.msg);
+        alert('Close day success!');
     });
     
 }
