@@ -247,8 +247,7 @@ class M_subsrd extends CI_Model {
                     $date
                 );
                 
-            if($checkStatusMutasi == 1 || $checkStatusMutasi == 0){
-             
+            if($checkStatusMutasi == 1 || $checkStatusMutasi == 0 || (count($checkStatusMutasi) == 0)){             
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
