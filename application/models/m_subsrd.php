@@ -246,8 +246,10 @@ class M_subsrd extends CI_Model {
                     trim($value['acc_no_dst']),
                     $date
                 );
+
+              //  print_r($checkStatusMutasi);
                 
-            if($checkStatusMutasi == 1 || $checkStatusMutasi == 0 || (count($checkStatusMutasi) == 0)){             
+            if($checkStatusMutasi == 1 || $checkStatusMutasi == 0 || (count($checkStatusMutasi) == 0)|| $checkStatusMutasi==5){             
                 $mutasi_trx = $this->db_jasgir->query("
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
