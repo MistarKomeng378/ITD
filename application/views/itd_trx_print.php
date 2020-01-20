@@ -170,15 +170,30 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
 </div>                       
 <div class="box_blank" style="margin-bottom: 15px;">
 <table width="100%" border="0" cellspacing="2" cellpadding="2" bgcolor="#000000">
-<tr bgcolor="#ffffff">
+
+<!-- <tr bgcolor="#ffffff">
     <td align="center" width="30%"><b>NO. REKENING</b></td>
     <td align="center" width="30%"><b>BANK</b></td>
     <td align="center" ><b>ATAS NAMA</b></td>
 </tr>
+
+
 <tr bgcolor="#ffffff">
     <td align="center"><?php echo $r_sdata["trx_acc_no"];?></td>
     <td align="center"><?php echo $r_sdata["trx_bank_name"];?></td>
     <td align="center"><?php echo $r_sdata["trx_acc_name"];?></td>
+</tr> -->
+
+<tr bgcolor="#ffffff">
+    <td align="center" width="30%"><b>NO. REKENING TUJUAN</b></td>
+    <td align="center" width="30%"><b>BANK TUJUAN</b></td>
+    <td align="center" ><b>ATAS NAMA</b></td>
+</tr>
+
+<tr bgcolor="#ffffff">
+    <td align="center"><?php echo $r_sdata["bank_acc_no"];?></td>
+    <td align="center"><?php echo $r_sdata["trx_to"];?></td>
+    <td align="center"><?php echo $r_sdata["bank_acc_name"];?></td>
 </tr>
 </table>    
 </div>
