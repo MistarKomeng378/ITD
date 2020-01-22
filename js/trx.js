@@ -141,6 +141,8 @@ function create_trx_event()
     });
     $("#hbtn_trx_edit").click(function(){
         selected_row_trx  = grid_trx.getActiveCell();
+        
+        
         if(selected_row_trx)
         {
 			// if(data_trx[selected_row_trx.row].nfs_td=='PTP')            
@@ -158,7 +160,12 @@ function create_trx_event()
             else
             {
                 set_var_dlg_trx(data_trx[selected_row_trx.row].trx_id,data_trx[selected_row_trx.row].trx_id_master,data_trx[selected_row_trx.row].trx_id_upper);
-                open_dlg_trx(2,0,2);
+                
+                if(data_trx[selected_row_trx.row].trx_type_id == 4){
+                    open_dlg_trx(2,4,2);
+                }else{
+                    open_dlg_trx(2,0,2);
+                }
             }
         }
         else
@@ -190,7 +197,9 @@ function create_trx_event()
                     else
                     {
                         set_var_dlg_trx(data_trx[selected_row_trx.row].trx_id,data_trx[selected_row_trx.row].trx_id_master,data_trx[selected_row_trx.row].trx_id_upper);
-                        open_dlg_trx(0,$("#hselect_trx_type").val(),2);                                                                                 
+                        open_dlg_trx(0,$("#hselect_trx_type").val(),2);    
+                        //console.log(0+'_'+$("#hselect_trx_type").val()+'_'+2);
+                                                                                                     
                     }
                 }
             }
