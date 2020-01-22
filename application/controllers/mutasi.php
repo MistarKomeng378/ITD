@@ -589,7 +589,7 @@ class Mutasi extends CI_Controller {
             @set_time_limit(600);
         }
         
-        $date = $date ? $date : date('Y-m-d', strtotime('-0 day'));
+        $date = $date ? $date : date('Y-m-d');
         for ($i; $i <= 16; $i++) {
             $this->backgroundToMutasi($i,$date);
         }
