@@ -374,7 +374,7 @@ function load_data_trx(pdata,no_tt)
     ena_break_trx1(pdata.trx_type,pdata.trx_rate_break);    
      
     // edit MK
-    if(pdata.nfs_td=='1' && selectType == 3){
+    if((pdata.nfs_td=='1' && selectType == 2) || (pdata.nfs_td=='1' && selectType == 3) || (pdata.nfs_td=='1' && selectType == 4)){
         $("#i_trx_nominal").attr("disabled",true);
         $("#i_trx_rate").attr("disabled",true);
         $("#i_trx_due_dt").attr("disabled",true);
@@ -382,7 +382,7 @@ function load_data_trx(pdata,no_tt)
         $("#i_trx_deposit_tenor").attr("disabled",true);
         $("#i_trx_client_code").attr("disabled",true);
         $("#i_trx_curr").attr("disabled",true);
-        
+
     }else if(pdata.nfs_td=='1'){
         $("#i_trx_nominal").attr("disabled",true);
         $("#i_trx_rate").attr("disabled",true);
