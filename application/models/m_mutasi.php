@@ -3082,7 +3082,7 @@ class M_mutasi extends CI_Model {
                     A.CREATION_DATE,
                     A.MODIFICATION_DATE,
                     'D017' AS subsrd_kategori,
-                    'Interst Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
+                    'Interest Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                     B.FUND_OPR_ACCT_NO AS acc_no 
                 FROM
                     NFS_FI_INS_INQ_TEMP A
@@ -7721,7 +7721,7 @@ class M_mutasi extends CI_Model {
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.INTEREST_INCOME_TAX, 0) ) AS subsrd_nominal,
                     'D017' AS subsrd_kategori,
-                    'Interst Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
+                    'Interest Income Tax - ' + RTRIM(SECURITY_CODE) AS deskripsi,
                     B.FUND_OPR_ACCT_NO AS acc_no 
                 FROM
                     NFS_FI_INS_INQ_TEMP A
