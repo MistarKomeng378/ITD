@@ -2541,7 +2541,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
             SELECT
-                A.SI_REFERENCE AS SI_REFF,
+                A.SI_REFERENCE+'_CGT' AS SI_REFF,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
@@ -2571,7 +2571,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
-                    A.SI_REFERENCE AS SI_REFF,
+                    A.SI_REFERENCE+'_IIT' AS SI_REFF,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
@@ -3047,7 +3047,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
             SELECT
-                A.SI_REFERENCE AS subsrd_id,
+                A.SI_REFERENCE+'_CGT' AS subsrd_id,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL(16,2), A.CAPITAL_GAIN_TAX ) AS subsrd_nominal,
@@ -3074,7 +3074,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
-                    A.SI_REFERENCE AS subsrd_id,
+                    A.SI_REFERENCE+'_IIT' AS subsrd_id,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DECIMAL(16,2), A.INTEREST_INCOME_TAX ) AS subsrd_nominal,
@@ -7689,7 +7689,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
             SELECT
-                A.SI_REFERENCE AS id,
+                A.SI_REFERENCE+'_CGT' AS id,
                 A.HIPORT_CODE AS client_code,
                 CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                 CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.CAPITAL_GAIN_TAX, 0) ) AS subsrd_nominal,
@@ -7716,7 +7716,7 @@ class M_mutasi extends CI_Model {
             FROM
             (
                 SELECT
-                    A.SI_REFERENCE AS id,
+                    A.SI_REFERENCE+'_IIT' AS id,
                     A.HIPORT_CODE AS client_code,
                     CONVERT ( DATE, A.SETTLEMENT_DATE ) AS subsrd_date,
                     CONVERT ( DECIMAL ( 16, 2 ), ISNULL(A.INTEREST_INCOME_TAX, 0) ) AS subsrd_nominal,
