@@ -319,7 +319,7 @@
                 <input id="i_trx_list_dt_nfs" type="text" class="dtpick" style="width:80px;text-align: center;" /> 
                 <button id="hbtn_trx_get_nfs">Get data from S-INVEST</button> 
                 <?php if($lvl<=5) { ?>
-                <button id="hbtn_trx_approve_nfs">Approve & Cetak</button> s                
+                <button id="hbtn_trx_approve_nfs">Approve & Cetak</button>                 
                 <?php }?>
                 -
                 <button id="hbtn_trx_ticket_nfs">Buat Tiket</button> 
