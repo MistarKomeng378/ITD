@@ -2684,7 +2684,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-                if($status_mutasi == 0 || $status_mutasi == 1 ){
+                if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5 ){
                     $msg = $msg.' <br> '.$value['subsrd_id'];
                     $sql = $sql. "
                     IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='C006' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
@@ -2762,7 +2762,7 @@ class M_mutasi extends CI_Model {
 
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-                if($status_mutasi == 0 || $status_mutasi == 1 ){
+                if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5 ){
                 $msg = $msg.' <br> '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D004' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
@@ -2839,7 +2839,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' <br> '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='C007' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
@@ -2916,7 +2916,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' <br> '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D005' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
@@ -2994,7 +2994,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $sql = $sql. "
                 IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D016' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
                 BEGIN
@@ -3102,7 +3102,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' <br> '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$value['client_code']."' AND trx_date='".$value['subsrd_date']->format('Y-m-d H:i:s')."' AND coa_no='D017' AND acc_no='".$value['acc_no']."' AND subsrd_id='".$value['subsrd_id']."' )
@@ -3260,7 +3260,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' <br> '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -3418,7 +3418,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -3576,7 +3576,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -3734,7 +3734,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -3892,7 +3892,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -4050,7 +4050,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -4208,7 +4208,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -4366,7 +4366,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -4524,7 +4524,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
@@ -4682,7 +4682,7 @@ class M_mutasi extends CI_Model {
             foreach ($subsrd->result_array() as $key => $value) {
                 $status_mutasi = $this->status_mutasi($value['client_code'], $value['acc_no'], $value['subsrd_date']->format('Y-m-d'));
 
-				if($status_mutasi == 0 || $status_mutasi == 1){
+				if($status_mutasi == 0 || $status_mutasi == 1 || $status_mutasi == 5){
                 $msg = $msg.' '.$value['subsrd_id'];
                 $sql = $sql. "
                 IF NOT EXISTS (SELECT*FROM mutasi_trx WHERE subsrd_id='".$value['subsrd_id']."')
