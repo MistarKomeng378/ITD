@@ -200,26 +200,13 @@ class Mutasi extends CI_Controller {
         $this->load->model("M_mutasi");  
         $param=$this->input->post();
         sql_quot_all($param); 
-        //$data = $this->M_itd->list_client_by_code($param["client_code"]);    echo 
+
         $param["c_dt"]=change_dt_format($param["c_dt"]);
         $data = $this->M_mutasi->close_day($param['c_code'],$param['c_no'],$param['c_dt'],$param['gs_bal'],$param['c_rem'],$this->data['uid']); 
         $this->data["r_success"] = 1;
         $this->data["r_num_rows"] = count($data);
         $this->data["r_sdata"]= $data;
-        //$_subject="ITD: Client {$param["c_code"]} balance mutation is closed by {$this->data['uid']}";
-        //$_content="Client Code : {$param["c_code"]}<br />Date : {$param["c_dt"]}<br />GS Bal: " . number_format($param["gs_bal"],2,'.',',') . "<br /><br /> ITD Client Services System";
-        //$this->_send_notif($_subject,$_content);
-        
-        //Matiin notif
-        /*if(count($data)>0)
-        {
-            if( $data[0]["hiport_active"]==1 && $data[0]["client_type"]==1 || $data[0]["client_type"]==2)
-            {
-                $_subject="ITD: Mutation is closed by {$this->data['uid']}. ({$data[0]["client_code"]}-{$data[0]["client_name"]}) ";
-                $_content="Client Code : {$data[0]["client_code"]}<br />Date : " . date_format($data[0]["balance_date"],"d M Y") . "<br />Closing Balance: " . number_format($data[0]["balance_close"],2,'.',',') . "<br />Saldo Balance: " . number_format($data[0]["balance_gs"],2,'.',',') . "<br /><br /> ITD Client Services System";
-                $this->_send_notif($_subject,$_content);
-            }
-        } */
+
         $jasgir = $this->M_mutasi->check_jasgir($param['c_code'],$param['c_no']); 
         if($jasgir[0]['kena_jasgir'] == 1){
             $this->data["jasgir"] = $this->AutoJasaGiro(
@@ -989,39 +976,16 @@ class Mutasi extends CI_Controller {
         echo json_encode($data);
     }
 
-    public function debug()
-    {
-        // $this->load->model("M_mutasi");
-        // $data = $this->M_mutasi->ListIGIncomeTax('000');
-        // // $data = $this->M_mutasi->MutasiClient('000D2K','4582601627');
-        // // $data = $this->M_mutasi->list_client_by_code('000D2K');
-        
-        // if ($this->session->userdata('itd_uid')) {
-        //     echo var_dump($this->session->all_userdata());
-        // }else{
-        //     // $this->session->set_userdata(array('itd_uid' => 'system'));
-        //     echo var_dump($this->session->all_userdata());
-        // }
-        
-        
-        // // echo json_encode($this->session->userdata('itd_uid'));
-        // $date = '24-12-2019';
-        // $dayOfWeek = date('w', strtotime($date));
-        // switch ($dayOfWeek) {
-        //     case 5:
-        //         $date = date('Y-m-d', strtotime($date.'+3 day'));
-        //         break;
-        //     case 6:
-        //         $date = date('Y-m-d', strtotime($date.'+2 day'));
-        //         break;
-        //     default:
-        //         $date = date('Y-m-d', strtotime($date.'+1 day'));
-        //         break;
-        // }
-        // echo $date;
-    }
-
-    public function AutoJasaGiro($GSBalance = 0, $valdate = '1900-01-01', $asofdate = '1900-01-01', $client_code = '', $acc_no = '', $client_name = '', $sumNetJasgir = 0)
+    public function AutoJasaGiro(
+        $GSBalance    = 0,
+        $valdate      = '1900-01-01', 
+        $asofdate     = '1900-01-01', 
+        $client_code  = '', 
+        $acc_no       = '', 
+        $client_name  = '', 
+        $sumNetJasgir = 0,
+        $giro_tenor   = 1
+    )
     {
         $rate = $this->RateJasgir($GSBalance);
         if(!$rate){
@@ -1029,7 +993,7 @@ class Mutasi extends CI_Controller {
             die();
         }
 
-        $giro_year = 365;
+        $giro_year      = 365;
         $CreditInterest = ($rate*$GSBalance)/$giro_year;
         $pajak          = 20/100;
 
@@ -1041,39 +1005,43 @@ class Mutasi extends CI_Controller {
         $sumNetJasgir   = $netJasgir + $sumNetJasgir;
         $valdate        = date('Y-m-d H:i:s', strtotime($valdate));
         $asofdate       = date('Y-m-d', strtotime($asofdate.'+1 day'));
-
+        
+        $GSBalance = $totalSaldo-$sumNetJasgir;
         switch ($dayOfWeek) {
-            case 5:
-                $this->AutoJasaGiro($totalSaldo, $valdate, $asofdate, $client_code, $acc_no, $client_name, $sumNetJasgir);
+            case 5: //jika jumat
+                $this->AutoJasaGiro($totalSaldo, $valdate, $asofdate, $client_code, $acc_no, $client_name, $sumNetJasgir, $giro_tenor+1);
                 break;
-            case 6:
-                $this->AutoJasaGiro($totalSaldo, $valdate, $asofdate, $client_code, $acc_no, $client_name, $sumNetJasgir);
+            case 6: //juka sabtu
+                $this->AutoJasaGiro($totalSaldo, $valdate, $asofdate, $client_code, $acc_no, $client_name, $sumNetJasgir, $giro_tenor+1);
                 break;
-            default:
+            default: //selain jumat dan sabtu
                 $mutasiGiro = array(
-                    'giro_val_date' => $valdate,
-                    'giro_asof_date' => $asofdate,
-                    'giro_rate' => $rate*100,
-                    'giro_tenor' => 1,
-                    'giro_year' => $giro_year,
-                    'client_code' => $client_code,
-                    'client_name' => $client_name,
-                    'acc_no' => $acc_no,
-                    'giro_nominal' => $GSBalance,
-                    'giro_interest' => $CreditInterest,
+                    'giro_val_date'     => $valdate,
+                    'giro_asof_date'    => $asofdate,
+                    'giro_rate'         => $rate*100,
+                    'giro_tenor'        => $giro_tenor,
+                    'giro_year'         => $giro_year,
+                    'client_code'       => $client_code,
+                    'client_name'       => $client_name,
+                    'acc_no'            => $acc_no,
+                    'giro_nominal'      => $GSBalance,
+                    'giro_interest'     => $CreditInterest,
                     'giro_interest_tax' => $whtax,
                     'giro_interest_net' => $sumNetJasgir,
-                    'created_by' => $this->session->userdata('itd_uid'),
-                    'created_dt' => date('Y-m-d H:i:s')
+                    'created_by'        => $this->session->userdata('itd_uid'),
+                    'created_dt'        => date('Y-m-d H:i:s')
                 );
+
                 $this->load->model("M_mutasi");
                 $setMutasiGiro = $this->M_mutasi->SetMutasiGiro($mutasiGiro);
                 $jasgirToMutasi = $this->M_mutasi->JasgirToMutasi();
                 return "Total jasa giro : ".$sumNetJasgir;
+
                 break;
         }
-        
+
     }
+
     public function RateJasgir($GSBalance)
     {
         if($GSBalance >= 100000000 && $GSBalance <= 500000000){
@@ -1085,6 +1053,14 @@ class Mutasi extends CI_Controller {
         }
         return false;
     }
+
+    public function debug()
+    {
+        $asofdate = '2020-01-26';
+        $dayOfWeek = date('w', strtotime($asofdate));
+        echo $dayOfWeek;
+    }
+
 }
         
 ?>
