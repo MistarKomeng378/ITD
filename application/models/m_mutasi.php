@@ -7801,39 +7801,42 @@ class M_mutasi extends CI_Model {
     public function SetMutasiGiro($data)
     {
         $this->db_jasgir->query("
-            INSERT INTO [dbo].[mutasi_giro] (
-                [giro_val_date],
-                [giro_asof_date],
-                [giro_rate],
-                [giro_tenor],
-                [giro_year],
-                [client_code],
-                [client_name],
-                [acc_no],
-                [giro_nominal],
-                [giro_interest],
-                [giro_interest_tax],
-                [giro_interest_net],
-                [created_by],
-                [created_dt]
-            )
-            VALUES
-            (
-                '".$data['giro_val_date']."',
-                '".$data['giro_asof_date']."',
-                ".$data['giro_rate'].",
-                '".$data['giro_tenor']."',
-                '".$data['giro_year']."',
-                '".$data['client_code']."',
-                '".$data['client_name']."',
-                '".$data['acc_no']."',
-                '".$data['giro_nominal']."',
-                '".$data['giro_interest']."',
-                '".$data['giro_interest_tax']."',
-                '".$data['giro_interest_net']."',
-                '".$data['created_by']."',
-                '".$data['created_dt']."'
-            );
+            IF NOT EXISTS ( SELECT*FROM mutasi_giro WHERE client_code='".$data['client_code']."' AND acc_no='".$data['acc_no']."' AND giro_asof_date='".$data['giro_asof_date']."' )
+            BEGIN
+                INSERT INTO [dbo].[mutasi_giro] (
+                    [giro_val_date],
+                    [giro_asof_date],
+                    [giro_rate],
+                    [giro_tenor],
+                    [giro_year],
+                    [client_code],
+                    [client_name],
+                    [acc_no],
+                    [giro_nominal],
+                    [giro_interest],
+                    [giro_interest_tax],
+                    [giro_interest_net],
+                    [created_by],
+                    [created_dt]
+                )
+                VALUES
+                (
+                    '".$data['giro_val_date']."',
+                    '".$data['giro_asof_date']."',
+                    ".$data['giro_rate'].",
+                    '".$data['giro_tenor']."',
+                    '".$data['giro_year']."',
+                    '".$data['client_code']."',
+                    '".$data['client_name']."',
+                    '".$data['acc_no']."',
+                    '".$data['giro_nominal']."',
+                    '".$data['giro_interest']."',
+                    '".$data['giro_interest_tax']."',
+                    '".$data['giro_interest_net']."',
+                    '".$data['created_by']."',
+                    '".$data['created_dt']."'
+                );
+            END;
         ");
     }
     public function JasgirToMutasi()
@@ -7843,37 +7846,40 @@ class M_mutasi extends CI_Model {
         ");
         $data = $query->result_array();
         $mutasi_trx = $this->db_jasgir->query("
-            INSERT INTO [dbo].[mutasi_trx] (
-                [client_code],
-                [acc_no],
-                [trx_date],
-                [coa_no],
-                [coa_desc],
-                [trx_desc],
-                [trx_dc],
-                [trx_nominal],
-                [created_by],
-                [created_dt],
-                [modified_by],
-                [modified_dt],
-                [trx_status],
-                [subsrd_id]
-            )VALUES(
-                '".$data[0]['client_code']."',
-                '".$data[0]['acc_no']."',
-                '".$data[0]['giro_asof_date']->format('Y-m-d H:i:s')."',
-                'C001',
-                'Jasa Giro',
-                '".$data[0]['client_name']."',
-                'C',
-                '".$data[0]['giro_interest_net']."',
-                '".$this->session->userdata('itd_uid')."',
-                '".$data[0]['giro_val_date']->format('Y-m-d H:i:s')."',
-                '".$this->session->userdata('itd_uid')."',
-                '".date('Y-m-d H:i:s')."',
-                1,
-                '".$data[0]['giro_id']."'
-            );
+            IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".$data[0]['client_code']."' AND trx_date='".$data[0]['giro_asof_date']->format('Y-m-d H:i:s')."' AND coa_no='C001' AND acc_no='".$data[0]['acc_no']."' AND subsrd_id='".$data[0]['giro_id']."' )
+            BEGIN
+                INSERT INTO [dbo].[mutasi_trx] (
+                    [client_code],
+                    [acc_no],
+                    [trx_date],
+                    [coa_no],
+                    [coa_desc],
+                    [trx_desc],
+                    [trx_dc],
+                    [trx_nominal],
+                    [created_by],
+                    [created_dt],
+                    [modified_by],
+                    [modified_dt],
+                    [trx_status],
+                    [subsrd_id]
+                )VALUES(
+                    '".$data[0]['client_code']."',
+                    '".$data[0]['acc_no']."',
+                    '".$data[0]['giro_asof_date']->format('Y-m-d H:i:s')."',
+                    'C001',
+                    'Jasa Giro',
+                    '".$data[0]['client_name']."',
+                    'C',
+                    '".$data[0]['giro_interest_net']."',
+                    '".$this->session->userdata('itd_uid')."',
+                    '".$data[0]['giro_val_date']->format('Y-m-d H:i:s')."',
+                    '".$this->session->userdata('itd_uid')."',
+                    '".date('Y-m-d H:i:s')."',
+                    1,
+                    '".$data[0]['giro_id']."'
+                );
+            END;
         ");
     }
 
