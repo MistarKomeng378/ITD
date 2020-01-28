@@ -48,11 +48,13 @@ function set_val_dlg_trx_ticket(t_id)
     if(t_id!=0)
     {                           
         state_progress(1);    
-        var obj_post = $.post(uri+"/index.php/itd/get_trx", 
+        var obj_post = $.post(uri+"/index.php/itd/get_itd_print", 
             { trx_id:t_id,trx_unix:2},function(data) { 
             
         },"json"); 
         obj_post.done(function(msg) { 
+            console.log(msg);
+            
             if(msg.r_num_rows>0)
             {                                                       
                 $("#dlg_trx_ticket_client_code").val(msg.r_sdata[0].trx_client_code);
@@ -186,7 +188,7 @@ function do_dlg_trx_ticket_print()
         , trx_note:$("#dlg_trx_ticket_notes").val(),trx_taxamount:$("#dlg_trx_ticket_taxamount").val()
         },function(data) {});
     obj_post.done(function(msg) { 
-        loadPrintDocument(uri+'index.php/itd/get_trx_ticket_print');  
+        loadPrintDocument(uri+'index.php/itd/get_trx_ticket_print/'+trx_ticket_trx_id);  
     });
     obj_post.fail(function(jqXHR, textStatus) {alert("Failed printing data :" + textStatus);});
 }
