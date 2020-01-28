@@ -207,6 +207,26 @@ class Itd extends CI_Controller {
         $this->data["r_sdata"]= $data;
         echo json_encode($this->data);
     }
+
+    function get_itd_print()
+    {
+        $param=$this->input->post();
+        sql_quot_all($param);
+        $this->load->model("M_itd");  
+        $data = $this->M_itd->get_itd_print($this->session->userdata('itd_uid'),$param["trx_id"],$param["trx_unix"]);
+        
+		$data = array_map(array($this,'do_map'),$data);
+        
+        $this->data["r_success"] = 1;
+        $this->data["r_num_rows"] = count($data);
+
+        $fields = array("trx_due_date");
+        add_data_dt_str($data,$fields);
+
+        $this->data["r_sdata"]= $data;
+        echo json_encode($this->data);
+    }
+
     function get_trx_for_print($trx_id=0)
     {
         $this->load->model("M_itd");  
@@ -478,10 +498,10 @@ class Itd extends CI_Controller {
         $this->data["r_sdata"]= $data;
         echo json_encode($this->data);
     }
-    function get_trx_ticket_print()
+    function get_trx_ticket_print($id = 1)
     {
         $this->load->model("M_itd");  
-        $data = $this->M_itd->get_trx_ticket_print($this->session->userdata('itd_uid'));
+        $data = $this->M_itd->get_trx_ticket_print($id);
         if(count($data)>0)
         {
             $rdata= array();

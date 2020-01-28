@@ -130,6 +130,35 @@ class M_itd extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
+    function get_itd_print($user_id="",$trx_id=0,$trx_unix=1)
+    {                 
+        $itd_print = $this->db->query(" SELECT
+                f1 AS trx_client_code,
+                f2 AS trx_client_name,
+                f3 AS trx_type,
+                f5 AS trx_to,
+                f6 AS trx_due_date,
+                f7 AS trx_deposit_tenor_hr,
+                f8 AS trx_rate_break,
+                f8 AS trx_rate,
+                replace(f10, ',', '') AS trx_nominal,
+                f11 AS trx_ref,
+                f18 AS trx_id,
+                f19 AS trx_other
+            FROM
+                itd_print 
+            WHERE
+                f18 = '".$trx_id."' 
+        ");
+        if( count($itd_print->result_array()) > 0 ){
+            $query = $itd_print;
+        }else{
+            $query = $this->db->query("exec get_trx '{$user_id}',{$trx_id},{$trx_unix}");
+        }
+        
+        $data = $query->result_array();
+        return $data;
+    }
     function get_trx_print($user_id="",$trx_id=0)
     {                 
         $query=$this->db->query("exec get_trx_print '{$user_id}',{$trx_id}");
