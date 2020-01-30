@@ -1005,15 +1005,14 @@ class Mutasi extends CI_Controller {
         $totalSaldo     = $GSBalance+$netJasgir;
 
         $dayOfWeek      = date('w', strtotime($asofdate));
-        $sumNetJasgir   = $netJasgir + $sumNetJasgir;
         $valdate        = date('Y-m-d H:i:s', strtotime($valdate));
         $asofdate       = date('Y-m-d', strtotime($asofdate.'+1 day'));
         
-        $GSBalance = $totalSaldo-$sumNetJasgir;
         $this->sumNetJasgir     = $this->sumNetJasgir+$netJasgir;
         $this->CreditInterest   = $this->CreditInterest+$CreditInterest;
         $this->whtax            = $this->whtax+$whtax;
         $this->giroTenor        = $this->giroTenor+1;
+        $GSBalance = $totalSaldo-$this->sumNetJasgir;
 
         switch ($dayOfWeek) {
             case 5: //jika jumat
@@ -1043,7 +1042,7 @@ class Mutasi extends CI_Controller {
                 $this->load->model("M_mutasi");
                 $setMutasiGiro = $this->M_mutasi->SetMutasiGiro($mutasiGiro);
                 $jasgirToMutasi = $this->M_mutasi->JasgirToMutasi();
-                return "Total jasa giro : ".$sumNetJasgir;
+                return "Total jasa giro : " . $this->sumNetJasgir;
 
                 break;
         }
