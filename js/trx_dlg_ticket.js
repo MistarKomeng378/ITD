@@ -52,9 +52,7 @@ function set_val_dlg_trx_ticket(t_id)
             { trx_id:t_id,trx_unix:2},function(data) { 
             
         },"json"); 
-        obj_post.done(function(msg) { 
-            console.log(msg);
-            
+        obj_post.done(function(msg) {            
             if(msg.r_num_rows>0)
             {                                                       
                 $("#dlg_trx_ticket_client_code").val(msg.r_sdata[0].trx_client_code);
