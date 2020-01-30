@@ -143,8 +143,11 @@ class M_itd extends CI_Model {
                 f8 AS trx_rate,
                 replace(f10, ',', '') AS trx_nominal,
                 f11 AS trx_ref,
+                replace(f12, ',', '') AS ac_mount,
+                replace(f17, ',', '') AS bt_mount,
                 f18 AS trx_id,
-                f19 AS trx_other
+                f19 AS trx_other,
+                replace(f20, ',', '') AS tax_mount
             FROM
                 itd_print 
             WHERE
