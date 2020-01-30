@@ -91,6 +91,19 @@ function set_val_dlg_trx_ticket(t_id)
                 var bt_mount = ac_mount - ac_mount*p_tax /100;
                 
                 var tax_mount =ac_mount*(0+$("#dlg_trx_ticket_tax").val()) / 100;
+
+                if (msg.r_sdata[0].ac_mount) {
+                    ac_mount = msg.r_sdata[0].ac_mount;
+                }
+
+                if (msg.r_sdata[0].tax_mount) {
+                    tax_mount = msg.r_sdata[0].tax_mount;
+                }
+
+                if (msg.r_sdata[0].bt_mount) {
+                    bt_mount = msg.r_sdata[0].bt_mount;
+                }
+
                 $("#dlg_trx_ticket_taxamount").val(strtomoney(tax_mount));
                 $("#dlg_trx_ticket_rate_amount").val(strtomoney(ac_mount));
                 $("#dlg_trx_ticket_net").val(strtomoney(bt_mount));
