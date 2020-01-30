@@ -16,7 +16,7 @@ class Mutasi extends CI_Controller {
         $this->sumNetJasgir     = 0;
         $this->CreditInterest   = 0;
         $this->whtax            = 0;
-        $this->giroTenor        = 1;
+        $this->giroTenor        = 0;
     } 
     function is_login()
     {
