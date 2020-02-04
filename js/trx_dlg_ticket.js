@@ -104,9 +104,14 @@ function set_val_dlg_trx_ticket(t_id)
                     bt_mount = msg.r_sdata[0].bt_mount;
                 }
 
+                if (msg.r_sdata[0].trx_tax_ticket) {
+                    trx_tax_ticket = msg.r_sdata[0].trx_tax_ticket;
+                }
+
                 $("#dlg_trx_ticket_taxamount").val(strtomoney(tax_mount));
                 $("#dlg_trx_ticket_rate_amount").val(strtomoney(ac_mount));
                 $("#dlg_trx_ticket_net").val(strtomoney(bt_mount));
+                $("#dlg_trx_ticket_tax").val(strtomoney(trx_tax_ticket));
                 
             }
             state_progress(0);
