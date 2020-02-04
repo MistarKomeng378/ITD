@@ -7839,10 +7839,10 @@ class M_mutasi extends CI_Model {
             END;
         ");
     }
-    public function JasgirToMutasi()
+    public function JasgirToMutasi($mutasiGiro)
     {
         $query = $this->db_jasgir->query("
-            SELECT TOP (1) * FROM mutasi_giro ORDER BY giro_id DESC; 
+            SELECT TOP (1) * FROM mutasi_giro WHERE client_code='".$mutasiGiro['client_code']."' AND acc_no='".$mutasiGiro['acc_no']."' AND giro_asof_date='".$mutasiGiro['giro_asof_date']."' ORDER BY giro_id DESC;
         ");
         $data = $query->result_array();
         $mutasi_trx = $this->db_jasgir->query("

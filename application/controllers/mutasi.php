@@ -1041,7 +1041,7 @@ class Mutasi extends CI_Controller {
 
                 $this->load->model("M_mutasi");
                 $setMutasiGiro = $this->M_mutasi->SetMutasiGiro($mutasiGiro);
-                $jasgirToMutasi = $this->M_mutasi->JasgirToMutasi();
+                $jasgirToMutasi = $this->M_mutasi->JasgirToMutasi($mutasiGiro);
                 return "Total jasa giro : " . $this->sumNetJasgir;
 
                 break;
