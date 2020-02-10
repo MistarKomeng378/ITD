@@ -81,8 +81,9 @@ class Itd_nfs extends CI_Controller {
                     ),sql_quot($xitem1['ACCT_NO']),sql_quot($xitem1['ACCT_NAME']));
                 
             }
-            $this->M_itd_nfs->move_tmp($this->session->userdata('itd_uid'));
-           
+            
+            $data = $this->M_itd_nfs->move_tmp($this->session->userdata('itd_uid'));
+
             $datanfs = $this->M_itd_nfs->down_trx_rev($sdt);
             foreach($datanfs as $xitem1)
             {
@@ -505,6 +506,59 @@ class Itd_nfs extends CI_Controller {
         foreach($data as $xitem1)
             echo "<option value=\"{$xitem1['group_code']}\">{$xitem1['group_name']}</option>\n";
     }
+
+    public function list_pending()
+    {
+        return $this->load->view('list_pending');
+    }
+
+    public function show_list_pending()
+    {
+        $this->load->model("M_itd_nfs");
+        $data = $this->M_itd_nfs->list_pending();
+        echo json_encode($data);
+    }
+
+    public function show_list_pending_parent()
+    {
+        $param = $this->input->post();
+        $this->load->model("M_itd_nfs");
+        $data = $this->M_itd_nfs->list_pending_parent($param);
+
+        $parent = array();
+        $child = array();
+        $list = array();
+
+        foreach ($data as $key => $value) {
+            if ($value['trx_id_upper'] == 0) {
+                array_push($parent, $value);
+            }
+
+            if ($value['trx_id_upper'] !== 0) {
+                array_push($child, $value);
+            }
+        }
+
+        $id = 0;
+        foreach ($parent as $key => $value) {
+            $value['id']     = $id;
+            $value['parent'] = null;
+            array_push($list,$value);
+            
+            foreach ($child as $keyb => $valueb) {
+                if ($value['trx_id'] == $valueb['trx_id_upper']) {
+                    $valueb['id'] = ++$id;
+                    $valueb['parent'] = $value['id'];
+                    array_push($list,$valueb);
+                }
+            }
+
+            ++$id;
+        }
+
+        echo json_encode($list);
+    }
+
 }
         
 ?>

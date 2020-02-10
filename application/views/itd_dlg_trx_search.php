@@ -59,7 +59,13 @@
          <tr>
             <td>Status</td>
             <td>:</td>
-            <td>Approved</td>
+            <td>
+                <select name="status" id="dlgTrxSearch_status">
+                    <option value="0">All</option>
+                    <option value="1">Submitted</option>
+                    <option value="2">Approved</option>
+                </select>
+            </td>
         </tr>
     </table>  
     <form action="<?php echo $url;?>index.php/itd/search_trx_approved_save" method="post" target="_blank" id="dlgTrxSearch_frm">
@@ -72,5 +78,6 @@
         <input type="hidden" name="trx_sdate" id="dlgTrxSearch_sdate1" />
         <input type="hidden" name="trx_edate" id="dlgTrxSearch_edate1" />
         <input type="hidden" name="trx_id" id="dlgTrxSearch_id1" />
+        <input type="hidden" name="status" id="dlgTrxSearch_status1" />
     </form>               
 <?php } ?>

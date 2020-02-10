@@ -187,11 +187,22 @@ class M_itd extends CI_Model {
         $data=$query->result_array();
         return $data;
     }
-    function search_trx_approved($trx_to='',$trx_ccode='',$trx_cname='',$trx_stype=0,$trx_ntype=0,$trx_nominal=0,$trx_sdate='01/01/1900',$trx_edate='01/01/1900',$user_id='',$trx_id=0)
+    function search_trx_approved($trx_to='',$trx_ccode='',$trx_cname='',$trx_stype=0,$trx_ntype=0,$trx_nominal=0,$trx_sdate='01/01/1900',$trx_edate='01/01/1900',$user_id='',$trx_id=0, $status=0)
     {                        
         //echo "exec search_trx_approved '{$trx_to}','{$trx_ccode}','{$trx_cname}',{$trx_stype},{$trx_ntype},{$trx_nominal},'{$trx_sdate}','{$trx_edate}','{$user_id}'";
-        $query=$this->db->query("exec search_trx_approved '{$trx_to}','{$trx_ccode}','{$trx_cname}','{$trx_stype}','{$trx_ntype}','{$trx_nominal}','{$trx_sdate}','{$trx_edate}','{$user_id}','{$trx_id}'");
-        $data=$query->result_array(); 
+        $approved   = array();
+        $unapproved = array();
+        if ($status == 0 || $status == 2) {
+            $approved  =   $this->db->query("exec search_trx_approved '{$trx_to}','{$trx_ccode}','{$trx_cname}','{$trx_stype}','{$trx_ntype}','{$trx_nominal}','{$trx_sdate}','{$trx_edate}','{$user_id}','{$trx_id}'");
+            $approved  =   $approved->result_array();  
+        }
+        
+        if ($status == 0 || $status == 1) {
+            $unapproved  =   $this->db->query("exec search_trx_unapproved '{$trx_to}','{$trx_ccode}','{$trx_cname}','{$trx_stype}','{$trx_ntype}','{$trx_nominal}','{$trx_sdate}','{$trx_edate}','{$user_id}','{$trx_id}'");
+            $unapproved  =   $unapproved->result_array(); 
+        }
+
+        $data = array_merge($unapproved,$approved);
         return $data;
     }
     function is_trx_editable($trx_id=0,$user_id="")

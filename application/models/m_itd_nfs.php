@@ -8,6 +8,7 @@ class M_itd_nfs extends CI_Model {
         parent::__construct();           
         $this->load->database('default');
         $this->dbnfs = $this->load->database('dbnfs',true);
+        $this->db_jasgir = $this->load->database('dbjasgir',true);
     }
     function list_trx($trx_date,$user_id,$prevdays=3)
     {
@@ -65,9 +66,23 @@ class M_itd_nfs extends CI_Model {
     }
     function move_tmp($uid)
     {
-        $query=$this->db->query("exec gw_nfs_move_temp '{$uid}'");
-        //$data=$query->result_array();
-        //return $data;
+        $this->db->query("exec gw_nfs_move_temp '{$uid}'");
+        $this->db->query("exec gw_nfs_move_pending '{$uid}'");
+        $this->db->query("exec gw_nfs_to_unapproved");
+        
+        // $query = $this->db->query("SELECT
+        //         * 
+        //     FROM
+        //         itd_trx_approved 
+        //     WHERE
+        //         nfs_td = 1 
+        //         AND trx_type <> 1 
+        //         AND trx_id_upper <> 0 
+        //         AND trx_valuta_date = '".$tanggal."'"
+        // );
+        // $data = $query->result_array();
+        // $move_to_mutasi = $this->move_to_mutasi($data);
+        // return $move_to_mutasi;
     }
     function move_rev_tmp($uid)
     {
@@ -85,6 +100,63 @@ class M_itd_nfs extends CI_Model {
     {                                                                                
         $query=$this->db->query("exec get_user_info '{$user}','" . md5($pass) . "'");
         $data=$query->result_array();
+        return $data;
+    }
+
+    public function list_pending()
+    {
+        $query=$this->db->query("
+            SELECT
+                b.type_desc,a.trx_id, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal
+            FROM
+                itd_trx_pending a
+            LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
+        ");
+        $data=$query->result_array();
+        return $data;
+    }
+
+    public function list_pending_parent($param)
+    {
+
+        $nominal = str_replace( ',', '', $param['trx_nominal']);
+        $id = $this->db->query(" 
+            SELECT 
+                trx_id 
+            FROM
+                itd_trx_approved b 
+            WHERE
+                b.nfs_td = 1 
+                AND b.trx_id_upper = 0 
+                AND b.trx_type = 1 
+                AND b.trx_valuta_date = '".$param['trx_valuta_date']."' 
+                AND b.trx_due_date = '".$param['trx_due_date']."' 
+                AND b.trx_client_code = '".$param['trx_client_code']."' 
+                AND b.nfs_bank_code = '".$param['nfs_bank_code']."' 
+                AND b.trx_rate = '".$param['trx_rate']."' 
+                AND b.trx_nominal = '".$nominal."'
+            ORDER BY
+                trx_id ASC
+        ");
+        $id = $id->result_array();
+        $trx_id = '';
+        foreach ($id as $key => $value) {
+            $trx_id = $trx_id."'".$value['trx_id']."',";
+        }
+        $trx_id = rtrim($trx_id, ", ");
+
+        $query=$this->db->query(" 
+            SELECT
+                b.type_desc, a.trx_id, a.trx_id_upper, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal
+            FROM
+                itd_trx_approved a
+            LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
+            WHERE
+                ( trx_id IN ( ".$trx_id." ) OR trx_id_upper IN ( ".$trx_id." ) ) AND a.trx_progress_status <> 11
+            ORDER BY a.trx_id, a.trx_id_upper ASC;
+        ");
+        
+        $data = $query->result_array();
         return $data;
     }
 }

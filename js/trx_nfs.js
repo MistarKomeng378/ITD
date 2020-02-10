@@ -1,6 +1,13 @@
 var grid_trx_nfs;
 var data_trx_nfs = [];
 
+var grid_data_pending;
+var grid_data_pending_parent;
+
+var data_list_pending = [];
+var data_list_pending_parent = [];
+
+var dataView;
 
 function initiate_trx_nfs()
 { 
@@ -48,6 +55,7 @@ function create_trx_nfs_grid()
     grid_trx_nfs.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow:true}));
     
 }
+
 function refresh_trx_nfs_grid()
 {
     trx_sect=1;                
@@ -94,7 +102,6 @@ function refresh_trx_nfs_grid()
     });
 }
 
-
 function create_trx_nfs_event()
 {
     $("#hbtn_trx_get_nfs").click(function(){
@@ -103,9 +110,11 @@ function create_trx_nfs_event()
             download_td_nfs($("#i_trx_list_dt_nfs").val());
         }
     });
+
     $("#hbtn_trx_refresh_nfs").click(function(){
         refresh_trx_nfs_grid();
     });
+
     $("#hbtn_trx_approve_nfs").click(function(){
         selected_row_trx_nfs  = grid_trx_nfs.getActiveCell();
         if(selected_row_trx_nfs)
@@ -123,9 +132,11 @@ function create_trx_nfs_event()
         else
             alert("No data selected!");
     });
+
     $("#hbtn_trx_search_nfs").click(function(){
         open_dlg_trx_search(); 
     });
+
     $("#hbtn_trx_ticket_nfs").click(function(){
         selected_row_trx  = grid_trx_nfs.getActiveCell();               
         if(selected_row_trx)
@@ -133,6 +144,7 @@ function create_trx_nfs_event()
         else
             alert("Instruksi belum dipilih!");
     });
+
     $("#hbtn_trx_print_nfs").click(function(){
         selected_row_trx  = grid_trx_nfs.getActiveCell();
         if(selected_row_trx)
@@ -155,6 +167,10 @@ function create_trx_nfs_event()
         else
             open_dlg_trx(1,0,data_trx_nfs[cell.row].trx_unix_no); 
     }); 
+
+    $("#hbtn_trx_nfs_pending").click(function(){
+        open_dlg_pending_data();
+    });
     
 }
 
@@ -174,5 +190,248 @@ function download_td_nfs(p_dt)
         alert("Error getting data :" + textStatus);
         state_progress(0);
         enableButton("hbtn_trx_get_nfs");
+    });
+}
+
+function create_dlg_pending_data()
+{
+    $("#dialogBox_pending_data").dialog({ 
+        title       : 'List Pending Data <span id="loadingPendingData"></span>',
+        width       : 750,
+        height      : 520,
+        autoOpen    : false,
+        resizable   : true,
+        closeOnEsc  : true,
+        modal       : true
+    }).dialog("widget").draggable("option","containment","none");
+}
+
+function open_dlg_pending_data() {
+    $("#dialogBox_pending_data").dialog("open");
+    var listPending = $.post(uri+"index.php/itd_nfs/list_pending",{},function(data) {
+        $("#dialogBox_pending_data").html(data);
+    });
+    listPending.done(function () {
+        get_data_pending();
+        create_list_table_pending();
+    });
+}
+
+function get_data_pending() {
+    $('#loadingPendingData').html('<img src="'+uri+'img/ajax-loader-small.gif" width="10px"/>');
+    var obj_post = $.post(uri+"index.php/itd_nfs/show_list_pending",function(data){
+    },'json');
+    obj_post.done(function(data) {
+        for (let index = 0; index < data.length; index++) {
+            data_list_pending[index] = {
+                'trx_id'            : data[index].trx_id,
+                'type'              : data[index].type_desc,
+                'trx_valuta_date'   : data[index].trx_valuta_date.date,
+                'trx_due_date'      : data[index].trx_due_date.date,
+                'trx_client_code'   : data[index].trx_client_code,
+                'nfs_bank_code'     : data[index].nfs_bank_code,
+                'trx_rate'          : data[index].trx_rate,
+                'trx_nominal'       : strtomoney(data[index].trx_nominal),
+            };
+        }
+        
+        grid_data_pending.invalidateAllRows();
+        grid_data_pending.updateRowCount();
+        grid_data_pending.render();
+        $('#loadingPendingData').html('');
+    });
+    
+    obj_post.fail(function(jqXHR, textStatus) {
+        grid_data_pending.invalidateAllRows();
+        grid_data_pending.updateRowCount();
+        grid_data_pending.render();
+        $('#loadingPendingData').html('');
+    });    
+}
+
+function get_data_pending_parent(data) {
+    $('#list_parent').html('');
+    data_list_pending_parent = [];
+    var obj_post = $.post(uri+"/index.php/itd_nfs/show_list_pending_parent",{
+        trx_valuta_date : data.trx_valuta_date,
+        trx_due_date : data.trx_due_date,
+        trx_client_code : data.trx_client_code,
+        nfs_bank_code : data.nfs_bank_code,
+        trx_rate : data.trx_rate,
+        trx_nominal : data.trx_nominal
+    },function(data){
+    },'json');
+
+    obj_post.done(function(data) {        
+        for (let index = 0; index < data.length; index++) {
+            data_list_pending_parent[index] = {
+                'trx_id'            : data[index].trx_id,
+                'trx_id_upper'      : data[index].trx_id_upper,
+                'type'              : data[index].type_desc,
+                'trx_valuta_date'   : data[index].trx_valuta_date.date,
+                'trx_due_date'      : data[index].trx_due_date.date,
+                'trx_client_code'   : data[index].trx_client_code,
+                'nfs_bank_code'     : data[index].nfs_bank_code,
+                'trx_rate'          : data[index].trx_rate,
+                'trx_nominal'       : strtomoney(data[index].trx_nominal),
+                'id'                : data[index].id,
+                'indent'            : data[index].trx_id_upper == 0 ? 0 : 1,
+                'parent'            : data[index].parent
+            };
+        }
+                
+        create_list_table_pending_parent();
+    });
+
+    obj_post.fail(function(jqXHR, textStatus) {
+
+    });  
+}
+
+function create_list_table_pending()
+{
+    var columns = [];
+    var options = [] ; 
+    columns = [         
+        {id:"id", name:"ID", field:"trx_id", width:80}
+        ,{id:"type", name:"Type", field:"type", width:80}
+        ,{id:"trx_valuta_date", name:"Valuta Date", field:"trx_valuta_date", width:105}
+        ,{id:"trx_due_date", name:"Due Date", field:"trx_due_date", width:105}
+        ,{id:"trx_client_code", name:"Client Code", field:"trx_client_code",width:70}
+        ,{id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75}
+        ,{id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"}
+        ,{id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"}
+    ];
+
+    options = {
+        enableAddRow: true,
+        editable: false,
+        enableCellNavigation: true,
+        asyncEditorLoading: false,
+        enableRowNavigation: true,
+        autoEdit: false,
+        multiSelect: false
+    };
+
+    grid_data_pending = new Slick.Grid("#list_pending", data_list_pending, columns, options);
+    grid_data_pending.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow:true}));        
+    grid_data_pending.onDblClick.subscribe(function (e, args) {
+        var rowSelected = args.grid.getActiveCell().row;
+        var dataSelected = args.grid.getDataItem(rowSelected);
+
+        get_data_pending_parent(dataSelected);
+        
+        var result_child = dataSelected.type+' : '+
+        dataSelected.trx_id+' | '+
+        dataSelected.trx_valuta_date+' | '+
+        dataSelected.trx_due_date+' | '+
+        dataSelected.trx_client_code+' | '+
+        dataSelected.nfs_bank_code+' | '+
+        dataSelected.trx_rate+' | '+
+        dataSelected.trx_nominal;
+
+        $('#result_chlid').html(result_child);
+    });
+}
+
+function myFilter(item) {    
+    if (item.parent != null) {
+        var parent = data_list_pending_parent[item.parent];
+
+        while (parent) {
+            if (parent._collapsed) {
+                return false;
+            }
+
+            parent = data_list_pending_parent[parent.parent];
+        }
+    }
+    return true;
+}
+
+var TaskNameFormatter = function (row, cell, value, columnDef, dataContext) {
+    value = value.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    var spacer = "<span style='display:inline-block;height:1px;width:" + (15 * dataContext["indent"]) + "px'></span>";
+    var idx = dataView.getIdxById(dataContext.id);
+    if (data_list_pending_parent[idx + 1] && data_list_pending_parent[idx + 1].indent > data_list_pending_parent[idx].indent) {
+        if (dataContext._collapsed) {
+            return spacer + " <span class='toggle expand'></span>&nbsp;" + value;
+        } else {
+            return spacer + " <span class='toggle collapse'></span>&nbsp;" + value;
+        }
+    } else {
+        return spacer + " <span class='toggle'></span>&nbsp;" + value;
+    }
+};
+
+function create_list_table_pending_parent()
+{
+    var columns = [
+        {id:"trx_id", name:"ID", field:"trx_id", width:80, formatter: TaskNameFormatter}
+        ,{id:"trx_id_upper", name:"Parent", field:"trx_id_upper", width:50}
+        ,{id:"type", name:"Type", field:"type", width:80}
+        ,{id:"trx_valuta_date", name:"Valuta Date", field:"trx_valuta_date", width:105}
+        ,{id:"trx_due_date", name:"Due Date", field:"trx_due_date", width:105}
+        ,{id:"trx_client_code", name:"Client Code", field:"trx_client_code",width:70}
+        ,{id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75}
+        ,{id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"}
+        ,{id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"}
+    ];
+
+    var options = {
+        editable: true,
+        enableAddRow: true,
+        enableCellNavigation: true,
+        asyncEditorLoading: false
+    };
+
+    dataView = new Slick.Data.DataView({ inlineFilters: true });
+    dataView.beginUpdate(); 
+    dataView.setItems(data_list_pending_parent);
+    dataView.setFilter(myFilter);
+    dataView.endUpdate();
+
+    grid_data_pending_parent = new Slick.Grid("#list_parent", dataView, columns, options);
+
+    grid_data_pending_parent.onClick.subscribe(function (e, args) {
+        if ($(e.target).hasClass("toggle")) {
+            var item = dataView.getItem(args.row);            
+            if (item) {
+                if (!item._collapsed) {
+                    item._collapsed = true;
+                } else {
+                    item._collapsed = false;
+                }
+                dataView.updateItem(item.id, item);
+            }
+            e.stopImmediatePropagation();
+        }
+    });
+    
+    // wire up model events to drive the grid
+    dataView.onRowCountChanged.subscribe(function (e, args) {
+        grid_data_pending_parent.updateRowCount();
+        grid_data_pending_parent.render();
+    });
+
+    dataView.onRowsChanged.subscribe(function (e, args) {
+        grid_data_pending_parent.invalidateRows(args.rows);
+        grid_data_pending_parent.render();
+    });
+
+    grid_data_pending_parent.onDblClick.subscribe(function (e, args) {
+        var rowSelected = args.grid.getActiveCell().row;
+        var dataSelected = args.grid.getDataItem(rowSelected);
+        
+        var result_child = dataSelected.type+' : '+
+        dataSelected.trx_id+' | '+
+        dataSelected.trx_valuta_date+' | '+
+        dataSelected.trx_due_date+' | '+
+        dataSelected.trx_client_code+' | '+
+        dataSelected.nfs_bank_code+' | '+
+        dataSelected.trx_rate+' | '+
+        dataSelected.trx_nominal;
+
+        $('#result_parent').html(result_child);
     });
 }
