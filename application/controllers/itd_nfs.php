@@ -559,6 +559,14 @@ class Itd_nfs extends CI_Controller {
         echo json_encode($list);
     }
 
+    public function pending_to_submit()
+    {
+        $param = $this->input->post();
+        $this->load->model("M_itd_nfs");
+        $data = $this->M_itd_nfs->pending_to_submit($param);
+        echo json_encode($data);
+    }
+
 }
         
 ?>

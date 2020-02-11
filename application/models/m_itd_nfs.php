@@ -159,5 +159,25 @@ class M_itd_nfs extends CI_Model {
         $data = $query->result_array();
         return $data;
     }
+
+    public function pending_to_submit($param)
+    {
+        $pending = $this->db->query(" 
+            SELECT 
+                * 
+            FROM
+                itd_trx_pending b 
+            WHERE
+                b.trx_id = '".$param['child']."'
+                trx_id ASC
+        ");
+        $pending = $pending->result_array();
+
+        foreach ($pending as $key => $value) {
+            $this->db->query(" 
+                INSERT INTO itd_trx_unapproved (trx_id, trx_id_unaprroved) VALUES ('".$value['itd_trx']."','".$value['itd_trx_upper']."' );
+            ");
+        }
+    }
 }
 ?>

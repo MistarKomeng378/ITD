@@ -51,7 +51,8 @@
 </div>
 
 <div style="margin-top: 5px">
-    <button>Submit</button>
-    <button>Cancel</button>
+    <button id="pending_submit">Submit</button>
+    <input type="text" id="input_parent">
+    <input type="text" id="input_child">
 </div>
 

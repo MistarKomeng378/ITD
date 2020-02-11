@@ -170,8 +170,7 @@ function create_trx_nfs_event()
 
     $("#hbtn_trx_nfs_pending").click(function(){
         open_dlg_pending_data();
-    });
-    
+    });    
 }
 
 function download_td_nfs(p_dt)
@@ -214,6 +213,33 @@ function open_dlg_pending_data() {
     listPending.done(function () {
         get_data_pending();
         create_list_table_pending();
+
+        $("#pending_submit").click(function(){
+            var parent = $('#input_parent').val();
+            var child = $('#input_child').val();
+    
+            if(parent == '' && child == ''){ 
+                alert('Pilih data terlebih dahulu');
+                throw 'Pilih data terlebih dahulu';
+            }
+    
+            if(parent == '' || child == ''){
+                alert('Lengkapi data terlebih dahulu');
+                throw 'Lengkapi data terlebih dahulu';
+            }
+
+            if(parent && child ){
+                var txt;
+                var r = confirm("Yakin akan proses data ini ?");
+                if (r == true) {
+                    $.post(uri+"index.php/itd_nfs/pending_to_submit",{parent: parent, child: child},function(data) {
+                        console.log(data);
+                    });
+                }
+            }
+            
+        });
+
     });
 }
 
@@ -331,6 +357,7 @@ function create_list_table_pending()
         dataSelected.trx_nominal;
 
         $('#result_chlid').html(result_child);
+        $('#input_child').val(dataSelected.trx_id);
     });
 }
 
@@ -433,5 +460,6 @@ function create_list_table_pending_parent()
         dataSelected.trx_nominal;
 
         $('#result_parent').html(result_child);
+        $('#input_parent').val(dataSelected.trx_id);
     });
 }
