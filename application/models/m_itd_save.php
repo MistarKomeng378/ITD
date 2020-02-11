@@ -323,8 +323,14 @@ class M_itd_save extends CI_Model {
         return $data;
     }
 
-    public function submit_cancel_trx($user_id="",$trx_id="",$trx_note)
+    public function submit_cancel_trx($user_id="",$param)
     {
+        $trx_id         = $param['trx_id'];
+        $acc_no         = $param['acc_no'];
+        $client_code    = $param['client_code'];
+        $coa            = $param['coa'];
+        $trx_note       = $param['trx_note'];
+
         $deleting = false;
         $cekMutasi = $this->CheckDataMutasi($trx_id);
         $data = array('msg' => '');
@@ -362,7 +368,14 @@ class M_itd_save extends CI_Model {
         }
 
         if($deleting){
-            $query  = $this->db_jasgir->query("DELETE FROM mutasi_trx WHERE subsrd_id = '".$trx_id."' ");
+            $query  = $this->db_jasgir->query("
+                DELETE FROM mutasi_trx 
+                WHERE 
+                    subsrd_id = '".$trx_id."' and 
+                    client_code = '".$client_code."' and 
+                    acc_no = '".$acc_no."' and 
+                    coa_no ='".$coa."' 
+            ");
             $query  = $this->db->query("exec submit_cancel_trx '{$user_id}','{$trx_id}','{$trx_note}'");
 
             // oleh kurob -- hard reset

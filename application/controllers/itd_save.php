@@ -316,9 +316,9 @@ class Itd_save extends CI_Controller {
             //{
                 //echo $this->session->userdata('itd_uid');
                 $param=$this->input->post();
-                sql_quot_all($param);                                  
+                sql_quot_all($param);
                 $this->load->model("M_itd_save");
-                $data=$this->M_itd_save->submit_cancel_trx($this->session->userdata('itd_uid'),$param["trx_id"],$param["trx_note"]);
+                $data=$this->M_itd_save->submit_cancel_trx($this->session->userdata('itd_uid'),$param);
                 $rdata["r_success"] = true;
                 $rdata["r_numrows"] = count($data);
                 $rdata["r_sdata"] = $data;

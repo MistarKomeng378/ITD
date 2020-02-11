@@ -1,7 +1,7 @@
 var grid_trx;
 var data_trx = [];
 var trx_sect=0;
-
+var grid_selected = [];
 
 function initiate_trx()
 { 
@@ -227,6 +227,7 @@ function create_trx_event()
             {
                 set_var_dlg_trx(data_trx[selected_row_trx.row].trx_id,data_trx[selected_row_trx.row].trx_id_master,data_trx[selected_row_trx.row].trx_id_upper);
                 open_dlg_trx(5,$("#hselect_trx_type").val(),2); 
+                grid_selected = data_trx[selected_row_trx.row];
             }
         }
         else

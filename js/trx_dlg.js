@@ -643,27 +643,61 @@ function do_submit_approve_trx()
 
 function do_submit_cancel_trx()
 {
-    if(confirm("Batalkan instruksi?"))
-    {
-        state_progress(1);
-        var obj_post = $.post(uri+"/index.php/itd_save/submit_cancel_trx", 
-            { trx_id:trxid,trx_note:$("#i_trx_note").val()},function(data) {
-                
-        },"json");
-        obj_post.done(function(data) { 
+    var data = grid_selected;
+    var acc_no = 0;
+    var client_code = 0;
+    var trx_type = 0;
+    $.post(uri+"index.php/itd/get_trx",{ trx_id:data.trx_id,trx_unix: data.trx_unix_no},function(data) {
+        var coa     = '';
+        var res     = data.r_sdata[0];
+        acc_no      = res.trx_acc_no;
+        client_code = res.trx_client_code;
+        trx_type    = res.trx_type;
+        
+        switch (trx_type) {
+            case '1':
+                coa = 'D002';
+                break;
+            case '2':
+                coa = 'D002';
+                break;
+            case '3':
+                coa = 'C003';
+                break;
+            case '4':
+                coa = 'C004';
+                break;
+        }
 
-            // alert("Pembatalan sukses!");
-            alert(data.r_sdata.msg);
+        if(confirm("Batalkan instruksi?")){
+            state_progress(1);
+            var obj_post = $.post(uri+"/index.php/itd_save/submit_cancel_trx", 
+                { 
+                    trx_id  :   trxid,
+                    acc_no  :   acc_no,
+                    client_code : client_code,
+                    coa : coa,
+                    trx_note:$("#i_trx_note").val()
+                },
+            function(data) {
+                    
+            },"json");
+            obj_post.done(function(data) { 
 
-            state_progress(0);
-            close_dlg_trx();
-            refresh_trx_grid();   
-        });
-        obj_post.fail(function(jqXHR, textStatus) {    
-            alert("Saving data error :" + textStatus);
-            state_progress(0);
-        });
-    }
+                // alert("Pembatalan sukses!");
+                alert(data.r_sdata.msg);
+
+                state_progress(0);
+                close_dlg_trx();
+                refresh_trx_grid();   
+            });
+            obj_post.fail(function(jqXHR, textStatus) {    
+                alert("Saving data error :" + textStatus);
+                state_progress(0);
+            });
+        }
+
+    },"json");
 }
 function set_dlg_event_trx()
 {
