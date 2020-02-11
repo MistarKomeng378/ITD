@@ -531,51 +531,79 @@ function do_submit_new_trx()
 }
 function do_submit_edit_trx()
 {
-    if((trim($("#i_trx_rate_break").val())==0 || trim($("#i_trx_rate_break").val())=='') && $("#i_trx_type").val()=='4')
-    {
-        alert('Please input Bunga Break!'); return 0;
-    }
-    if(confirm("Ubah instruksi?"))
-    {
-        var mov_bilyet= $("#i_trx_move_bilyet:checked").val();
-        if(mov_bilyet!=1 )
-            mov_bilyet=0;
-        state_progress(1);                                        
-        var obj_post = $.post(uri+"/index.php/itd_save/submit_edit_trx", 
-            {   trx_id:trxid,trx_to:$("#i_trx_to").val(),trx_remark1:$("#i_trx_remark1").val()
-                ,trx_up:$("#i_trx_up").val(),trx_telp:$("#i_trx_telp").val(),trx_fax:$("#i_trx_fax").val()
-                ,trx_c_code:$("#i_trx_client_code").val(),trx_c_name:$("#i_trx_client_name").val()
-                ,trx_acc_no:$("#i_trx_client_acc_no").val(),trx_acc_name:$("#i_trx_client_acc_name").val()
-                ,trx_bank_name:$("#i_trx_client_bank_name").val()
-                ,trx_dt:$("#i_trx_dt").val(),trx_val_dt:$("#i_trx_valuta_dt").val()
-                ,trx_due_dt:$("#i_trx_due_dt").val(),trx_other:$("#i_trx_other").val()
-                ,trx_nominal:$("#i_trx_nominal").val(),trx_rate:$("#i_trx_rate").val()
-                ,trx_type:$("#i_trx_type").val(),trx_dep_type:$("#i_trx_deposit_type").val()
-                ,trx_tax_status:$("#i_trx_tax_status").val(),trx_pay_type:$("#i_trx_payment_type").val()
-                ,trx_nominal:$("#i_trx_nominal").val(),trx_rate:$("#i_trx_rate").val()
-                ,trx_break_dt:$("#i_trx_break_dt").val(),trx_client_id:$("#i_trx_client_id").val()
-                ,trx_curr:$("#i_trx_curr").val(),trx_due_type:$("#i_trx_due_dt_status").val()
-                ,trx_note:$("#i_trx_note").val()
-                ,trx_mov_bil:mov_bilyet
-                ,bank_rek:$("#i_trx_dst_rek").val()
-                ,bank_rek_name:$("#i_trx_dst_acc_name").val()
-                ,pic_pid:$("#h_trx_pic_id").val()
-                ,trx_rbreak:$("#i_trx_rate_break").val()
-            },function(data){
-        },"json");
-        obj_post.done(function(data) { 
-            alert(data.r_sdata.msg);
-            // alert("Submit instruction success!"); 
-            state_progress(0);
-            close_dlg_trx();
-            close_dlg_trx();
-            refresh_trx_grid();  
-        });
-        obj_post.fail(function(jqXHR, textStatus) {    
-            alert("Saving data error :" + textStatus);
-            state_progress(0);
-        });
-    }
+    var data = grid_selected;
+    
+    $.post(uri+"index.php/itd/get_trx",{ trx_id:data.trx_id,trx_unix: data.trx_unix_no},function(data) {
+        var coa     = '';
+        var res     = data.r_sdata[0];
+        var acc_no      = res.trx_acc_no;
+        var client_code = res.trx_client_code;
+        var trx_type    = res.trx_type;
+        
+        switch (trx_type) {
+            case '1':
+                coa = 'D002';
+                break;
+            case '2':
+                coa = 'D002';
+                break;
+            case '3':
+                coa = 'C003';
+                break;
+            case '4':
+                coa = 'C004';
+                break;
+        }
+
+        if((trim($("#i_trx_rate_break").val())==0 || trim($("#i_trx_rate_break").val())=='') && $("#i_trx_type").val()=='4')
+        {
+            alert('Please input Bunga Break!'); return 0;
+        }
+        if(confirm("Ubah instruksi?"))
+        {
+            var mov_bilyet= $("#i_trx_move_bilyet:checked").val();
+            if(mov_bilyet!=1 )
+                mov_bilyet=0;
+            state_progress(1);                                        
+            var obj_post = $.post(uri+"/index.php/itd_save/submit_edit_trx", 
+                {   trx_id:trxid,trx_to:$("#i_trx_to").val(),trx_remark1:$("#i_trx_remark1").val()
+                    ,trx_up:$("#i_trx_up").val(),trx_telp:$("#i_trx_telp").val(),trx_fax:$("#i_trx_fax").val()
+                    ,trx_c_code:$("#i_trx_client_code").val(),trx_c_name:$("#i_trx_client_name").val()
+                    ,trx_acc_no:$("#i_trx_client_acc_no").val(),trx_acc_name:$("#i_trx_client_acc_name").val()
+                    ,trx_bank_name:$("#i_trx_client_bank_name").val()
+                    ,trx_dt:$("#i_trx_dt").val(),trx_val_dt:$("#i_trx_valuta_dt").val()
+                    ,trx_due_dt:$("#i_trx_due_dt").val(),trx_other:$("#i_trx_other").val()
+                    ,trx_nominal:$("#i_trx_nominal").val(),trx_rate:$("#i_trx_rate").val()
+                    ,trx_type:$("#i_trx_type").val(),trx_dep_type:$("#i_trx_deposit_type").val()
+                    ,trx_tax_status:$("#i_trx_tax_status").val(),trx_pay_type:$("#i_trx_payment_type").val()
+                    ,trx_nominal:$("#i_trx_nominal").val(),trx_rate:$("#i_trx_rate").val()
+                    ,trx_break_dt:$("#i_trx_break_dt").val(),trx_client_id:$("#i_trx_client_id").val()
+                    ,trx_curr:$("#i_trx_curr").val(),trx_due_type:$("#i_trx_due_dt_status").val()
+                    ,trx_note:$("#i_trx_note").val()
+                    ,trx_mov_bil:mov_bilyet
+                    ,bank_rek:$("#i_trx_dst_rek").val()
+                    ,bank_rek_name:$("#i_trx_dst_acc_name").val()
+                    ,pic_pid:$("#h_trx_pic_id").val()
+                    ,trx_rbreak:$("#i_trx_rate_break").val()
+                    ,coa:coa
+                },function(data){
+            },"json");
+            obj_post.done(function(data) { 
+                alert(data.r_sdata.msg);
+                // alert("Submit instruction success!"); 
+                state_progress(0);
+                close_dlg_trx();
+                close_dlg_trx();
+                refresh_trx_grid();  
+            });
+            obj_post.fail(function(jqXHR, textStatus) {    
+                alert("Saving data error :" + textStatus);
+                state_progress(0);
+            });
+        }
+
+    },"json");
+
 }
 function do_submit_revise_trx()
 {

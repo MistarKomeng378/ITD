@@ -166,6 +166,7 @@ function create_trx_event()
                 }else{
                     open_dlg_trx(2,0,2);
                 }
+                grid_selected = data_trx[selected_row_trx.row];
             }
         }
         else

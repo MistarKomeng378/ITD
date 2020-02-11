@@ -226,8 +226,14 @@ class M_itd_save extends CI_Model {
 
     public function submit_edit_trx($user_id="",$param)
     {
-        $deleting = false;
-        $cekMutasi = $this->CheckDataMutasi($param["trx_id"]);
+        $trx_id         = $param['trx_id'];
+        $acc_no         = $param['trx_acc_no'];
+        $client_code    = $param['trx_c_code'];
+        $coa            = $param['coa'];
+
+        $updating = false;
+        $cekMutasi = $this->CheckDataMutasi($trx_id, $acc_no, $client_code, $coa);
+
         // $trx_date = date('Y-m-d', strtotime($param["trx_dt"]));
         // $trx_date_valuta = date('Y-m-d', strtotime($param["trx_val_dt"]));
         $data = array('msg' => '');
@@ -245,25 +251,25 @@ class M_itd_save extends CI_Model {
 
             // jika data status mutasi 0 / data mutasi belum pernah di open / close mmaka data bisa di hapus
             if(count($checkStatusMutasi) == 0){
-                $deleting = true;
+                $updating = true;
             }else{
                 // jika data status mutasi = 1 / open maka data bisa dihapus
                 // selain status = 1 / open data tidak bisa di hapus
                 if($checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0 ){
-                    $deleting = true;
+                    $updating = true;
                
                 }else{
-                    $deleting = false;
+                    $updating = false;
                     $data = array('msg' => 'Data mutasi status bukan open');
                 }
             }
 
         }else{
-            $deleting = true;
+            $updating = true;
         }
 
 
-        if($deleting){
+        if($updating){
             if($param["trx_type"] == 1){                
                 $trx_date_edit = date('Y-m-d', strtotime($param["trx_val_dt"])); 
             }else{
@@ -338,7 +344,7 @@ class M_itd_save extends CI_Model {
         $trx_note       = $param['trx_note'];
 
         $deleting = false;
-        $cekMutasi = $this->CheckDataMutasi($trx_id);
+        $cekMutasi = $this->CheckDataMutasi($trx_id, $acc_no, $client_code, $coa);
         $data = array('msg' => '');
         // Jika data pencairan / penempatan ada pada mutasi maka check status mutasi Open/tidak
         // Jika data mutasi open maka data bisa di hapus dan jika tidak open maka data tidak bisa di hapus
@@ -395,9 +401,15 @@ class M_itd_save extends CI_Model {
         return $data;
     }
 
-    public function CheckDataMutasi($subsd_id)
+    public function CheckDataMutasi($trx_id, $acc_no, $client_code, $coa)
     {
-        $data = $this->db_jasgir->query(" select * from mutasi_trx where subsrd_id = '".$subsd_id."' ");
+        $data = $this->db_jasgir->query(" 
+            SELECT * FROM mutasi_trx 
+            WHERE subsrd_id = '".$trx_id."' and 
+                client_code = '".$client_code."' and 
+                acc_no = '".$acc_no."' and 
+                coa_no ='".$coa."' 
+        ");
         return $data->result_array();
     }
 
