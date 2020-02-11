@@ -89,7 +89,20 @@ body {
     <td></td>
 </tr>
 
-</table>                            
+
+</table> 
+<br/>
+<table width="100%" border="0" cellspacing="1" cellpadding="1" bgcolor="#000000">
+    <tr bgcolor="#ffffff">
+        <td align="left" width="15%">Rekening Tujuan</td>
+        <td>:</td>
+        <td align="left" ><?php echo $r_sdata["bank_acc_no"];?></td>   
+        <td align="right">a/n</td>
+        <td>:</td>
+        <td align="left"><?php echo $r_sdata["bank_acc_name"];?></td>
+    </tr>
+</table>
+<br/>                            
 </div>
 <div class="box_blank" style="margin-top: 15px;"> 
 Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai berikut :
@@ -183,21 +196,7 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
         <td align="center"><?php echo $r_sdata["trx_bank_name"];?></td>
         <td align="center"><?php echo $r_sdata["trx_acc_name"];?></td>
     </tr>
-</table>  
-<br/> <hr/> <br/>
-<table width="100%" border="0" cellspacing="2" cellpadding="2" bgcolor="#000000">
-    <tr bgcolor="#ffffff">
-        <td align="center" width="30%"><b>NO. REKENING TUJUAN</b></td>
-        <td align="center" width="30%"><b>BANK TUJUAN</b></td>
-        <td align="center" ><b>ATAS NAMA</b></td>
-    </tr>
-
-    <tr bgcolor="#ffffff">
-        <td align="center"><?php echo $r_sdata["bank_acc_no"];?></td>
-        <td align="center"><?php echo $r_sdata["trx_to"];?></td>
-        <td align="center"><?php echo $r_sdata["bank_acc_name"];?></td>
-    </tr>
-</table>    
+</table> 
 </div>
 
 <div class="box_blank" style="margin-bottom: 15px;"> 
