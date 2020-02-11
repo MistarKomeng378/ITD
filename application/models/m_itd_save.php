@@ -87,7 +87,7 @@ class M_itd_save extends CI_Model {
         $coa = $coa->result();
         
         $subsrd = $this->db->query("
-            SELECT 
+            SELECT TOP (1)
                 *
             FROM 
                 itd_trx_approved
@@ -107,6 +107,8 @@ class M_itd_save extends CI_Model {
 
             if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
                 $mutasi_trx = $this->db_jasgir->query("
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".trim($value['trx_client_code'])."' AND trx_date='".$value['trx_valuta_date']->format('Y-m-d')."' AND coa_no='".$coa[0]->coa_no."' AND acc_no='".trim($value['trx_acc_no'])."' AND subsrd_id='".$value['trx_id']."' )
+                BEGIN
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
                         [acc_no],
@@ -138,6 +140,7 @@ class M_itd_save extends CI_Model {
                         1,
                         '".$value['trx_id']."'
                     );
+                END
                 ");
             }else{
                 $p = trim($value['trx_client_code']).' - '.trim($value['trx_acc_no']).' - '.$value['trx_valuta_date']->format('Y-m-d');
@@ -156,7 +159,7 @@ class M_itd_save extends CI_Model {
         $coa = $coa->result();
         
         $subsrd = $this->db->query("
-            SELECT 
+            SELECT TOP (1)
                 *
             FROM 
                 itd_trx_approved
@@ -176,6 +179,8 @@ class M_itd_save extends CI_Model {
 
             if( count($checkStatusMutasi) == 0 || $checkStatusMutasi[0]['curr_status'] == 1 || $checkStatusMutasi[0]['curr_status'] == 0){
                 $mutasi_trx = $this->db_jasgir->query("
+                IF NOT EXISTS ( SELECT*FROM mutasi_trx WHERE client_code='".trim($value['trx_client_code'])."' AND trx_date='".$value['trx_valuta_date']->format('Y-m-d')."' AND coa_no='".$coa[0]->coa_no."' AND acc_no='".trim($value['trx_acc_no'])."' AND subsrd_id='".$value['trx_id']."' )
+                BEGIN
                     INSERT INTO [dbo].[mutasi_trx] (
                         [client_code],
                         [acc_no],
@@ -207,6 +212,7 @@ class M_itd_save extends CI_Model {
                         1,
                         '".$value['trx_id']."'
                     );
+                END
                 ");
             }else{
                 $p = trim($value['trx_client_code']).' - '.trim($value['trx_acc_no']).' - '.$value['trx_date']->format('Y-m-d');
