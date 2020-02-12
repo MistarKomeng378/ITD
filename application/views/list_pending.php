@@ -52,7 +52,7 @@
 
 <div style="margin-top: 5px">
     <button id="pending_submit">Submit</button>
-    <input type="text" id="input_parent">
-    <input type="text" id="input_child">
+    <input type="hidden" id="input_parent">
+    <input type="hidden" id="input_child">
 </div>
 

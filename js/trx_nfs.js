@@ -228,12 +228,25 @@ function open_dlg_pending_data() {
                 throw 'Lengkapi data terlebih dahulu';
             }
 
-            if(parent && child ){
+            if(parent && child ){                
                 var txt;
                 var r = confirm("Yakin akan proses data ini ?");
                 if (r == true) {
                     $.post(uri+"index.php/itd_nfs/pending_to_submit",{parent: parent, child: child},function(data) {
-                        console.log(data);
+                        if(data == true){
+                            $('#result_parent').html('Parent : xxxxxxxxxxx');
+                            $('#result_chlid').html('Child : xxxxxxxxxx');
+                            $('#input_parent').val('');
+                            $('#input_child').val('');
+
+                            get_data_pending();
+
+                            grid_data_pending_parent.invalidateAllRows();
+                            dataView.setItems(newData, "Id");
+                            grid_data_pending_parent.render();
+                        }else{
+                            alert('Data parent sudah pernah dijadikan acuan intruksi deposito');
+                        }
                     });
                 }
             }
@@ -450,16 +463,25 @@ function create_list_table_pending_parent()
         var rowSelected = args.grid.getActiveCell().row;
         var dataSelected = args.grid.getDataItem(rowSelected);
         
-        var result_child = dataSelected.type+' : '+
-        dataSelected.trx_id+' | '+
-        dataSelected.trx_valuta_date+' | '+
-        dataSelected.trx_due_date+' | '+
-        dataSelected.trx_client_code+' | '+
-        dataSelected.nfs_bank_code+' | '+
-        dataSelected.trx_rate+' | '+
-        dataSelected.trx_nominal;
+        if (dataSelected.type == 'Penempatan' || dataSelected.type == 'Perpanjangan') {
+            var result_child = dataSelected.type+' : '+
+            dataSelected.trx_id+' | '+
+            dataSelected.trx_valuta_date+' | '+
+            dataSelected.trx_due_date+' | '+
+            dataSelected.trx_client_code+' | '+
+            dataSelected.nfs_bank_code+' | '+
+            dataSelected.trx_rate+' | '+
+            dataSelected.trx_nominal;
 
-        $('#result_parent').html(result_child);
-        $('#input_parent').val(dataSelected.trx_id);
+            $('#result_parent').html(result_child);
+            $('#input_parent').val(dataSelected.trx_id);
+        }else{
+            $('#result_parent').html('Parent : xxxxxxxxxxx');
+            $('#input_parent').val('');
+
+            alert('Parent yang anda pilih bukan Penempatan/Perpanjangan');
+        }
+        
+        
     });
 }
