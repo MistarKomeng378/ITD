@@ -30,9 +30,22 @@ body {
     padding: 2px 8px;
     margin-bottom: 5px;;
 }
+
+.box2{             
+  
+      border: 2px solid black; 
+      border-collapse: collapse;
+	  border-spacing: 0;
+	  border-right : 1px solid black;
+}
+
 .box_blank{             
     padding: 0px;
     margin-bottom: 5px;;
+}
+
+
+	
 }
     </style>
 </head>
@@ -85,25 +98,30 @@ body {
     <td>:</td>
     <td><?php echo $r_sdata["trx_fax"];?></td>
     <td></td>
-    <td></td>
-    <td></td>
+    
 </tr>
 
 
 </table> 
-<br/>
-<table width="100%" border="0" cellspacing="1" cellpadding="1" bgcolor="#000000">
+</div>
+
+
+<?php if($r_sdata['trx_type']==1){ ?>
+<div>
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#000000">
     <tr bgcolor="#ffffff">
-        <td align="left" width="15%">Rekening Tujuan</td>
-        <td>:</td>
-        <td align="left" ><?php echo $r_sdata["bank_acc_no"];?></td>   
-        <td align="right">a/n</td>
-        <td>:</td>
-        <td align="left"><?php echo $r_sdata["bank_acc_name"];?></td>
+        <td class="box2" align="left" width="15%" style="border-right : 0px;">&nbsp;Rekening Tujuan : </td>
+       
+        <td class="box2" width="20%" align="left" style="border-right : 2px solid black; border-left : 0px;" ><?php echo $r_sdata["bank_acc_no"];?></td>   
+        <td class="box2" align="right" style="border-right : 0px; border-left : 0px;">a/n : </td>
+       
+        <td class="box2" style="border-left :0px; border-right : 2px solid black;" align="left"><?php echo $r_sdata["bank_acc_name"];?></td>
     </tr>
 </table>
-<br/>                            
 </div>
+<br/> 
+<?php } ?>                           
+
 <div class="box_blank" style="margin-top: 15px;"> 
 Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai berikut :
 <table width="100%" border="0" cellspacing="1" cellpadding="2">
@@ -134,32 +152,45 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
 </table>     
 </div>                   
 <p></p>
-<div class="box_blank" style="margin-bottom: 15px;"> 
-<table border="0" width="100%" cellspacing="1" cellpadding="1" bgcolor="#000000">
+<div style="margin: 15px;"> 
+<table width="100%" bgcolor="#000000" cellpadding="0" cellspacing="0">
 <tr bgcolor="#ffffff">
-    <td align="center" ><b>NAMA KLIEN</b></td>
-    <td align="center" width="30%"><b>NOMINAL</b></td>
-    <td align="center" width="20%"><b>BUNGA / NISBAH</b></td>
+    <td align="center" class="box2" style="border-bottom : 0px;"><b>NAMA KLIEN</b></td>
+    <td align="center" class="box2" width="30%" style="border-bottom : 0px;"><b>NOMINAL</b></td>
+    
     <?php if($r_sdata['trx_type']==4){ ?>
-    <td align="center" width="10%"><b>BUNGA BREAK</b></td>
-    <?php }?>
+	<td align="center" class="box2" width="20%" style="border-bottom : 0px;"><b>BUNGA / NISBAH</b></td>
+    <td align="center" class="box2" width="10%" style="border-right : 2px solid black; border-bottom : 0px;"><b>BUNGA BREAK</b></td>
+    <?php } else {?>
+	
+	<td align="center" class="box2" width="20%" style="border-right : 2px solid black; border-bottom : 0px;"><b>BUNGA / NISBAH</b></td>
+	
+	<?php } ?>
+	
 </tr>
 <tr bgcolor="#ffffff">
-    <td align="center">
+    <td align="center" class="box2">
     <b><span id="s_client_name"><?php echo $r_sdata["trx_client_name"];?></span></b><br />
     C/O Custodial Services
     </td>
-    <td align="center">
+    <td align="center" class="box2">
     <b><?php echo $r_sdata["trx_curr"] . " " . number_format($r_sdata["trx_nominal"],2,",",".");?></b>
     </td>
-    <td align="center">
-    <b><?php echo $r_sdata["trx_rate"];?>%</b>
-    </td>
+   
     <?php if($r_sdata['trx_type']==4){ ?>
-    <td align="center">
+	 <td align="center" class="box2">
+    <b><?php echo $r_sdata["trx_rate"]; ?>%</b>
+    </td>
+    <td align="center" class="box2" style="border-right : 2px solid black;">
     <b><?php echo $r_sdata["trx_rate_break"];?>%</b>
     </td>
-    <?php }?>
+    <?php } else {?>
+	
+	<td align="center" class="box2" style="border-right : 2px solid black;">
+    <b><?php echo $r_sdata["trx_rate"];?>%</b>
+    </td>
+	
+	<?php } ?>
 </tr>
 </table>    
 </div>
