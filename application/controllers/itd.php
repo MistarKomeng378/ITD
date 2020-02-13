@@ -320,7 +320,7 @@ class Itd extends CI_Controller {
             $param["trx_edate"]='01/01/1900';
         $param["trx_sdate"] = change_dt_format($param["trx_sdate"]);
         $param["trx_edate"] = change_dt_format($param["trx_edate"]);
-        $data = $this->M_itd->search_trx_approved($param["trx_to"],$param["trx_ccode"],$param["trx_cname"],$param["trx_stype"],$param["trx_ntype"],0+$param["trx_nominal"],$param["trx_sdate"],$param["trx_edate"],$this->session->userdata('itd_uid'),$param['trx_id']);
+        $data = $this->M_itd->search_trx_approved($param["trx_to"],$param["trx_ccode"],$param["trx_cname"],$param["trx_stype"],$param["trx_ntype"],0+$param["trx_nominal"],$param["trx_sdate"],$param["trx_edate"],$this->session->userdata('itd_uid'),$param['trx_id'], $param['status']);
         $fields = array("trx_create_dt","trx_valuta_date","trx_due_date");
         add_data_dt_str($data,$fields);
         $this->data["r_success"] = 1;
@@ -339,7 +339,7 @@ class Itd extends CI_Controller {
             $param["trx_edate"]='01/01/1900';
         $param["trx_sdate"] = change_dt_format($param["trx_sdate"]);
         $param["trx_edate"] = change_dt_format($param["trx_edate"]);
-        $data = $this->M_itd->search_trx_approved($param["trx_to"],$param["trx_ccode"],$param["trx_cname"],$param["trx_stype"],$param["trx_ntype"],0+$param["trx_nominal"],$param["trx_sdate"],$param["trx_edate"],$this->session->userdata('itd_uid'),$param['trx_id']);
+        $data = $this->M_itd->search_trx_approved($param["trx_to"],$param["trx_ccode"],$param["trx_cname"],$param["trx_stype"],$param["trx_ntype"],0+$param["trx_nominal"],$param["trx_sdate"],$param["trx_edate"],$this->session->userdata('itd_uid'),$param['trx_id'], $param['status']);
         $fields = array("trx_create_dt","trx_valuta_date","trx_due_date");
         add_data_dt_str($data,$fields);
         $this->data["r_success"] = 1;

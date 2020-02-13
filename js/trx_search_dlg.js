@@ -61,7 +61,8 @@ function do_dlg_trx_search()
         trx_cname:$("#dlgTrxSearch_client_name").val(),trx_stype:$("#dlgTrxSearch_type").val() ,
         trx_nominal:$("#dlgTrxSearch_nominal").val(),trx_ntype:$("#dlgTrxSearch_nominal_type").val() 
         ,trx_sdate:$("#dlgTrxSearch_sdate").val(),trx_edate:$("#dlgTrxSearch_edate").val(),
-        trx_id:$("#dlgTrxSearch_id").val()
+        trx_id:$("#dlgTrxSearch_id").val(),
+        status:$("#dlgTrxSearch_status").val()
         },function(data) {        
        // alert(data);
        var irow=0;
@@ -157,6 +158,7 @@ function do_dlg_trx_search_save()
     $("#dlgTrxSearch_sdate1").val($("#dlgTrxSearch_sdate").val());
     $("#dlgTrxSearch_edate1").val($("#dlgTrxSearch_edate").val());
     $("#dlgTrxSearch_id1").val($("#dlgTrxSearch_id").val());
+    $("#dlgTrxSearch_status1").val($("#dlgTrxSearch_status").val());
     
     state_progress(1);      
     if(trx_sect==0)     
@@ -168,7 +170,8 @@ function do_dlg_trx_search_save()
         trx_cname:$("#dlgTrxSearch_client_name").val(),trx_stype:$("#dlgTrxSearch_type").val() ,
         trx_nominal:$("#dlgTrxSearch_nominal").val(),trx_ntype:$("#dlgTrxSearch_nominal_type").val() 
         ,trx_sdate:$("#dlgTrxSearch_sdate").val(),trx_edate:$("#dlgTrxSearch_edate").val(),
-        trx_id:$("#dlgTrxSearch_id").val()
+        trx_id:$("#dlgTrxSearch_id").val(),
+        status:$("#dlgTrxSearch_status").val()
         },function(data) {        
        // alert(data);
         for (var i=0; i<data.r_num_rows; i++) {

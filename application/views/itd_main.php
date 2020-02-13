@@ -23,6 +23,7 @@
     <script type="text/javascript" src="<?php echo $url;?>js/plugins/slick.rowselectionmodel.js"></script>
     <script type="text/javascript" src="<?php echo $url;?>js/slick.editors.js"></script>
     <script type="text/javascript" src="<?php echo $url;?>js/slick.grid.js"></script>
+    <script type="text/javascript" src="<?php echo $url;?>js/slick.dataview.js"></script>
 
         
     <script type="text/javascript">        
@@ -318,6 +319,7 @@
                 <button id="hbtn_trx_search_nfs">Cari Inst</button>           -
                 <input id="i_trx_list_dt_nfs" type="text" class="dtpick" style="width:80px;text-align: center;" /> 
                 <button id="hbtn_trx_get_nfs">Get data from S-INVEST</button> 
+                <button id="hbtn_trx_nfs_pending">Pending data</button> 
                 <?php if($lvl<=5) { ?>
                 <button id="hbtn_trx_approve_nfs">Approve & Cetak</button>                 
                 <?php }?>
@@ -771,6 +773,8 @@
 
 <div id="dialogBox_mutasi_client_kode"></div>
 <div id="alert_send_to_mutasi"></div>
+
+<div id="dialogBox_pending_data"></div>
 
 <!-- DIALOG BOX w/ User -->
 <!-- DIALOG BOX w/ pic -->
