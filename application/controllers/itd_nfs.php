@@ -73,12 +73,45 @@ class Itd_nfs extends CI_Controller {
             {
                 $pdate = substr($xitem1['PLACEMENT_DATE'],4,2) . '/' . substr($xitem1['PLACEMENT_DATE'],-2) . '/' . substr($xitem1['PLACEMENT_DATE'],0,4);
                 $mdate = substr($xitem1['MATURITY_DATE'],4,2) . '/' . substr($xitem1['MATURITY_DATE'],-2) . '/' . substr($xitem1['MATURITY_DATE'],0,4);
-                $this->M_itd_nfs->insert_tmp(sql_quot($xitem1['HIPORT_CODE']),sql_quot($xitem1['TRANSACTION_STATUS']),sql_quot($xitem1['ACTION_TYPE']),sql_quot($xitem1['INPUT_TYPE']),trim($xitem1['IM_NAME']),
-                    sql_quot($xitem1['FUND_CODE']),sql_quot($xitem1['FUND_NAME']),sql_quot($xitem1['PLACEMENT_BANK_CODE']),sql_quot($xitem1['PLACEMENT_BANK_NAME']),trim($xitem1['BRANCH_CODE']),sql_quot($xitem1['BRANCH_NAME']),
-                    sql_quot($xitem1['PLACEMENT_BANK_SECURITY']),sql_quot($xitem1['PLACEMENT_BANK_CASH']),sql_quot($xitem1['CCY']),sql_quot($xitem1['PRINCIPLE']),sql_quot($xitem1['INTEREST_RATE']),sql_quot($pdate),sql_quot($mdate),sql_quot(
-                    $xitem1['SHARIA_DEPOSIT']),sql_quot($xitem1['CONTACT_PERSON']),sql_quot($xitem1['TELEPHONE_NO']),sql_quot($xitem1['FAX_NO']),sql_quot($xitem1['REFERENCE_NO']),sql_quot($xitem1['PARENT_REFERENCE_NO']),sql_quot(
-                    $xitem1['DESCRIPTION']),sql_quot($xitem1['SI_REFERENCE']),sql_quot($xitem1['STATUS']),sql_quot($xitem1['APPROVE']),sql_quot($xitem1['CHECKED']),sql_quot($xitem1['PENDING']),sql_quot($xitem1['REJECT_REASON']
-                    ),sql_quot($xitem1['ACCT_NO']),sql_quot($xitem1['ACCT_NAME']));
+                $this->M_itd_nfs->insert_tmp(
+                    sql_quot($xitem1['HIPORT_CODE']),
+                    sql_quot($xitem1['TRANSACTION_STATUS']),
+                    sql_quot($xitem1['ACTION_TYPE']),
+                    sql_quot($xitem1['INPUT_TYPE']),
+                    trim($xitem1['IM_NAME']),
+                    sql_quot($xitem1['FUND_CODE']),
+                    sql_quot($xitem1['FUND_NAME']),
+                    sql_quot($xitem1['PLACEMENT_BANK_CODE']),
+                    sql_quot($xitem1['PLACEMENT_BANK_NAME']),
+                    trim($xitem1['BRANCH_CODE']),
+                    sql_quot($xitem1['BRANCH_NAME']),
+                    sql_quot($xitem1['PLACEMENT_BANK_SECURITY']),
+                    sql_quot($xitem1['PLACEMENT_BANK_CASH']),
+                    sql_quot($xitem1['CCY']),
+                    sql_quot($xitem1['PRINCIPLE']),
+                    sql_quot($xitem1['INTEREST_RATE']),
+                    sql_quot($pdate),
+                    sql_quot($mdate),
+                    sql_quot($xitem1['SHARIA_DEPOSIT']),
+                    sql_quot($xitem1['CONTACT_PERSON']),
+                    sql_quot($xitem1['TELEPHONE_NO']),
+                    sql_quot($xitem1['FAX_NO']),
+                    sql_quot($xitem1['REFERENCE_NO']),
+                    sql_quot($xitem1['PARENT_REFERENCE_NO']),
+                    sql_quot($xitem1['DESCRIPTION']),
+                    sql_quot($xitem1['SI_REFERENCE']),
+                    sql_quot($xitem1['STATUS']),
+                    sql_quot($xitem1['APPROVE']),
+                    sql_quot($xitem1['CHECKED']),
+                    sql_quot($xitem1['PENDING']),
+                    sql_quot($xitem1['REJECT_REASON']),
+                    sql_quot($xitem1['ACCT_NO']),
+                    sql_quot($xitem1['ACCT_NAME']),
+                    date('Y/m/d H:i:s', strtotime($xitem1['WITHDRAWAL_DATE'])),
+                    sql_quot($xitem1['NEW_PRINCIPLE_AMOUNT']),
+                    sql_quot($xitem1['NEW_INTEREST_RATE']),
+                    date('Y/m/d H:i:s', strtotime($xitem1['NEW_MATURITY_DATE']))
+                );
                 
             }
             
@@ -546,7 +579,7 @@ class Itd_nfs extends CI_Controller {
             array_push($list,$value);
             
             foreach ($child as $keyb => $valueb) {
-                if ($value['trx_id'] == $valueb['trx_id_upper']) {
+                if ($value['trx_id'] == $valueb['trx_id_upper'] || $value['trx_id'] == $valueb['trx_id_master']) {
                     $valueb['id'] = ++$id;
                     $valueb['parent'] = $value['id'];
                     array_push($list,$valueb);
@@ -567,6 +600,13 @@ class Itd_nfs extends CI_Controller {
         echo $data;
     }
 
+    public function hapus_list_pending()
+    {
+        $param = $this->input->post();
+        $this->load->model("M_itd_nfs");
+        $data = $this->M_itd_nfs->hapus_list_pending($param);
+        echo $data;
+    }
 }
         
 ?>

@@ -268,7 +268,6 @@ function create_trx_event()
         var cell = grid_trx.getCellFromEvent(e);
         set_var_dlg_trx(data_trx[cell.row].trx_id,data_trx[cell.row].trx_id_master,data_trx[cell.row].trx_id_upper);
         
-        console.log(data_trx[cell.row]);
         if(data_trx[cell.row].trx_unix_no==2 && data_trx[cell.row].trx_type_id == 1){
             open_dlg_trx(3,0,data_trx[cell.row].trx_unix_no);
         }else if(data_trx[cell.row].trx_unix_no == 2 && data_trx[cell.row].trx_type_id !== 1 ){

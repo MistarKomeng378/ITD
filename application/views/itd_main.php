@@ -24,6 +24,7 @@
     <script type="text/javascript" src="<?php echo $url;?>js/slick.editors.js"></script>
     <script type="text/javascript" src="<?php echo $url;?>js/slick.grid.js"></script>
     <script type="text/javascript" src="<?php echo $url;?>js/slick.dataview.js"></script>
+    <script type="text/javascript" src="<?php echo $url;?>js/controls/slick.columnpicker.js"></script>
 
         
     <script type="text/javascript">        

@@ -24,8 +24,15 @@
     .toggle.collapse {
         background: url(../img/collapse.gif) no-repeat center center;
     }
-</style>
 
+    #hapus_pending_data {
+        margin-bottom: 5px
+    }
+    #refresh_pending_data {
+        margin-bottom: 5px
+    }
+</style>
+<button id="hapus_pending_data">Hapus Data (0)</button>
 <div id="list_pending" style="height: 170px;border: 1.25px solid #84142d;border-radius: 5px; margin-bottom: 15px"></div>
 
 <span>Data Aapproved</span>
@@ -33,8 +40,6 @@
     height: 170px;
     border: 1.25px solid #84142d;
     border-radius: 5px;
-    overflow-y: auto; 
-    overflow-x: auto;
     white-space: nowrap;">
 </div>
 

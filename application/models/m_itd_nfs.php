@@ -24,18 +24,22 @@ class M_itd_nfs extends CI_Model {
         //return $data;
     }
     function insert_tmp($client_code,$transaction_status,$action_type,$input_type,$im_name,$fund_code,
-                $fund_name,$placement_bank_code,$placement_bank_name,$branch_code,$branch_name,
-                $placement_bank_security,$placement_bank_cash,$ccy,$principle ,
-                $interest_rate,$placement_date,$maturity_date,$sharia_deposit ,
-                $contact_person,$telephone_no,$fax_no,$reference_no,$parent_reference_no ,
-                $description,$si_reference,$status,$approve,$checked,$pending,$reject_reason,$acct_no,$acct_name )
+        $fund_name,$placement_bank_code,$placement_bank_name,$branch_code,$branch_name,
+        $placement_bank_security,$placement_bank_cash,$ccy,$principle ,
+        $interest_rate,$placement_date,$maturity_date,$sharia_deposit ,
+        $contact_person,$telephone_no,$fax_no,$reference_no,$parent_reference_no ,
+        $description,$si_reference,$status,$approve,$checked,$pending,$reject_reason,$acct_no,$acct_name,
+        $WITHDRAWAL_DATE, $NEW_PRINCIPLE_AMOUNT, $NEW_INTEREST_RATE, $NEW_MATURITY_DATE
+    )
     {
         $this->db->query("exec gw_nfs_insert_temp '{$client_code}','{$transaction_status}','{$action_type}','{$input_type}','{$im_name}','{$fund_code}',
-        '{$fund_name}','{$placement_bank_code}','{$placement_bank_name}','{$branch_code}','{$branch_name}',
-        '{$placement_bank_security}','{$placement_bank_cash}','{$ccy}','{$principle}',
-        '{$interest_rate}','{$placement_date}','{$maturity_date}','{$sharia_deposit }',
-        '{$contact_person}','{$telephone_no}','{$fax_no}','{$reference_no}','{$parent_reference_no }',
-        '{$description}','{$si_reference}','{$status}','{$approve}','{$checked}','{$pending}','{$reject_reason }','{$acct_no}','{$acct_name}'");   
+            '{$fund_name}','{$placement_bank_code}','{$placement_bank_name}','{$branch_code}','{$branch_name}',
+            '{$placement_bank_security}','{$placement_bank_cash}','{$ccy}','{$principle}',
+            '{$interest_rate}','{$placement_date}','{$maturity_date}','{$sharia_deposit }',
+            '{$contact_person}','{$telephone_no}','{$fax_no}','{$reference_no}','{$parent_reference_no }',
+            '{$description}','{$si_reference}','{$status}','{$approve}','{$checked}','{$pending}','{$reject_reason }','{$acct_no}','{$acct_name}',
+            '{$WITHDRAWAL_DATE}', '{$NEW_PRINCIPLE_AMOUNT}', '{$NEW_INTEREST_RATE}', '{$NEW_MATURITY_DATE}'
+        ");   
         
     }
     function insert_rev_tmp($client_code,$transaction_status,$action_type,$input_type,$im_name,$fund_code,
@@ -93,7 +97,7 @@ class M_itd_nfs extends CI_Model {
     {
         $query=$this->db->query("
             SELECT
-                b.type_desc,a.trx_id, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal
+                b.type_desc,a.trx_id, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal, a.trx_to
             FROM
                 itd_trx_pending a
             LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
@@ -121,25 +125,26 @@ class M_itd_nfs extends CI_Model {
                 AND b.nfs_bank_code = '".$param['nfs_bank_code']."' 
                 AND b.trx_rate = '".$param['trx_rate']."' 
                 AND b.trx_nominal = '".$nominal."'
+                AND (SELECT value FROM dbo.branch_name_from_trx_to(b.trx_to,'-')) = '".$param['branch_name']."'
             ORDER BY
                 trx_id ASC
         ");
         $id = $id->result_array();
-        $trx_id = '';
+        $trx_id = NULL;
         foreach ($id as $key => $value) {
             $trx_id = $trx_id."'".$value['trx_id']."',";
         }
-        $trx_id = rtrim($trx_id, ", ");
+        $trx_id = $trx_id !== NULL ? rtrim($trx_id, ", ") : 'NULL';
 
         $query=$this->db->query(" 
             SELECT
-                b.type_desc, a.trx_id, a.trx_id_upper, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal
+                b.type_desc, a.trx_id, a.trx_id_master, a.trx_id_upper, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal, a.trx_to
             FROM
                 itd_trx_approved a
             LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
             WHERE
-                ( trx_id IN ( ".$trx_id." ) OR trx_id_upper IN ( ".$trx_id." ) ) AND a.trx_progress_status <> 11
-            ORDER BY a.trx_id, a.trx_id_upper ASC;
+                ( trx_id IN ( ".$trx_id." ) OR trx_id_upper IN ( ".$trx_id." ) OR trx_id_master IN ( ".$trx_id." ) ) AND a.trx_progress_status <> 11
+            ORDER BY a.trx_id ASC;
         ");
         
         $data = $query->result_array();
@@ -172,8 +177,11 @@ class M_itd_nfs extends CI_Model {
         ");
         $approved = $approved->result_array();
 
-        if (count($unapprove) > 0 || count($approved) > 0) {
-            return false;
+        if (count($unapprove) > 0 ) {
+            return 'Data parent sudah pernah dijadikan acuan intruksi deposito dengan status submitted';
+        }
+        if (count($approved) > 0) {
+            return 'Data parent sudah pernah dijadikan acuan intruksi deposito dengan status approved';
         }
 
         $pending = $this->db->query(" 
@@ -190,6 +198,35 @@ class M_itd_nfs extends CI_Model {
         
         $SQL = "";
         foreach ($pending as $key => $value) {
+            $approved = $this->db->query(" 
+                SELECT 
+                    * 
+                FROM
+                    itd_trx_approved b 
+                WHERE
+                    b.trx_id = '".$param['parent']."'
+                ORDER BY
+                    trx_id ASC
+            ");
+
+            $approved = $approved->result_array();
+
+            // jika perpanjagan/break dan parentnya penemptan
+            if( ($value['trx_type'] == '2' && $approved[0]['trx_type'] == '1') || ($value['trx_type'] == '4' && $approved[0]['trx_type'] == '1') ){
+                $value['trx_id_master'] = $approved[0]['trx_id'] ;
+            }
+
+            // jika perpanjagan/break dan parentnya perpanjangan
+            if( ($value['trx_type'] == '2' && $approved[0]['trx_type'] == '2') || ($value['trx_type'] == '4' && $approved[0]['trx_type'] == '2') ){
+                $value['trx_id_master'] = $approved[0]['trx_id_master'] ;
+            }
+
+            if( $value['trx_type'] == '2' ){
+                $value['trx_nominal'] = $value['NEW_PRINCIPLE_AMOUNT'];
+                $value['trx_rate'] = $value['NEW_INTEREST_RATE'];
+                $value['trx_due_date'] = $value['NEW_MATURITY_DATE'];
+            }
+
             $SQL = "INSERT INTO itd_trx_unapproved (
                 trx_id_master, 
                 trx_id_upper,
@@ -246,7 +283,7 @@ class M_itd_nfs extends CI_Model {
                 itd_kategori
                 
             ) VALUES (
-                '".$value['trx_id']."', 
+                '".$value['trx_id_master']."',
                 '".$param['parent']."',
                 '".$value['trx_to']."', 
                 '".$value['trx_remark1']."', 
@@ -312,6 +349,18 @@ class M_itd_nfs extends CI_Model {
             ");
         } 
         return $delete;
+    }
+
+    public function hapus_list_pending($param)
+    {
+        $unapprove = $this->db->query(" 
+            DELETE FROM itd_trx_pending WHERE trx_id = '".$param['trx_id']."'
+        ");
+
+        if($unapprove){
+            return 'Data berhasil dihapus.';
+        }
+        return 'Data gagal dihapus.';
     }
 }
 ?>

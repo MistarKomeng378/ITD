@@ -197,7 +197,7 @@ function create_dlg_pending_data()
     $("#dialogBox_pending_data").dialog({ 
         title       : 'List Pending Data <span id="loadingPendingData"></span>',
         width       : 750,
-        height      : 520,
+        height      : 550,
         autoOpen    : false,
         resizable   : true,
         closeOnEsc  : true,
@@ -213,6 +213,33 @@ function open_dlg_pending_data() {
     listPending.done(function () {
         get_data_pending();
         create_list_table_pending();
+
+        $("#hapus_pending_data").click(function(){
+            var data = grid_data_pending.getSelectedRows();
+            if(data.length > 0){
+                var r = confirm("Yakin akan menghapus data tersebut ?");
+                if (r == true) {
+                    $('#loadingPendingData').html('<img src="'+uri+'img/ajax-loader-small.gif" width="10px"/>');
+                    for (let index = 0; index < data.length; index++) {
+                        var dataSelected = grid_data_pending.getDataItem(data[index]);
+                        var hapus = $.post(uri+"index.php/itd_nfs/hapus_list_pending",{trx_id:dataSelected.trx_id },function(data) {
+                            
+                        });
+                    }
+                    hapus.done(function(data) {
+                        
+                        setTimeout(() => {
+                            alert(data);
+                            get_data_pending();
+                            create_list_table_pending();
+                            $('#hapus_pending_data').html('Hapus Data (0)');
+                        }, 2000);
+                        
+                    });
+                    
+                }
+            }
+        });
 
         $("#pending_submit").click(function(){
             var parent = $('#input_parent').val();
@@ -242,10 +269,10 @@ function open_dlg_pending_data() {
                             get_data_pending();
 
                             grid_data_pending_parent.invalidateAllRows();
-                            dataView.setItems(newData, "Id");
+                            dataView.setItems([], "Id");
                             grid_data_pending_parent.render();
                         }else{
-                            alert('Data parent sudah pernah dijadikan acuan intruksi deposito');
+                            alert(data);
                         }
                     });
                 }
@@ -261,6 +288,7 @@ function get_data_pending() {
     var obj_post = $.post(uri+"index.php/itd_nfs/show_list_pending",function(data){
     },'json');
     obj_post.done(function(data) {
+        data_list_pending = [];
         for (let index = 0; index < data.length; index++) {
             data_list_pending[index] = {
                 'trx_id'            : data[index].trx_id,
@@ -271,11 +299,13 @@ function get_data_pending() {
                 'nfs_bank_code'     : data[index].nfs_bank_code,
                 'trx_rate'          : data[index].trx_rate,
                 'trx_nominal'       : strtomoney(data[index].trx_nominal),
+                'trx_to'            : data[index].trx_to
             };
         }
         
         grid_data_pending.invalidateAllRows();
         grid_data_pending.updateRowCount();
+        grid_data_pending.setData(data_list_pending);
         grid_data_pending.render();
         $('#loadingPendingData').html('');
     });
@@ -289,6 +319,13 @@ function get_data_pending() {
 }
 
 function get_data_pending_parent(data) {
+    var branch_name = '';
+    var trx_to = data.trx_to.split('-');
+    
+    for (let index = 0; index < trx_to.length; index++) {
+        branch_name = trx_to[index].replace(/\s/g,'');
+    }
+
     $('#list_parent').html('');
     data_list_pending_parent = [];
     var obj_post = $.post(uri+"/index.php/itd_nfs/show_list_pending_parent",{
@@ -297,7 +334,8 @@ function get_data_pending_parent(data) {
         trx_client_code : data.trx_client_code,
         nfs_bank_code : data.nfs_bank_code,
         trx_rate : data.trx_rate,
-        trx_nominal : data.trx_nominal
+        trx_nominal : data.trx_nominal,
+        branch_name : branch_name
     },function(data){
     },'json');
 
@@ -315,7 +353,8 @@ function get_data_pending_parent(data) {
                 'trx_nominal'       : strtomoney(data[index].trx_nominal),
                 'id'                : data[index].id,
                 'indent'            : data[index].trx_id_upper == 0 ? 0 : 1,
-                'parent'            : data[index].parent
+                'parent'            : data[index].parent,
+                'trx_to'            : data[index].trx_to
             };
         }
                 
@@ -331,16 +370,22 @@ function create_list_table_pending()
 {
     var columns = [];
     var options = [] ; 
-    columns = [         
-        {id:"id", name:"ID", field:"trx_id", width:80}
-        ,{id:"type", name:"Type", field:"type", width:80}
-        ,{id:"trx_valuta_date", name:"Valuta Date", field:"trx_valuta_date", width:105}
-        ,{id:"trx_due_date", name:"Due Date", field:"trx_due_date", width:105}
-        ,{id:"trx_client_code", name:"Client Code", field:"trx_client_code",width:70}
-        ,{id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75}
-        ,{id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"}
-        ,{id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"}
-    ];
+
+    var checkboxSelector = new Slick.CheckboxSelectColumn({
+        cssClass: "slick-cell-checkboxsel"
+    });
+  
+    columns.push(checkboxSelector.getColumnDefinition());
+
+    columns.push({id:"id", name:"ID", field:"trx_id", width:80});
+    columns.push({id:"type", name:"Type", field:"type", width:80});
+    columns.push({id:"trx_valuta_date", name:"Valuta Date", field:"trx_valuta_date", width:105});
+    columns.push({id:"trx_due_date", name:"Due Date", field:"trx_due_date", width:105});
+    columns.push({id:"trx_client_code", name:"Client Code", field:"trx_client_code",width:70});
+    columns.push({id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75});
+    columns.push({id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"});
+    columns.push({id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"});
+    columns.push({id:"trx_to", name:"Trx To", field:"trx_to",width:110});
 
     options = {
         enableAddRow: true,
@@ -353,7 +398,10 @@ function create_list_table_pending()
     };
 
     grid_data_pending = new Slick.Grid("#list_pending", data_list_pending, columns, options);
-    grid_data_pending.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow:true}));        
+    grid_data_pending.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow:true}));  
+    grid_data_pending.registerPlugin(checkboxSelector);
+    var columnpicker = new Slick.Controls.ColumnPicker(columns, grid_data_pending, options);
+
     grid_data_pending.onDblClick.subscribe(function (e, args) {
         var rowSelected = args.grid.getActiveCell().row;
         var dataSelected = args.grid.getDataItem(rowSelected);
@@ -369,8 +417,14 @@ function create_list_table_pending()
         dataSelected.trx_rate+' | '+
         dataSelected.trx_nominal;
 
+        $('#result_parent').html('Parent : xxxxxxxxxxx');
         $('#result_chlid').html(result_child);
         $('#input_child').val(dataSelected.trx_id);
+    });
+
+    grid_data_pending.onSelectedRowsChanged.subscribe(function (e, args) {
+        var data = args.grid.getSelectedRows();
+        $('#hapus_pending_data').html('Hapus Data ('+data.length+')');
     });
 }
 
@@ -416,6 +470,7 @@ function create_list_table_pending_parent()
         ,{id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75}
         ,{id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"}
         ,{id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"}
+        ,{id:"trx_to", name:"Trx To", field:"trx_to",width:110}
     ];
 
     var options = {
