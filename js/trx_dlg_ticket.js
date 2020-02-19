@@ -104,6 +104,7 @@ function set_val_dlg_trx_ticket(t_id)
                     bt_mount = msg.r_sdata[0].bt_mount;
                 }
 
+                var trx_tax_ticket = 0;
                 if (msg.r_sdata[0].trx_tax_ticket) {
                     trx_tax_ticket = msg.r_sdata[0].trx_tax_ticket;
                 }
