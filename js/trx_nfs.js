@@ -339,7 +339,11 @@ function get_data_pending_parent(data) {
     },function(data){
     },'json');
 
-    obj_post.done(function(data) {        
+    obj_post.done(function(data) {       
+        if (data.length == 0) {
+            alert('Tidak ditemukan data penempatan/perpanjangan dengan status approved');
+        }
+        
         for (let index = 0; index < data.length; index++) {
             data_list_pending_parent[index] = {
                 'trx_id'            : data[index].trx_id,
