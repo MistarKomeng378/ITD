@@ -320,12 +320,8 @@ function get_data_pending() {
 }
 
 function get_data_pending_parent(data) {
-    var branch_name = '';
-    var trx_to = data.trx_to.split('-');
-    
-    for (let index = 0; index < trx_to.length; index++) {
-        branch_name = trx_to[index].replace(/\s/g,'');
-    }
+    var trx_to = data.trx_to.replace(/\s/g,'');
+    var branch_name = trx_to.replace(/-/g,'');
 
     $('#list_parent').html('');
     data_list_pending_parent = [];

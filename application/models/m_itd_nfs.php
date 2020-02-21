@@ -134,7 +134,7 @@ class M_itd_nfs extends CI_Model {
                 AND b.nfs_bank_code = '".$param['nfs_bank_code']."' 
                 AND b.trx_rate = '".$param['trx_rate']."' 
                 AND b.trx_nominal = '".$nominal."'
-                AND (SELECT value FROM dbo.branch_name_from_trx_to(b.trx_to,'-')) = '".$param['branch_name']."'
+                AND dbo.branch_name_from_trx_to(b.trx_to) = dbo.branch_name_from_trx_to('".$param['branch_name']."')
             ORDER BY
                 trx_id ASC
         ");
