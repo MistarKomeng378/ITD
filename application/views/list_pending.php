@@ -35,7 +35,7 @@
 <button id="hapus_pending_data">Hapus Data (0)</button>
 <div id="list_pending" style="height: 170px;border: 1.25px solid #84142d;border-radius: 5px; margin-bottom: 15px"></div>
 
-<span>Data Aapproved</span>
+<span>Data Approved</span>
 <div id="list_parent" style="margin-top: 10px; margin-bottom: 5px;
     height: 170px;
     border: 1.25px solid #84142d;

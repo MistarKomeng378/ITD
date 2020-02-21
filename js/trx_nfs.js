@@ -385,7 +385,7 @@ function create_list_table_pending()
     columns.push({id:"trx_valuta_date", name:"Valuta Date", field:"trx_valuta_date", width:105});
     columns.push({id:"trx_due_date", name:"Due Date", field:"trx_due_date", width:105});
     columns.push({id:"trx_client_code", name:"Client Code", field:"trx_client_code",width:70});
-    columns.push({id:"trx_client_name", name:"Client Code", field:"trx_client_name",width:100});
+    columns.push({id:"trx_client_name", name:"Client Name", field:"trx_client_name",width:100});
     columns.push({id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75});
     columns.push({id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"});
     columns.push({id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"});
@@ -471,11 +471,11 @@ function create_list_table_pending_parent()
         ,{id:"trx_valuta_date", name:"Valuta Date", field:"trx_valuta_date", width:105}
         ,{id:"trx_due_date", name:"Due Date", field:"trx_due_date", width:105}
         ,{id:"trx_client_code", name:"Client Code", field:"trx_client_code",width:70}
-        ,{id:"trx_client_name", name:"Client Code", field:"trx_client_name",width:100}
+        ,{id:"trx_client_name", name:"Client Name", field:"trx_client_name",width:100}
         ,{id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75}
         ,{id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"}
         ,{id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"}
-        ,{id:"trx_other", name:"Other", field:"trx_other",width:110}
+        ,{id:"trx_other", name:"Other", field:"trx_other",width:550}
         ,{id:"trx_to", name:"Trx To", field:"trx_to",width:110}
     ];
 
