@@ -97,7 +97,16 @@ class M_itd_nfs extends CI_Model {
     {
         $query=$this->db->query("
             SELECT
-                b.type_desc,a.trx_id, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal, a.trx_to
+                b.type_desc,
+                a.trx_id,
+                a.trx_valuta_date,
+                a.trx_due_date,
+                a.trx_client_code,
+                a.trx_client_name,
+                a.nfs_bank_code,
+                a.trx_rate,
+                a.trx_nominal,
+                a.trx_to
             FROM
                 itd_trx_pending a
             LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
@@ -138,7 +147,18 @@ class M_itd_nfs extends CI_Model {
 
         $query=$this->db->query(" 
             SELECT
-                b.type_desc, a.trx_id, a.trx_id_master, a.trx_id_upper, a.trx_valuta_date,a.trx_due_date,a.trx_client_code,a.nfs_bank_code,a.trx_rate,a.trx_nominal, a.trx_to
+                b.type_desc, 
+                a.trx_id, 
+                a.trx_id_master, 
+                a.trx_id_upper, 
+                a.trx_valuta_date,
+                a.trx_due_date,
+                a.trx_client_code,
+                a.trx_client_name,
+                a.nfs_bank_code,
+                a.trx_rate,
+                a.trx_nominal, 
+                a.trx_to
             FROM
                 itd_trx_approved a
             LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
