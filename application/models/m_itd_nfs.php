@@ -158,12 +158,23 @@ class M_itd_nfs extends CI_Model {
                 a.nfs_bank_code,
                 a.trx_rate,
                 a.trx_nominal, 
-                a.trx_to
+                a.trx_to,
+                CASE	
+					WHEN c.trx_id IS NOT NULL THEN
+					    a.trx_other+' - Bilyet No:' +c.bilyet_no 
+					WHEN d.trx_id IS NOT NULL THEN
+					    a.trx_other+' - Bilyet No:' +d.bilyet_no  
+					ELSE a.trx_other 
+				END trx_other
             FROM
                 itd_trx_approved a
             LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
+            left outer join itd_bilyet_in c on a.trx_id = c.trx_id
+            left outer join itd_bilyet_out d on a.trx_id = d.trx_id
+            
             WHERE
-                ( trx_id IN ( ".$trx_id." ) OR trx_id_upper IN ( ".$trx_id." ) OR trx_id_master IN ( ".$trx_id." ) ) AND a.trx_progress_status <> 11
+                ( a.trx_id IN ( ".$trx_id." ) OR a.trx_id_upper IN ( ".$trx_id." ) OR a.trx_id_master IN ( ".$trx_id." ) ) AND 
+                a.trx_progress_status <> 11
             ORDER BY a.trx_id ASC;
         ");
         

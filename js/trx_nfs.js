@@ -360,7 +360,8 @@ function get_data_pending_parent(data) {
                 'id'                : data[index].id,
                 'indent'            : data[index].trx_id_upper == 0 ? 0 : 1,
                 'parent'            : data[index].parent,
-                'trx_to'            : data[index].trx_to
+                'trx_to'            : data[index].trx_to,
+                'trx_other'         : data[index].trx_other
             };
         }
                 
@@ -478,6 +479,7 @@ function create_list_table_pending_parent()
         ,{id:"nfs_bank_code", name:"Bank Code", field:"nfs_bank_code",width:75}
         ,{id:"trx_rate", name:"Rate", field:"trx_rate",width:50, cssClass:"cell_right"}
         ,{id:"trx_nominal", name:"Nominal", field:"trx_nominal",width:110, cssClass:"cell_right"}
+        ,{id:"trx_other", name:"Other", field:"trx_other",width:110}
         ,{id:"trx_to", name:"Trx To", field:"trx_to",width:110}
     ];
 
