@@ -29,7 +29,7 @@ class M_itd_nfs extends CI_Model {
         $interest_rate,$placement_date,$maturity_date,$sharia_deposit ,
         $contact_person,$telephone_no,$fax_no,$reference_no,$parent_reference_no ,
         $description,$si_reference,$status,$approve,$checked,$pending,$reject_reason,$acct_no,$acct_name,
-        $WITHDRAWAL_DATE, $NEW_PRINCIPLE_AMOUNT, $NEW_INTEREST_RATE, $NEW_MATURITY_DATE
+        $WITHDRAWAL_DATE, $NEW_PRINCIPLE_AMOUNT, $NEW_INTEREST_RATE, $NEW_MATURITY_DATE, $ROLLOVER_DATE
     )
     {
         $this->db->query("exec gw_nfs_insert_temp '{$client_code}','{$transaction_status}','{$action_type}','{$input_type}','{$im_name}','{$fund_code}',
@@ -38,7 +38,7 @@ class M_itd_nfs extends CI_Model {
             '{$interest_rate}','{$placement_date}','{$maturity_date}','{$sharia_deposit }',
             '{$contact_person}','{$telephone_no}','{$fax_no}','{$reference_no}','{$parent_reference_no }',
             '{$description}','{$si_reference}','{$status}','{$approve}','{$checked}','{$pending}','{$reject_reason }','{$acct_no}','{$acct_name}',
-            '{$WITHDRAWAL_DATE}', '{$NEW_PRINCIPLE_AMOUNT}', '{$NEW_INTEREST_RATE}', '{$NEW_MATURITY_DATE}'
+            '{$WITHDRAWAL_DATE}', '{$NEW_PRINCIPLE_AMOUNT}', '{$NEW_INTEREST_RATE}', '{$NEW_MATURITY_DATE}', '{$ROLLOVER_DATE}'
         ");   
         
     }
@@ -117,69 +117,18 @@ class M_itd_nfs extends CI_Model {
 
     public function list_pending_parent($param)
     {
-
         $nominal = str_replace( ',', '', $param['trx_nominal']);
-        $id = $this->db->query(" 
-            SELECT 
-                trx_id 
-            FROM
-                itd_trx_approved b 
-            WHERE
-                b.nfs_td = 1 
-                AND b.trx_id_upper = 0 
-                AND b.trx_type = 1 
-                AND b.trx_valuta_date = '".$param['trx_valuta_date']."' 
-                AND b.trx_due_date = '".$param['trx_due_date']."' 
-                AND b.trx_client_code = '".$param['trx_client_code']."' 
-                AND b.nfs_bank_code = '".$param['nfs_bank_code']."' 
-                AND b.trx_rate = '".$param['trx_rate']."' 
-                AND b.trx_nominal = '".$nominal."'
-                AND dbo.branch_name_from_trx_to(b.trx_to) = dbo.branch_name_from_trx_to('".$param['branch_name']."')
-            ORDER BY
-                trx_id ASC
-        ");
-        $id = $id->result_array();
-        $trx_id = NULL;
-        foreach ($id as $key => $value) {
-            $trx_id = $trx_id."'".$value['trx_id']."',";
-        }
-        $trx_id = $trx_id !== NULL ? rtrim($trx_id, ", ") : 'NULL';
-
-        $query=$this->db->query(" 
-            SELECT
-                b.type_desc, 
-                a.trx_id, 
-                a.trx_id_master, 
-                a.trx_id_upper, 
-                a.trx_valuta_date,
-                a.trx_due_date,
-                a.trx_client_code,
-                a.trx_client_name,
-                a.nfs_bank_code,
-                a.trx_rate,
-                a.trx_nominal, 
-                a.trx_to,
-                CASE	
-					WHEN c.trx_id IS NOT NULL THEN
-					    a.trx_other+' - Bilyet No:' +c.bilyet_no 
-					WHEN d.trx_id IS NOT NULL THEN
-					    a.trx_other+' - Bilyet No:' +d.bilyet_no  
-					ELSE a.trx_other 
-				END trx_other
-            FROM
-                itd_trx_approved a
-            LEFT JOIN itd_trx_type b on b.type_id = a.trx_type
-            left outer join itd_bilyet_in c on a.trx_id = c.trx_id
-            left outer join itd_bilyet_out d on a.trx_id = d.trx_id
-            
-            WHERE
-                ( a.trx_id IN ( ".$trx_id." ) OR a.trx_id_upper IN ( ".$trx_id." ) OR a.trx_id_master IN ( ".$trx_id." ) ) AND 
-                a.trx_progress_status <> 11
-            ORDER BY a.trx_id ASC;
+        $data = $this->db->query(" 
+            EXEC gw_list_pending_parent 
+            '{$param['trx_valuta_date']}',
+            '{$param['trx_due_date']}',
+            '{$param['trx_client_code']}',
+            '{$param['trx_rate']}',
+            '{$nominal}',
+            '{$param['branch_name']}'
         ");
         
-        $data = $query->result_array();
-        return $data;
+        return $data->result_array();
     }
 
     public function pending_to_submit($param)
@@ -242,13 +191,9 @@ class M_itd_nfs extends CI_Model {
 
             $approved = $approved->result_array();
 
-            // jika perpanjagan/break dan parentnya penemptan
-            if( ($value['trx_type'] == '2' && $approved[0]['trx_type'] == '1') || ($value['trx_type'] == '4' && $approved[0]['trx_type'] == '1') ){
+            if( $approved[0]['trx_id_master'] == 0){
                 $value['trx_id_master'] = $approved[0]['trx_id'] ;
-            }
-
-            // jika perpanjagan/break dan parentnya perpanjangan
-            if( ($value['trx_type'] == '2' && $approved[0]['trx_type'] == '2') || ($value['trx_type'] == '4' && $approved[0]['trx_type'] == '2') ){
+            }else if( $approved[0]['trx_id_master'] > 0){
                 $value['trx_id_master'] = $approved[0]['trx_id_master'] ;
             }
 
@@ -256,6 +201,7 @@ class M_itd_nfs extends CI_Model {
                 $value['trx_nominal'] = $value['NEW_PRINCIPLE_AMOUNT'];
                 $value['trx_rate'] = $value['NEW_INTEREST_RATE'];
                 $value['trx_due_date'] = $value['NEW_MATURITY_DATE'];
+                $value['trx_valuta_date'] = $value['ROLLOVER_DATE'];
             }
 
             $SQL = "INSERT INTO itd_trx_unapproved (

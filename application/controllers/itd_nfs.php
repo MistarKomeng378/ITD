@@ -110,7 +110,8 @@ class Itd_nfs extends CI_Controller {
                     date('Y/m/d H:i:s', strtotime($xitem1['WITHDRAWAL_DATE'])),
                     sql_quot($xitem1['NEW_PRINCIPLE_AMOUNT']),
                     sql_quot($xitem1['NEW_INTEREST_RATE']),
-                    date('Y/m/d H:i:s', strtotime($xitem1['NEW_MATURITY_DATE']))
+                    date('Y/m/d H:i:s', strtotime($xitem1['NEW_MATURITY_DATE'])),
+                    date('Y/m/d H:i:s', strtotime($xitem1['ROLLOVER_DATE']))
                 );
                 
             }

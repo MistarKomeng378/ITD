@@ -40,7 +40,9 @@
     height: 170px;
     border: 1.25px solid #84142d;
     border-radius: 5px;
-    white-space: nowrap;">
+    white-space: nowrap;
+    overflow-y: auto;
+    ">
 </div>
 
 <span>Hasil</span>
