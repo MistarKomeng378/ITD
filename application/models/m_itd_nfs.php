@@ -29,7 +29,8 @@ class M_itd_nfs extends CI_Model {
         $interest_rate,$placement_date,$maturity_date,$sharia_deposit ,
         $contact_person,$telephone_no,$fax_no,$reference_no,$parent_reference_no ,
         $description,$si_reference,$status,$approve,$checked,$pending,$reject_reason,$acct_no,$acct_name,
-        $WITHDRAWAL_DATE, $NEW_PRINCIPLE_AMOUNT, $NEW_INTEREST_RATE, $NEW_MATURITY_DATE, $ROLLOVER_DATE
+        $WITHDRAWAL_DATE, $NEW_PRINCIPLE_AMOUNT, $NEW_INTEREST_RATE, $NEW_MATURITY_DATE, $ROLLOVER_DATE, 
+        $ADJUSTMENT_INTEREST_RATE
     )
     {
         $this->db->query("exec gw_nfs_insert_temp '{$client_code}','{$transaction_status}','{$action_type}','{$input_type}','{$im_name}','{$fund_code}',
@@ -38,7 +39,8 @@ class M_itd_nfs extends CI_Model {
             '{$interest_rate}','{$placement_date}','{$maturity_date}','{$sharia_deposit }',
             '{$contact_person}','{$telephone_no}','{$fax_no}','{$reference_no}','{$parent_reference_no }',
             '{$description}','{$si_reference}','{$status}','{$approve}','{$checked}','{$pending}','{$reject_reason }','{$acct_no}','{$acct_name}',
-            '{$WITHDRAWAL_DATE}', '{$NEW_PRINCIPLE_AMOUNT}', '{$NEW_INTEREST_RATE}', '{$NEW_MATURITY_DATE}', '{$ROLLOVER_DATE}'
+            '{$WITHDRAWAL_DATE}', '{$NEW_PRINCIPLE_AMOUNT}', '{$NEW_INTEREST_RATE}', '{$NEW_MATURITY_DATE}', '{$ROLLOVER_DATE}',
+            '{$ADJUSTMENT_INTEREST_RATE}'
         ");   
         
     }
