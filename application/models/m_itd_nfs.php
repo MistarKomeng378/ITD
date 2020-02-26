@@ -199,11 +199,16 @@ class M_itd_nfs extends CI_Model {
                 $value['trx_id_master'] = $approved[0]['trx_id_master'] ;
             }
 
+            // jika perpanjangan
             if( $value['trx_type'] == '2' ){
                 $value['trx_nominal'] = $value['NEW_PRINCIPLE_AMOUNT'];
                 $value['trx_rate'] = $value['NEW_INTEREST_RATE'];
                 $value['trx_due_date'] = $value['NEW_MATURITY_DATE'];
                 $value['trx_valuta_date'] = $value['ROLLOVER_DATE'];
+            }
+            
+            if( $value['trx_type'] == '3' ){
+                $value['trx_date'] = $value['trx_break_dt'];
             }
 
             $SQL = "INSERT INTO itd_trx_unapproved (
