@@ -51,7 +51,7 @@ body {
 </head>
 <body>
 <div style="width: 800px; margin: 0 auto;padding:0; background-color: #FFFFFF;">
-<div style="color: #F0F0F0;" align="center">. <br /><br /><br /><br /><br /><br /></div>
+<div style="color: #F0F0F0;" align="center">.  <br /><br /><br /><br /></div>
 <!--
 <img src="<?php echo $url;?>img/cimb.png" style="margin: 0;" />         <br />
 -->
@@ -257,7 +257,6 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
 <table width="100%">
     <tr>                             
         <td width="25%" valign="top">Terima Kasih</td>
-        <td></td>
     </tr>
     <tr>
         <td></td>
@@ -266,7 +265,6 @@ Mohon dilakukan transaksi untuk kepentingan klien kami, dengan detail sebagai be
                 <tr>
                     <td colspan="3" align="center">Hormat Kami,</td>
                 </tr>
-                <tr><td colspan="3" align="center">&nbsp;</td></tr>
                 <tr><td colspan="3" align="center">&nbsp;</td></tr>
                 <tr><td colspan="3" align="center">&nbsp;</td></tr>
                 <tr><td colspan="3" align="center">&nbsp;</td></tr>
