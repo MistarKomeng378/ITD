@@ -267,11 +267,9 @@ function create_trx_event()
     grid_trx.onDblClick.subscribe(function(e) {     
         var cell = grid_trx.getCellFromEvent(e);
         set_var_dlg_trx(data_trx[cell.row].trx_id,data_trx[cell.row].trx_id_master,data_trx[cell.row].trx_id_upper);
-        
-        if(data_trx[cell.row].trx_unix_no==2 && data_trx[cell.row].trx_type_id == 1){
+
+        if(data_trx[cell.row].trx_unix_no == 2){
             open_dlg_trx(3,0,data_trx[cell.row].trx_unix_no);
-        }else if(data_trx[cell.row].trx_unix_no == 2 && data_trx[cell.row].trx_type_id !== 1 ){
-            open_dlg_trx(1,0,data_trx[cell.row].trx_unix_no);
         }else{
             open_dlg_trx(1,0,data_trx[cell.row].trx_unix_no);
         }
