@@ -559,39 +559,7 @@ class Itd_nfs extends CI_Controller {
         $param = $this->input->post();
         $this->load->model("M_itd_nfs");
         $data = $this->M_itd_nfs->list_pending_parent($param);
-
-        $parent = array();
-        $child = array();
-        $list = array();
-
-        foreach ($data as $key => $value) {
-            if ($value['trx_id_upper'] == 0) {
-                array_push($parent, $value);
-            }
-
-            if ($value['trx_id_upper'] !== 0) {
-                array_push($child, $value);
-            }
-        }
-
-        $id = 0;
-        foreach ($parent as $key => $value) {
-            $value['id']     = $id;
-            $value['parent'] = null;
-            array_push($list,$value);
-            
-            foreach ($child as $keyb => $valueb) {
-                if ($value['trx_id'] == $valueb['trx_id_upper'] || $value['trx_id'] == $valueb['trx_id_master']) {
-                    $valueb['id'] = ++$id;
-                    $valueb['parent'] = $value['id'];
-                    array_push($list,$valueb);
-                }
-            }
-
-            ++$id;
-        }
-
-        echo json_encode($list);
+        echo json_encode($data);
     }
 
     public function pending_to_submit()

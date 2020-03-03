@@ -336,7 +336,7 @@ function get_data_pending_parent(data) {
     },function(data){
     },'json');
 
-    obj_post.done(function(data) {       
+    obj_post.done(function(data) {         
         if (data.length == 0) {
             alert('Tidak ditemukan data penempatan/perpanjangan dengan status approved');
         }
@@ -353,7 +353,7 @@ function get_data_pending_parent(data) {
                 'nfs_bank_code'     : data[index].nfs_bank_code,
                 'trx_rate'          : data[index].trx_rate,
                 'trx_nominal'       : strtomoney(data[index].trx_nominal),
-                'id'                : data[index].id,
+                'id'                : data[index].trx_id,
                 'indent'            : data[index].trx_id_upper == 0 ? 0 : 1,
                 'parent'            : data[index].parent,
                 'trx_to'            : data[index].trx_to,
