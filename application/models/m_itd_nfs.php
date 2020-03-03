@@ -182,11 +182,22 @@ class M_itd_nfs extends CI_Model {
         foreach ($pending as $key => $value) {
             $approved = $this->db->query(" 
                 SELECT 
-                    * 
+                    a.*,
+                    CASE
+					    WHEN c.trx_id IS NOT NULL THEN
+						    a.trx_other+ ' - Bilyet No: ' + c.bilyet_no
+					    WHEN d.trx_id IS NOT NULL THEN
+						    a.trx_other+ ' - Bilyet No: ' + d.bilyet_no
+					    ELSE 
+						    a.trx_other 
+				    END approved_trx_other
                 FROM
-                    itd_trx_approved b 
+                    itd_trx_approved a
+                LEFT JOIN itd_trx_type b ON b.type_id = a.trx_type
+                LEFT OUTER JOIN itd_bilyet_in c ON a.trx_id = c.trx_id
+                LEFT OUTER JOIN itd_bilyet_out d ON a.trx_id = d.trx_id 
                 WHERE
-                    b.trx_id = '".$param['parent']."'
+                    a.trx_id = '".$param['parent']."'
                 ORDER BY
                     trx_id ASC
             ");
@@ -210,6 +221,8 @@ class M_itd_nfs extends CI_Model {
             if( $value['trx_type'] == '3' ){
                 $value['trx_date'] = $value['trx_break_dt'];
             }
+
+            $value['trx_other'] = $approved[0]['approved_trx_other'];
 
             $SQL = "INSERT INTO itd_trx_unapproved (
                 trx_id_master, 
@@ -347,4 +360,3 @@ class M_itd_nfs extends CI_Model {
         return 'Data gagal dihapus.';
     }
 }
-?>
