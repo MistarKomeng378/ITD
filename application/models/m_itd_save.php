@@ -342,6 +342,7 @@ class M_itd_save extends CI_Model {
         $client_code    = $param['client_code'];
         $coa            = $param['coa'];
         $trx_note       = $param['trx_note'];
+        $trx_unix_no    = $param['trx_unix_no'];
 
         $deleting = false;
         $cekMutasi = $this->CheckDataMutasi($trx_id, $acc_no, $client_code, $coa);
@@ -393,9 +394,18 @@ class M_itd_save extends CI_Model {
             // oleh kurob -- hard reset
             // hapus dari tabel itd_trx_approved
             // untuk kebutuhan data deposito jatuh tempo
-            $this->db->query("DELETE FROM itd_trx_approved WHERE trx_id = '".$trx_id."' ");
-            $data   = $query->result_array();
-            $data = $query ? array('msg' => 'Data berhasil di hapus') : array('msg' => 'Data gagal di hapus');
+            if ($trx_unix_no == 1) {
+                $this->db->query("DELETE FROM itd_trx_unapproved WHERE trx_id = '".$trx_id."' ");
+                $data = $query->result_array();
+                $data = $query ? array('msg' => 'Data berhasil di hapus') : array('msg' => 'Data gagal di hapus');
+            }
+
+            if ($trx_unix_no == 2) {
+                $this->db->query("DELETE FROM itd_trx_approved WHERE trx_id = '".$trx_id."' ");
+                $data   = $query->result_array();
+                $data = $query ? array('msg' => 'Data berhasil di hapus') : array('msg' => 'Data gagal di hapus');
+            }
+            
         }
 
         return $data;

@@ -227,8 +227,16 @@ function create_trx_event()
                 alert("Sudah/Pernah ada bilyet masuk pada instruksi ini!");
             else
             {
-                set_var_dlg_trx(data_trx[selected_row_trx.row].trx_id,data_trx[selected_row_trx.row].trx_id_master,data_trx[selected_row_trx.row].trx_id_upper);
-                open_dlg_trx(5,$("#hselect_trx_type").val(),2); 
+                set_var_dlg_trx(
+                    data_trx[selected_row_trx.row].trx_id,
+                    data_trx[selected_row_trx.row].trx_id_master,
+                    data_trx[selected_row_trx.row].trx_id_upper
+                );
+                open_dlg_trx(
+                    5,
+                    $("#hselect_trx_type").val(),
+                    data_trx[selected_row_trx.row].trx_unix_no 
+                ); 
                 grid_selected = data_trx[selected_row_trx.row];
             }
         }

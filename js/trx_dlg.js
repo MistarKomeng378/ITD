@@ -675,6 +675,8 @@ function do_submit_cancel_trx()
     var acc_no = 0;
     var client_code = 0;
     var trx_type = 0;
+    var trx_unix_no = data.trx_unix_no;
+
     $.post(uri+"index.php/itd/get_trx",{ trx_id:data.trx_id,trx_unix: data.trx_unix_no},function(data) {
         var coa     = '';
         var res     = data.r_sdata[0];
@@ -701,11 +703,12 @@ function do_submit_cancel_trx()
             state_progress(1);
             var obj_post = $.post(uri+"/index.php/itd_save/submit_cancel_trx", 
                 { 
-                    trx_id  :   trxid,
-                    acc_no  :   acc_no,
+                    trx_id      : trxid,
+                    acc_no      : acc_no,
                     client_code : client_code,
-                    coa : coa,
-                    trx_note:$("#i_trx_note").val()
+                    coa         : coa,
+                    trx_note    : $("#i_trx_note").val(),
+                    trx_unix_no : trx_unix_no
                 },
             function(data) {
                     
