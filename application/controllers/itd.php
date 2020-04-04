@@ -277,8 +277,18 @@ class Itd extends CI_Controller {
         $this->data["r_sdata"]= $data;
         echo json_encode($this->data);
     } 
-    function save_to_excel_approved($trx_to, $trx_ccode, $trx_cname, $trx_stype, $trx_ntype, $trx_nominal, $trx_sdate, $trx_edate, $trx_id)
-    {
+    function save_to_excel_approved(
+        $trx_to, 
+        $trx_ccode, 
+        $trx_cname, 
+        $trx_stype, 
+        $trx_ntype, 
+        $trx_nominal, 
+        $trx_sdate, 
+        $trx_edate, 
+        $trx_id,
+        $trx_status
+    ){
         $this->load->model("M_itd");  
         if($trx_sdate=="")
             $trx_sdate='01/01/1900';
@@ -297,7 +307,8 @@ class Itd extends CI_Controller {
             $trx_sdate > 0 ? $trx_sdate : '',
             $trx_edate > 0 ? $trx_edate : '',
             $this->session->userdata('itd_uid'),
-            $trx_id > 0 ? $trx_id : ''
+            $trx_id > 0 ? $trx_id : '',
+            $trx_status > 0 ? $trx_status : ''
         );
 
         // echo json_encode($data);

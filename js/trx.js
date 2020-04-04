@@ -109,6 +109,7 @@ function save_to_excel_instruksi_deposito()
     var trx_sdate = $("#dlgTrxSearch_sdate").val();
     var trx_edate = $("#dlgTrxSearch_edate").val();
     var trx_id = $("#dlgTrxSearch_id").val();
+    var trx_status = $("#dlgTrxSearch_status").val();
 
     var trx_to = trx_to ? trx_to : 0 ;
     var trx_ccode = trx_ccode ? trx_ccode : 0 ;
@@ -119,8 +120,19 @@ function save_to_excel_instruksi_deposito()
     var trx_sdate = trx_sdate ? trx_sdate : 0 ;
     var trx_edate = trx_edate ? trx_edate : 0 ;
     var trx_id = trx_id ? trx_id : 0 ;
+    var trx_status = trx_status ? trx_status : 0 ;
 
-    var param = '/'+ trx_to +'/'+ trx_ccode +'/'+ trx_cname +'/'+ trx_stype +'/'+ trx_nominal +'/'+ trx_ntype +'/'+ trx_sdate +'/'+ trx_edate +'/'+ trx_id;
+    var param = '/'+ 
+        trx_to +'/'+ 
+        trx_ccode +'/'+ 
+        trx_cname +'/'+ 
+        trx_stype +'/'+ 
+        trx_nominal +'/'+ 
+        trx_ntype +'/'+ 
+        trx_sdate +'/'+ 
+        trx_edate +'/'+ 
+        trx_id+'/'+
+        trx_status;
     
     window.open(uri+"index.php/itd/save_to_excel_approved"+param,"_blank");
 }
