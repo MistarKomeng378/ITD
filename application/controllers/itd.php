@@ -298,20 +298,19 @@ class Itd extends CI_Controller {
         $trx_edate = change_dt_format($trx_edate);
 
         $data = $this->M_itd->search_trx_approved(
-            $trx_to > 0 ? $trx_to : '' , 
-            $trx_ccode > 0 ? $trx_ccode : '', 
-            $trx_cname > 0 ? $trx_cname : '', 
-            $trx_stype > 0 ? $trx_stype : '', 
-            $trx_ntype > 0 ? $trx_ntype : '', 
-            $trx_nominal > 0 ? $trx_nominal : 0+$trx_nominal,
-            $trx_sdate > 0 ? $trx_sdate : '',
-            $trx_edate > 0 ? $trx_edate : '',
+            $trx_to !== '0' ? $trx_to : '' , 
+            $trx_ccode !== '0' ? $trx_ccode : '', 
+            $trx_cname !== '0' ? str_replace('%20',' ',$trx_cname) : '', 
+            $trx_stype !== '0' ? $trx_stype : 0, 
+            $trx_ntype !== '0' ? $trx_ntype : 0, 
+            $trx_nominal !== '0' ? $trx_nominal : 0+$trx_nominal,
+            $trx_sdate !== '0' ? $trx_sdate : '',
+            $trx_edate !== '0' ? $trx_edate : '',
             $this->session->userdata('itd_uid'),
-            $trx_id > 0 ? $trx_id : '',
-            $trx_status > 0 ? $trx_status : ''
+            $trx_id !== '0' ? $trx_id : '',
+            $trx_status !== '0' ? $trx_status : 0
         );
 
-        // echo json_encode($data);
         $filename="instruksi_deposito_ ".$trx_sdate." s.d ".$trx_edate.".xls";
         header("Content-Type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=$filename");
