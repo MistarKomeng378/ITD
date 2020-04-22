@@ -107,8 +107,19 @@ function do_print_tc5()
     }
 }
 function do_refresh_tc5()
-{            
-    clear_field_tc5();                                    
+{                
+    $("#dlg_tc5_bnf_name").val('');
+    $("#dlg_tc5_bnf_acc_no").val('');
+    $("#dlg_tc5_bnf_bank").val('');
+    $("#dlg_tc5_db_acc_no").val('');
+    $("#dlg_tc5_db_amount").val('');
+    $("#dlg_tc5_db_amount_say").val('');
+    $("#dlg_tc5_msg").val('');
+    $("#dlg_tc5_sender").val('');
+    $("#dlg_tc5_db_pic_id").val('');
+    $("#dlg_tc5_db_amount_h").val('');
+    $("#dlg_tc5_charges_s").html('');
+
     state_progress(1);                            
     var obj_post = $.post(uri+"/index.php/tc5/get_tc5", 
         { pic_id:picid,trx_id:pictrxid,unix_no:picunix },function(data) {   
